@@ -1,0 +1,177 @@
+/* ── UNLABELED — BASE STYLES ────────────────────────────────
+   Design language: Rick Rubin meets Austin Kleon.
+   Black, white, one accent. Humanist serif for content.
+   Monospace for system elements. No gradients. No shadows.
+   ─────────────────────────────────────────────────────────── */
+
+:root {
+  --black: #0f0f0f;
+  --white: #fafaf8;
+  --accent: #c8502a;        /* the one color — marks action states */
+  --grey-light: #e8e8e4;
+  --grey-mid: #999990;
+  --grey-dark: #444440;
+
+  --font-serif: 'Georgia', 'Times New Roman', serif;
+  --font-mono: 'Courier New', 'Courier', monospace;
+
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 32px;
+  --space-lg: 64px;
+  --space-xl: 128px;
+
+  --max-width: 680px;
+  --max-width-wide: 960px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 18px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: var(--white);
+  color: var(--black);
+  font-family: var(--font-serif);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── TYPOGRAPHY ─────────────────────────────────────────────── */
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: normal;
+  line-height: 1.3;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.4rem; }
+h3 { font-size: 1.1rem; }
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--grey-mid);
+}
+
+/* ── LAYOUT ─────────────────────────────────────────────────── */
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+.container-wide {
+  max-width: var(--max-width-wide);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+/* ── BUTTONS ─────────────────────────────────────────────────── */
+
+button, .btn {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  padding: 0;
+}
+
+.btn-primary {
+  background: var(--black);
+  color: var(--white);
+  padding: 12px 24px;
+  display: inline-block;
+}
+
+.btn-primary:hover {
+  background: var(--grey-dark);
+}
+
+.btn-accent {
+  background: var(--accent);
+  color: var(--white);
+  padding: 12px 24px;
+  display: inline-block;
+}
+
+.btn-ghost {
+  border: 1px solid var(--grey-light);
+  padding: 10px 20px;
+  color: var(--grey-dark);
+}
+
+.btn-ghost:hover {
+  border-color: var(--black);
+  color: var(--black);
+}
+
+/* ── INPUTS ──────────────────────────────────────────────────── */
+
+input, textarea {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  border: none;
+  border-bottom: 1px solid var(--grey-light);
+  background: transparent;
+  color: var(--black);
+  width: 100%;
+  padding: 8px 0;
+  outline: none;
+  line-height: 1.6;
+}
+
+input:focus, textarea:focus {
+  border-bottom-color: var(--black);
+}
+
+textarea {
+  resize: none;
+  min-height: 80px;
+}
+
+/* ── DIVIDERS ─────────────────────────────────────────────────── */
+
+hr {
+  border: none;
+  border-top: 1px solid var(--grey-light);
+  margin: var(--space-md) 0;
+}
+
+/* ── UTILITY ──────────────────────────────────────────────────── */
+
+.text-muted { color: var(--grey-mid); }
+.text-accent { color: var(--accent); }
+.text-small { font-size: 0.85rem; }
+
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }

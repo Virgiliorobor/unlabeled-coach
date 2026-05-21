@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+.env.local
+
+# Local database (use github storage mode for persistence)
+_database/users/*.json
+_database/sessions/**/*.json
+_database/community/*.json
+
+# Keep folder structure
+!_database/users/.gitkeep
+!_database/sessions/.gitkeep
+!_database/community/.gitkeep
