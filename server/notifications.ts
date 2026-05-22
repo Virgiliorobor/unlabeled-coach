@@ -7,8 +7,16 @@
 import { Resend } from 'resend'
 import { DailySignalPayload } from './types.js'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 const EMAIL_FROM = process.env.EMAIL_FROM || 'onboarding@resend.dev'
+
+// Lazy — only instantiated when actually sending. Avoids crash on missing key at startup.
+function getResend(): Resend | null {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('[email] RESEND_API_KEY not set — email disabled')
+    return null
+  }
+  return new Resend(process.env.RESEND_API_KEY)
+}
 
 // Telegram is optional — only initialised if token is set
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN || ''
@@ -32,10 +40,8 @@ export async function sendEmail(opts: {
   html: string
   text: string
 }): Promise<boolean> {
-  if (!process.env.RESEND_API_KEY) {
-    console.warn('[email] RESEND_API_KEY not set — skipping email')
-    return false
-  }
+  const resend = getResend()
+  if (!resend) return false
   try {
     await resend.emails.send({
       from: EMAIL_FROM,
