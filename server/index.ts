@@ -36,7 +36,8 @@ app.get('/api/health', (_req, res) => {
 // ── SERVE CLIENT IN PRODUCTION ────────────────────────────────
 
 if (process.env.NODE_ENV === 'production') {
-  const clientDist = path.join(__dirname, '../../client')
+  // dist/server/index.js → ../client = dist/client
+  const clientDist = path.join(__dirname, '../client')
   app.use(express.static(clientDist))
   app.get('*', (_req, res) => {
     res.sendFile(path.join(clientDist, 'index.html'))

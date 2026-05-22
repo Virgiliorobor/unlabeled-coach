@@ -7,7 +7,6 @@
 import cron from 'node-cron'
 import { readProfile, writeProfile } from './storage.js'
 import { sendDailySignal, sendReinterviewReminder } from './notifications.js'
-import { UserProfile } from './types.js'
 
 // We store slugs in a registry for the scheduler to iterate.
 // In a real DB this would be a table scan. For file storage, we maintain a list.

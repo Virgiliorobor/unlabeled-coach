@@ -171,7 +171,10 @@ router.get('/posts/:id', requireAuth, async (req: Request, res: Response) => {
   // Strip user_ids from responses before returning
   const sanitized = {
     ...post,
-    responses: post.responses.map(({ user_id: _uid, ...rest }) => rest)
+    responses: post.responses.map((r) => {
+      const { user_id: _uid, ...rest } = r
+      return rest
+    })
   }
 
   res.json(sanitized)
