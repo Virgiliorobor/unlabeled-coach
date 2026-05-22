@@ -64,6 +64,14 @@
     {
       "role": "assistant",
       "content": "So it started as workflow optimization — using AI to make your actual job better — and then the possibilities opened up. Now you're building things that have nothing to do with finance at all.\n\nThat's a common pattern for people with deep domain expertise who discover they can actually build. The tool becomes more interesting than the original problem.\n\n**What skills or judgment from those 15 years of financial analysis do you find yourself using constantly in the new work — even if you wouldn't call them by their old names?**\n\nFor example: pattern recognition, knowing when numbers don't add up, understanding how systems connect, reading between the lines. What from finance shows up when you're building?"
+    },
+    {
+      "role": "user",
+      "content": "numbers, logic and understanding companies and the companies needs, also how the inside of the companies work"
+    },
+    {
+      "role": "assistant",
+      "content": "Numbers, logic, understanding what companies actually need and how they operate from the inside. That's not a small thing — most builders are guessing at what businesses need. You've spent 15 years seeing it directly.\n\n**When you describe what you're doing now — the building, the AI work — to someone from your finance world, how do you explain it? And what do you usually leave out?**"
     }
   ]
 }
