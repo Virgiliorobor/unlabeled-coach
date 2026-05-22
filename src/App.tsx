@@ -14,6 +14,7 @@ export default function App() {
   const [view, setView] = useState<AppView>('loading')
   const [user, setUser] = useState<AppUser | null>(null)
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
+  const [openingMessage, setOpeningMessage] = useState<string | null>(null)
 
   // Check auth on mount
   useEffect(() => {
@@ -43,6 +44,7 @@ export default function App() {
     if (res.ok) {
       const data = await res.json()
       setActiveSessionId(data.session_id)
+      setOpeningMessage(data.opening_message || null)
       setView('session')
     }
   }
@@ -68,6 +70,7 @@ export default function App() {
     return (
       <Session
         sessionId={activeSessionId}
+        openingMessage={openingMessage}
         onEnd={handleSessionEnd}
       />
     )

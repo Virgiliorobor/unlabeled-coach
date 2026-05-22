@@ -7,11 +7,14 @@ interface Message {
 
 interface Props {
   sessionId: string
+  openingMessage: string | null
   onEnd: () => void
 }
 
-export default function Session({ sessionId, onEnd }: Props) {
-  const [messages, setMessages] = useState<Message[]>([])
+export default function Session({ sessionId, openingMessage, onEnd }: Props) {
+  const [messages, setMessages] = useState<Message[]>(
+    openingMessage ? [{ role: 'assistant', content: openingMessage }] : []
+  )
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const [safetyState, setSafetyState] = useState<'engaged' | 'watchful' | 'redirected'>('engaged')
@@ -107,7 +110,7 @@ export default function Session({ sessionId, onEnd }: Props) {
       }}>
         {messages.length === 0 && (
           <p className="text-muted" style={{ marginTop: 'var(--space-md)' }}>
-            The coach is ready. Say something.
+            …
           </p>
         )}
 

@@ -68,8 +68,19 @@ router.get('/active', requireAuth, async (req: Request, res: Response) => {
     chat_log: []
   }
 
+  // Generate opening message — coach speaks first
+  let opening_message = ''
+  try {
+    const opening = await runTurn([], '[SESSION_START]', profile)
+    opening_message = opening.message
+    session.chat_log.push({ role: 'assistant', content: opening_message })
+  } catch (err: any) {
+    console.error('[session] Opening message failed:', err?.message || err)
+    // Non-fatal — session still works, user just has to speak first
+  }
+
   await writeSession(session)
-  res.json({ session_id, phase: profile.program.current_phase })
+  res.json({ session_id, phase: profile.program.current_phase, opening_message })
 })
 
 // ── POST /api/session/:session_id/message ─────────────────────
