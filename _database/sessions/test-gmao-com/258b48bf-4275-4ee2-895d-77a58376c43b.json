@@ -36,5 +36,14 @@
   "next_session_open_with": "",
   "phase_transition": false,
   "new_phase": "",
-  "chat_log": []
+  "chat_log": [
+    {
+      "role": "user",
+      "content": "test"
+    },
+    {
+      "role": "assistant",
+      "content": "Hello. I see this is your first session.\n\nBefore we begin any coaching, I need to build your profile — an honest picture of where you actually are, not the elevator pitch version. This takes about 30 minutes and shapes everything that comes after.\n\nThere are no right answers. The less polished your responses, the more useful this will be.\n\nLet's start with your background.\n\n**What did you do before this?** Not the LinkedIn version — what did the work actually involve, and how long did you do it?"
+    }
+  ]
 }
