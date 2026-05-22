@@ -49,6 +49,7 @@ interface DashboardData {
 interface Props {
   slug: string
   onStartSession: () => void
+  onPhaseChange?: (phase: string) => void
 }
 
 function formatDate(iso: string): string {
@@ -61,14 +62,18 @@ function daysUntil(iso: string): number {
   return Math.ceil((new Date(iso).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
 }
 
-export default function Dashboard({ slug, onStartSession }: Props) {
+export default function Dashboard({ slug, onStartSession, onPhaseChange }: Props) {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetch('/api/dashboard', { credentials: 'include' })
       .then(r => r.json())
-      .then(d => { setData(d); setLoading(false) })
+      .then(d => {
+        setData(d)
+        setLoading(false)
+        if (d?.profile?.current_phase) onPhaseChange?.(d.profile.current_phase)
+      })
       .catch(() => setLoading(false))
   }, [])
 
@@ -100,13 +105,14 @@ export default function Dashboard({ slug, onStartSession }: Props) {
 
   const { profile, goals, active_commitment, commitment_history } = data
   const reInterviewDays = daysUntil(profile.re_interview_due)
+  const isOverdue = active_commitment ? daysUntil(active_commitment.due_date) <= 0 : false
 
   return (
     <div className="container" style={{ paddingTop: 'var(--space-lg)', paddingBottom: 'var(--space-xl)' }}>
 
       {/* Header */}
-      <div className="flex justify-between items-center" style={{ marginBottom: 'var(--space-lg)' }}>
-        <span className="label">Unlabeled</span>
+      <div className="workbench-header flex justify-between items-center" style={{ marginBottom: 'var(--space-lg)' }}>
+        <span className="dymo-label">Unlabeled</span>
         <div className="flex gap-sm items-center">
           <span className="label">{slug}</span>
           <button className="label" onClick={handleLogout} style={{ color: 'var(--grey-mid)' }}>
@@ -117,14 +123,7 @@ export default function Dashboard({ slug, onStartSession }: Props) {
 
       {/* Re-interview banner */}
       {profile.re_interview_overdue && (
-        <div style={{
-          background: 'var(--black)',
-          color: 'var(--white)',
-          padding: 'var(--space-sm) var(--space-md)',
-          marginBottom: 'var(--space-md)',
-          fontFamily: 'var(--font-mono)',
-          fontSize: '0.8rem'
-        }}>
+        <div className="deadline-tape" style={{ marginBottom: 'var(--space-md)' }}>
           Weekly check-in due — start a session to update your profile.
         </div>
       )}
@@ -143,17 +142,19 @@ export default function Dashboard({ slug, onStartSession }: Props) {
 
       {/* Active commitment */}
       {active_commitment ? (
-        <div style={{ margin: 'var(--space-md) 0' }}>
-          <span className="label" style={{ display: 'block', marginBottom: 'var(--space-xs)' }}>
-            Active commitment — due {formatDate(active_commitment.due_date)}
-            {daysUntil(active_commitment.due_date) <= 0 && (
-              <span style={{ color: 'var(--accent)', marginLeft: 8 }}>overdue</span>
+        <div className={`commitment-block tape-border${isOverdue ? ' overdue' : ''}`}
+             style={{ margin: 'var(--space-md) 0' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--space-xs)', marginBottom: 'var(--space-xs)' }}>
+            <span className="dymo-label" style={{ fontSize: '0.65rem' }}>Active commitment</span>
+            <span className="label">due {formatDate(active_commitment.due_date)}</span>
+            {isOverdue && (
+              <span className="overdue-marker label">overdue</span>
             )}
-          </span>
+          </div>
           <p style={{ marginBottom: 'var(--space-sm)' }}>{active_commitment.text}</p>
           <div className="flex gap-sm">
             <button className="btn-ghost" onClick={() => resolveCommitment(active_commitment.commitment_id, 'done')}>
-              Done ✓
+              Mark done
             </button>
             <button className="btn-ghost" onClick={() => resolveCommitment(active_commitment.commitment_id, 'partial')}>
               Partial
@@ -163,7 +164,7 @@ export default function Dashboard({ slug, onStartSession }: Props) {
             </button>
           </div>
           {active_commitment.share_post && (
-            <div style={{ marginTop: 'var(--space-sm)', padding: 'var(--space-sm)', background: 'var(--grey-light)' }}>
+            <div style={{ marginTop: 'var(--space-sm)', padding: 'var(--space-sm)', background: 'var(--grey-light)', borderLeft: '3px solid var(--black)' }}>
               <span className="label" style={{ display: 'block', marginBottom: 4 }}>Share post — ready to use</span>
               <p style={{ fontSize: '0.9rem', fontStyle: 'italic' }}>{active_commitment.share_post}</p>
             </div>
@@ -182,24 +183,24 @@ export default function Dashboard({ slug, onStartSession }: Props) {
 
       {/* Three horizons */}
       <div style={{ margin: 'var(--space-md) 0' }}>
-        <h2 style={{ marginBottom: 'var(--space-md)' }}>Three horizons</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-md)' }}>
+        <h2 className="dymo-label" style={{ marginBottom: 'var(--space-md)', fontSize: '0.75rem' }}>Three horizons</h2>
+        <div className="horizon-grid">
 
-          <div>
+          <div className="horizon-cell">
             <span className="label" style={{ display: 'block', marginBottom: 'var(--space-xs)' }}>30 days</span>
             <p style={{ fontSize: '0.95rem' }}>
               {goals.thirty_days.text || <span className="text-muted">Not set yet</span>}
             </p>
           </div>
 
-          <div>
+          <div className="horizon-cell">
             <span className="label" style={{ display: 'block', marginBottom: 'var(--space-xs)' }}>90 days</span>
             <p style={{ fontSize: '0.95rem' }}>
               {goals.ninety_days.text || <span className="text-muted">Not set yet</span>}
             </p>
           </div>
 
-          <div>
+          <div className="horizon-cell">
             <span className="label" style={{ display: 'block', marginBottom: 'var(--space-xs)' }}>12 months</span>
             <p style={{ fontSize: '0.95rem' }}>
               {goals.twelve_months.text || <span className="text-muted">Not set yet</span>}
@@ -214,11 +215,13 @@ export default function Dashboard({ slug, onStartSession }: Props) {
       {/* Commitment history */}
       {commitment_history.length > 0 && (
         <div style={{ margin: 'var(--space-md) 0' }}>
-          <h2 style={{ marginBottom: 'var(--space-md)' }}>Commitment log</h2>
-          <div className="flex flex-col gap-sm">
+          <h2 className="dymo-label" style={{ marginBottom: 'var(--space-md)', fontSize: '0.75rem' }}>Commitment log</h2>
+          <div className="flex flex-col">
             {commitment_history.slice().reverse().map((c, i) => (
-              <div key={i} className="flex justify-between items-center">
-                <p style={{ fontSize: '0.9rem', flex: 1 }}>{c.text}</p>
+              <div key={i} className="log-row flex justify-between items-center">
+                <p className={`text-small flex-1${c.status === 'done' ? ' commitment-done' : ''}`}>
+                  {c.text}
+                </p>
                 <span className="mono" style={{
                   marginLeft: 'var(--space-sm)',
                   color: c.status === 'done'
@@ -238,9 +241,9 @@ export default function Dashboard({ slug, onStartSession }: Props) {
       {/* Footer info */}
       <div style={{ marginTop: 'var(--space-lg)' }}>
         <span className="label text-muted">
-          Next check-in in {reInterviewDays > 0 ? `${reInterviewDays} days` : 'now'} ·
-          {profile.dominant_lens !== 'split' && ` ${profile.dominant_lens}-dominant · `}
-          {profile.resistance_pattern && ` ${profile.resistance_pattern.replace('_', ' ')}`}
+          Next check-in in {reInterviewDays > 0 ? `${reInterviewDays} days` : 'now'}
+          {profile.dominant_lens && profile.dominant_lens !== 'split' && ` · ${profile.dominant_lens}-dominant`}
+          {profile.resistance_pattern && ` · ${profile.resistance_pattern.replace(/_/g, ' ')}`}
         </span>
       </div>
 

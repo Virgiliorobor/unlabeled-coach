@@ -1,30 +1,50 @@
-/* ── UNLABELED — BASE STYLES ────────────────────────────────
-   Design language: Rick Rubin meets Austin Kleon.
-   Black, white, one accent. Humanist serif for content.
-   Monospace for system elements. No gradients. No shadows.
-   ─────────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   UNLABELED — MASTER DESIGN SYSTEM
+   The Tactile OS: Physical Surface · Radical Transparency · Function Dictates Feeling
+   ═══════════════════════════════════════════════════════════ */
 
+/* ── GLOBAL TOKENS ──────────────────────────────────────────── */
 :root {
-  --black: #0f0f0f;
-  --white: #fafaf8;
-  --accent: #c8502a;        /* the one color — marks action states */
-  --grey-light: #e8e8e4;
-  --grey-mid: #999990;
-  --grey-dark: #444440;
+  /* Canvas — never pure white */
+  --canvas:        #F4F4F0;
+  --canvas-dark:   #E8E8E4;
+  --black:         #111111;
+  --white:         #F4F4F0;
 
-  --font-serif: 'Georgia', 'Times New Roman', serif;
-  --font-mono: 'Courier New', 'Courier', monospace;
+  /* Functional color — strictly utilitarian */
+  --red:           #E03C31;   /* NASA red: deadlines, commitments, destructive */
+  --yellow:        #FFF000;   /* Highlighter: insights, active selections */
+  --grey:          #888880;
+  --grey-light:    #D8D8D4;
 
-  --space-xs: 8px;
-  --space-sm: 16px;
-  --space-md: 32px;
-  --space-lg: 64px;
-  --space-xl: 128px;
+  /* Borders — harsh, structural */
+  --border:        1px solid #111111;
+  --border-thick:  2px solid #111111;
 
-  --max-width: 680px;
+  /* Shadows — unblurred, physical */
+  --shadow:        4px 4px 0px #111111;
+  --shadow-sm:     2px 2px 0px #111111;
+  --shadow-inset:  inset 2px 2px 0px #111111;
+
+  /* Typography — default to Sanctuary */
+  --font-serif:      'EB Garamond', Georgia, 'Times New Roman', serif;
+  --font-mono:       'Space Mono', 'Courier New', monospace;
+  --font-typewriter: 'Courier Prime', 'Courier New', monospace;
+  --font-marker:     'Permanent Marker', cursive;
+  --font-body:       var(--font-serif);
+
+  /* Spacing */
+  --space-xs:  6px;
+  --space-sm:  16px;
+  --space-md:  32px;
+  --space-lg:  64px;
+  --space-xl:  120px;
+
+  --max-width:      660px;
   --max-width-wide: 960px;
 }
 
+/* ── BASE RESET ─────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -34,144 +54,884 @@
 html {
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--white);
+  background: var(--canvas);
   color: var(--black);
-  font-family: var(--font-serif);
-  line-height: 1.7;
+  font-family: var(--font-body);
+  line-height: 1.75;
   min-height: 100vh;
+  position: relative;
 }
 
-/* ── TYPOGRAPHY ─────────────────────────────────────────────── */
+/* Paper grain overlay — always present, subtle */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.025;
+}
 
+/* ── TYPOGRAPHY BASE ────────────────────────────────────────── */
 h1, h2, h3, h4 {
-  font-family: var(--font-serif);
+  font-family: var(--font-body);
   font-weight: normal;
   line-height: 1.3;
 }
 
-h1 { font-size: 2rem; }
+h1 { font-size: 2.2rem; }
 h2 { font-size: 1.4rem; }
 h3 { font-size: 1.1rem; }
 
+p { line-height: 1.75; }
+
 .mono {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
-  letter-spacing: 0.04em;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
 }
 
 .label {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--grey-mid);
+  color: var(--grey);
 }
 
-/* ── LAYOUT ─────────────────────────────────────────────────── */
-
+/* ── LAYOUT UTILITIES ───────────────────────────────────────── */
 .container {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 0 var(--space-md);
 }
-
 .container-wide {
   max-width: var(--max-width-wide);
   margin: 0 auto;
   padding: 0 var(--space-md);
 }
+.flex         { display: flex; }
+.flex-col     { flex-direction: column; }
+.gap-sm       { gap: var(--space-sm); }
+.gap-md       { gap: var(--space-md); }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
 
-/* ── BUTTONS ─────────────────────────────────────────────────── */
-
-button, .btn {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
+hr {
   border: none;
-  background: none;
-  color: inherit;
-  padding: 0;
+  border-top: var(--border);
+  margin: var(--space-md) 0;
 }
 
-.btn-primary {
-  background: var(--black);
-  color: var(--white);
-  padding: 12px 24px;
-  display: inline-block;
-}
-
-.btn-primary:hover {
-  background: var(--grey-dark);
-}
-
-.btn-accent {
-  background: var(--accent);
-  color: var(--white);
-  padding: 12px 24px;
-  display: inline-block;
-}
-
-.btn-ghost {
-  border: 1px solid var(--grey-light);
-  padding: 10px 20px;
-  color: var(--grey-dark);
-}
-
-.btn-ghost:hover {
-  border-color: var(--black);
-  color: var(--black);
-}
-
-/* ── INPUTS ──────────────────────────────────────────────────── */
-
+/* ── DEFAULT INPUTS ─────────────────────────────────────────── */
 input, textarea {
-  font-family: var(--font-serif);
+  font-family: var(--font-body);
   font-size: 1rem;
-  border: none;
-  border-bottom: 1px solid var(--grey-light);
   background: transparent;
   color: var(--black);
+  border: none;
+  border-bottom: var(--border);
   width: 100%;
   padding: 8px 0;
   outline: none;
   line-height: 1.6;
 }
+input:focus, textarea:focus { border-bottom: var(--border-thick); }
+textarea { resize: none; min-height: 80px; }
 
-input:focus, textarea:focus {
-  border-bottom-color: var(--black);
-}
+button { cursor: pointer; border: none; background: none; font-family: var(--font-mono); }
 
-textarea {
-  resize: none;
-  min-height: 80px;
-}
-
-/* ── DIVIDERS ─────────────────────────────────────────────────── */
-
-hr {
-  border: none;
-  border-top: 1px solid var(--grey-light);
-  margin: var(--space-md) 0;
-}
-
-/* ── UTILITY ──────────────────────────────────────────────────── */
-
-.text-muted { color: var(--grey-mid); }
-.text-accent { color: var(--accent); }
-.text-small { font-size: 0.85rem; }
-
+.text-muted  { color: var(--grey); }
+.text-red    { color: var(--red); }
+.text-small  { font-size: 0.85rem; }
+.flex-1      { flex: 1; }
 .mt-sm { margin-top: var(--space-sm); }
 .mt-md { margin-top: var(--space-md); }
 .mt-lg { margin-top: var(--space-lg); }
 
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.gap-sm { gap: var(--space-sm); }
-.gap-md { gap: var(--space-md); }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
+
+/* ═══════════════════════════════════════════════════════════
+   QUADRANT 1 — THE SANCTUARY (Rick Rubin · Phase 0 · Entrance)
+   Intent: Enforce slowness, silence, deep reflection.
+   ═══════════════════════════════════════════════════════════ */
+
+[data-quadrant="sanctuary"] {
+  --font-body: var(--font-serif);
+}
+
+[data-quadrant="sanctuary"] body,
+[data-quadrant="sanctuary"] {
+  background: var(--canvas);
+}
+
+/* Vast margins — content floats */
+[data-quadrant="sanctuary"] .container {
+  max-width: 580px;
+  padding: 0 var(--space-lg);
+}
+
+/* No buttons — only plain text links */
+[data-quadrant="sanctuary"] .btn-primary,
+[data-quadrant="sanctuary"] .btn-ghost {
+  all: unset;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: var(--black);
+}
+[data-quadrant="sanctuary"] .btn-primary:hover,
+[data-quadrant="sanctuary"] .btn-ghost:hover {
+  opacity: 0.6;
+}
+
+/* Labels disappear — no visible structure */
+[data-quadrant="sanctuary"] .label {
+  letter-spacing: 0.05em;
+  text-transform: none;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--grey);
+}
+
+/* Sanctuary headings — airy, large */
+[data-quadrant="sanctuary"] h1 {
+  font-size: 2.6rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+[data-quadrant="sanctuary"] h2 {
+  font-size: 1.5rem;
+  font-style: italic;
+}
+
+/* Input — absolutely minimal */
+[data-quadrant="sanctuary"] input,
+[data-quadrant="sanctuary"] textarea {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  border: none;
+  border-bottom: 1px solid var(--grey-light);
+  padding: 12px 0;
+}
+[data-quadrant="sanctuary"] input:focus,
+[data-quadrant="sanctuary"] textarea:focus {
+  border-bottom: 1px solid var(--grey);
+}
+
+/* No horizontal rules in sanctuary */
+[data-quadrant="sanctuary"] hr { display: none; }
+
+/* Coach messages in sanctuary — large, italic, breathing */
+[data-quadrant="sanctuary"] .coach-message {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-style: italic;
+  line-height: 1.9;
+  color: var(--black);
+}
+
+/* User messages in sanctuary — plain, slightly smaller */
+[data-quadrant="sanctuary"] .user-message {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  color: var(--grey);
+  text-align: right;
+}
+
+/* ── Sanctuary page component classes (Onboarding) ─── */
+.sanctuary-page {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.sanctuary-wordmark {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--grey);
+  letter-spacing: 0.04em;
+}
+
+.sanctuary-headline {
+  font-family: var(--font-serif);
+  font-size: 2.4rem;
+  font-weight: normal;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin-bottom: var(--space-md);
+  max-width: 520px;
+}
+
+.sanctuary-subhead {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-style: italic;
+  font-weight: normal;
+  margin-bottom: var(--space-sm);
+}
+
+.sanctuary-body {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--grey);
+  max-width: 480px;
+  margin-bottom: var(--space-lg);
+}
+
+.sanctuary-cta {
+  all: unset;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-style: italic;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  color: var(--black);
+  transition: opacity 0.2s;
+}
+.sanctuary-cta:hover { opacity: 0.55; }
+.sanctuary-cta:disabled { opacity: 0.4; cursor: default; }
+
+.sanctuary-back {
+  all: unset;
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  font-style: italic;
+  cursor: pointer;
+  color: var(--grey);
+  text-decoration: none;
+}
+.sanctuary-back:hover { color: var(--black); }
+
+.sanctuary-form {
+  max-width: 400px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   QUADRANT 2 — THE SANDBOX (Austin Kleon · Phases 1–2)
+   Intent: Lower stakes, bypass perfectionism, permission to make a mess.
+   ═══════════════════════════════════════════════════════════ */
+
+[data-quadrant="sandbox"] {
+  --font-body: var(--font-typewriter);
+}
+
+/* Slightly warmer, more textured canvas */
+[data-quadrant="sandbox"] body,
+[data-quadrant="sandbox"] {
+  background: #F0EDE6;
+}
+
+/* Typewriter feel throughout */
+[data-quadrant="sandbox"] h1,
+[data-quadrant="sandbox"] h2,
+[data-quadrant="sandbox"] h3 {
+  font-family: var(--font-typewriter);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+[data-quadrant="sandbox"] input,
+[data-quadrant="sandbox"] textarea {
+  font-family: var(--font-typewriter);
+  font-size: 0.95rem;
+}
+
+/* Coach messages — Permanent Marker annotation */
+[data-quadrant="sandbox"] .coach-message {
+  font-family: var(--font-marker);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--black);
+  position: relative;
+}
+
+/* Slight skew on coach message containers */
+[data-quadrant="sandbox"] .message-block {
+  transform: rotate(-0.5deg);
+  transition: transform 0.3s ease;
+}
+[data-quadrant="sandbox"] .message-block:nth-child(even) {
+  transform: rotate(0.4deg);
+}
+[data-quadrant="sandbox"] .message-block:hover {
+  transform: rotate(0deg);
+}
+
+/* User messages — typewriter, right-aligned */
+[data-quadrant="sandbox"] .user-message {
+  font-family: var(--font-typewriter);
+  font-size: 0.9rem;
+  background: var(--canvas);
+  border: var(--border);
+  padding: 10px 14px;
+  display: inline-block;
+  transform: rotate(0.3deg);
+}
+
+/* Redaction block — solid black rectangle for emphasis */
+[data-quadrant="sandbox"] .redaction {
+  display: inline-block;
+  background: var(--black);
+  color: transparent;
+  padding: 0 4px;
+  border-radius: 0;
+  user-select: none;
+}
+
+/* Sandbox buttons — typewriter style */
+[data-quadrant="sandbox"] .btn-primary {
+  font-family: var(--font-typewriter);
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--black);
+  color: var(--canvas);
+  padding: 10px 20px;
+  letter-spacing: 0.05em;
+  border: none;
+  transform: rotate(-0.3deg);
+  display: inline-block;
+}
+[data-quadrant="sandbox"] .btn-ghost {
+  font-family: var(--font-typewriter);
+  font-size: 0.8rem;
+  border: var(--border-thick);
+  padding: 8px 16px;
+  background: transparent;
+}
+
+/* Labels in sandbox — typewriter */
+[data-quadrant="sandbox"] .label {
+  font-family: var(--font-typewriter);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+/* "Tape" note card effect on containers */
+[data-quadrant="sandbox"] .note-card {
+  background: #FAFAF4;
+  border: var(--border);
+  padding: var(--space-md);
+  position: relative;
+  transform: rotate(-0.5deg);
+}
+[data-quadrant="sandbox"] .note-card::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%) rotate(1deg);
+  width: 48px;
+  height: 16px;
+  background: rgba(255, 240, 0, 0.7); /* yellow tape */
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   QUADRANT 3 — THE SYSTEM (Bauhaus · Phase 3)
+   Intent: Organize chaos into reliable architecture.
+   ═══════════════════════════════════════════════════════════ */
+
+[data-quadrant="system"] {
+  --font-body: var(--font-mono);
+}
+
+[data-quadrant="system"] body,
+[data-quadrant="system"] {
+  background: var(--canvas);
+}
+
+/* Strict grid — everything in boxes */
+[data-quadrant="system"] h1,
+[data-quadrant="system"] h2,
+[data-quadrant="system"] h3 {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+}
+
+[data-quadrant="system"] h1 { font-size: 1rem; }
+
+/* Every container gets a strict border */
+[data-quadrant="system"] .system-cell {
+  border: var(--border-thick);
+  padding: var(--space-md);
+  box-shadow: var(--shadow);
+}
+
+/* Coach messages — monospace, data-like */
+[data-quadrant="system"] .coach-message {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: var(--black);
+  border-left: 4px solid var(--black);
+  padding-left: var(--space-sm);
+}
+
+/* User messages — boxed */
+[data-quadrant="system"] .user-message {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  background: var(--black);
+  color: var(--canvas);
+  padding: 10px 14px;
+  display: inline-block;
+}
+
+/* Bauhaus buttons — stark boxes */
+[data-quadrant="system"] .btn-primary {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: var(--black);
+  color: var(--canvas);
+  padding: 12px 24px;
+  border: var(--border-thick);
+  box-shadow: var(--shadow-sm);
+  display: inline-block;
+}
+[data-quadrant="system"] .btn-primary:hover {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+[data-quadrant="system"] .btn-ghost {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: var(--border-thick);
+  padding: 10px 20px;
+  box-shadow: var(--shadow-sm);
+  background: transparent;
+}
+[data-quadrant="system"] .btn-ghost:hover {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+[data-quadrant="system"] .label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+/* System input — boxed */
+[data-quadrant="system"] input,
+[data-quadrant="system"] textarea {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  border: var(--border);
+  padding: 10px 12px;
+  box-shadow: var(--shadow-inset);
+  width: 100%;
+}
+
+/* Grid divider — thick, structural */
+[data-quadrant="system"] hr {
+  border: none;
+  border-top: var(--border-thick);
+  margin: var(--space-md) 0;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   QUADRANT 4 — THE WORKBENCH (Tom Sachs · Phases 4–5 · Dashboard)
+   Intent: Execution. Pick up the tools. Ship the work.
+   ═══════════════════════════════════════════════════════════ */
+
+[data-quadrant="workbench"] {
+  --font-body: var(--font-mono);
+}
+
+[data-quadrant="workbench"] body,
+[data-quadrant="workbench"] {
+  background: var(--canvas);
+}
+
+/* Dymo label — black bg, stark white text, slight emboss */
+.dymo-label {
+  display: inline-block;
+  background: var(--black);
+  color: var(--canvas);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding: 4px 10px;
+  box-shadow: 1px 1px 0px rgba(255,255,255,0.15) inset,
+              -1px -1px 0px rgba(0,0,0,0.4) inset;
+}
+
+/* "Duct tape" border — CSS tape strips */
+.tape-border {
+  position: relative;
+  border: var(--border-thick);
+  padding: var(--space-md);
+  box-shadow: var(--shadow);
+}
+.tape-border::before,
+.tape-border::after {
+  content: '';
+  position: absolute;
+  background: rgba(255, 240, 0, 0.75); /* yellow drafting tape */
+  border: 1px solid rgba(0,0,0,0.12);
+  height: 14px;
+}
+.tape-border::before {
+  top: -7px;
+  left: 16px;
+  width: 56px;
+  transform: rotate(-1.5deg);
+}
+.tape-border::after {
+  bottom: -7px;
+  right: 24px;
+  width: 40px;
+  transform: rotate(1deg);
+}
+
+/* NASA Red tape — marks deadlines */
+.deadline-tape {
+  display: inline-block;
+  background: var(--red);
+  color: var(--canvas);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 3px 10px;
+  transform: rotate(-0.5deg);
+}
+
+/* Workbench coach messages */
+[data-quadrant="workbench"] .coach-message {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: var(--black);
+  border-left: 3px solid var(--black);
+  padding-left: var(--space-sm);
+}
+
+/* User messages in workbench */
+[data-quadrant="workbench"] .user-message {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  background: var(--canvas-dark);
+  border: var(--border);
+  padding: 10px 14px;
+  display: inline-block;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Workbench buttons — Dymo style */
+[data-quadrant="workbench"] .btn-primary {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  background: var(--black);
+  color: var(--canvas);
+  padding: 12px 24px;
+  border: none;
+  box-shadow: var(--shadow-sm);
+  display: inline-block;
+}
+[data-quadrant="workbench"] .btn-primary:hover {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+  transition: all 0.1s;
+}
+
+[data-quadrant="workbench"] .btn-ghost {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: var(--border-thick);
+  padding: 10px 18px;
+  background: transparent;
+  box-shadow: var(--shadow-sm);
+}
+[data-quadrant="workbench"] .btn-ghost:hover {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+  transition: all 0.1s;
+}
+
+/* Completed items — thick strikethrough */
+.commitment-done {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  color: var(--grey);
+}
+
+/* Commitment block — workbench tape-bordered */
+[data-quadrant="workbench"] .commitment-block {
+  border: var(--border-thick);
+  padding: var(--space-md);
+  box-shadow: var(--shadow);
+  position: relative;
+  margin-bottom: var(--space-md);
+}
+
+/* Overdue — NASA red marker */
+.overdue-marker {
+  display: inline-block;
+  background: var(--red);
+  color: var(--canvas);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 2px 8px;
+  margin-left: 8px;
+}
+
+/* Workbench labels */
+[data-quadrant="workbench"] .label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+/* Three horizons in workbench — strict columns with borders */
+[data-quadrant="workbench"] .horizon-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border: var(--border-thick);
+  box-shadow: var(--shadow);
+}
+[data-quadrant="workbench"] .horizon-cell {
+  padding: var(--space-md);
+  border-right: var(--border);
+}
+[data-quadrant="workbench"] .horizon-cell:last-child {
+  border-right: none;
+}
+
+/* Workbench header strip — knolled organization */
+[data-quadrant="workbench"] .workbench-header {
+  border-bottom: var(--border-thick);
+  padding-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Commitment log — strikethrough rows */
+[data-quadrant="workbench"] .log-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--grey-light);
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   SNAP-TO-GRID TRANSITION (Sandbox → System)
+   The "Wow" moment — messy notes animate into perfect grid.
+   ═══════════════════════════════════════════════════════════ */
+
+.is-snapping .message-block {
+  animation: snap-to-grid 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.is-snapping .note-card {
+  animation: snap-to-grid 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes snap-to-grid {
+  0%   { transform: rotate(var(--current-rotation, -0.5deg)) translateY(0); }
+  40%  { transform: rotate(0.2deg) translateY(-4px); }
+  100% { transform: rotate(0deg) translateY(0); }
+}
+
+/* Grid lines appear during snap */
+.is-snapping {
+  background-image:
+    linear-gradient(var(--grey-light) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grey-light) 1px, transparent 1px);
+  background-size: 32px 32px;
+  animation: grid-fade-in 0.5s ease forwards;
+}
+
+@keyframes grid-fade-in {
+  from { background-size: 32px 32px; opacity: 0.3; }
+  to   { background-size: 32px 32px; opacity: 1; }
+}
+
+/* Phase transition overlay — brief flash */
+.phase-transition-flash {
+  position: fixed;
+  inset: 0;
+  background: var(--canvas);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9998;
+  animation: flash 0.4s ease forwards;
+}
+@keyframes flash {
+  0%   { opacity: 0; }
+  30%  { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   SHARED SESSION UI (works across all quadrants)
+   ═══════════════════════════════════════════════════════════ */
+
+.session-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+.session-header {
+  padding: var(--space-sm) 0;
+  border-bottom: var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.session-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.session-input-area {
+  border-top: var(--border);
+  padding: var(--space-sm) 0 var(--space-md);
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.safety-watchful-bar {
+  background: var(--yellow);
+  color: var(--black);
+  padding: 6px var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-xs);
+}
+
+.safety-banner,
+.safety-redirected-bar {
+  background: var(--black);
+  color: var(--canvas);
+  padding: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  margin-bottom: var(--space-sm);
+}
+
+/* Message sub-elements */
+.message-block {
+  display: flex;
+  flex-direction: column;
+}
+.message-block.user-message {
+  align-items: flex-end;
+}
+.message-block.coach-message {
+  align-items: flex-start;
+}
+.message-label {
+  margin-bottom: 4px;
+  display: block;
+}
+.message-text {
+  max-width: 88%;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+.user-message .message-text {
+  background: var(--grey-light);
+  padding: 12px 16px;
+}
+.coach-message .message-text {
+  background: transparent;
+  padding: 0;
+}
+
+/* Sending indicator */
+.sending-dots {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--grey);
+  letter-spacing: 0.2em;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  html { font-size: 16px; }
+
+  .container { padding: 0 var(--space-sm); }
+
+  [data-quadrant="sandbox"] .message-block,
+  [data-quadrant="sandbox"] .note-card,
+  [data-quadrant="sandbox"] .user-message {
+    transform: none; /* kill rotations on mobile */
+  }
+
+  [data-quadrant="workbench"] .horizon-grid {
+    grid-template-columns: 1fr;
+  }
+  [data-quadrant="workbench"] .horizon-cell {
+    border-right: none;
+    border-bottom: var(--border);
+  }
+  [data-quadrant="workbench"] .horizon-cell:last-child {
+    border-bottom: none;
+  }
+
+  h1 { font-size: 1.8rem; }
+}

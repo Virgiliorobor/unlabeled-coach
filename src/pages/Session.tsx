@@ -72,20 +72,10 @@ export default function Session({ sessionId, openingMessage, onEnd }: Props) {
   }
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100vh',
-      maxWidth: 'var(--max-width)',
-      margin: '0 auto',
-      padding: '0 var(--space-md)'
-    }}>
+    <div className="session-layout">
 
       {/* Header */}
-      <div className="flex justify-between items-center" style={{
-        padding: 'var(--space-sm) 0',
-        borderBottom: '1px solid var(--grey-light)'
-      }}>
+      <div className="session-header">
         <span className="label">Session in progress</span>
         <div className="flex gap-sm items-center">
           {safetyState === 'watchful' && (
@@ -100,14 +90,7 @@ export default function Session({ sessionId, openingMessage, onEnd }: Props) {
       </div>
 
       {/* Messages */}
-      <div style={{
-        flex: 1,
-        overflowY: 'auto',
-        padding: 'var(--space-md) 0',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 'var(--space-md)'
-      }}>
+      <div className="session-messages">
         {messages.length === 0 && (
           <p className="text-muted" style={{ marginTop: 'var(--space-md)' }}>
             …
@@ -115,29 +98,22 @@ export default function Session({ sessionId, openingMessage, onEnd }: Props) {
         )}
 
         {messages.map((m, i) => (
-          <div key={i} style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: m.role === 'user' ? 'flex-end' : 'flex-start'
-          }}>
-            <span className="label" style={{ marginBottom: 4 }}>
+          <div
+            key={i}
+            className={`message-block ${m.role === 'user' ? 'user-message' : 'coach-message'}`}
+          >
+            <span className="message-label label">
               {m.role === 'user' ? 'you' : 'coach'}
             </span>
-            <p style={{
-              maxWidth: '88%',
-              background: m.role === 'user' ? 'var(--grey-light)' : 'transparent',
-              padding: m.role === 'user' ? '12px 16px' : '0',
-              lineHeight: 1.7,
-              whiteSpace: 'pre-wrap'
-            }}>
+            <p className="message-text">
               {m.content}
             </p>
           </div>
         ))}
 
         {sending && (
-          <div>
-            <span className="label" style={{ marginBottom: 4, display: 'block' }}>coach</span>
+          <div className="message-block coach-message">
+            <span className="message-label label">coach</span>
             <span className="mono text-muted" style={{ fontSize: '0.75rem' }}>…</span>
           </div>
         )}
@@ -147,26 +123,13 @@ export default function Session({ sessionId, openingMessage, onEnd }: Props) {
 
       {/* Safety redirect state */}
       {safetyState === 'redirected' && (
-        <div style={{
-          background: 'var(--black)',
-          color: 'var(--white)',
-          padding: 'var(--space-sm)',
-          fontFamily: 'var(--font-mono)',
-          fontSize: '0.8rem',
-          marginBottom: 'var(--space-sm)'
-        }}>
+        <div className="safety-banner">
           Session paused. Please reach out to someone you trust.
         </div>
       )}
 
       {/* Input */}
-      <div style={{
-        borderTop: '1px solid var(--grey-light)',
-        padding: 'var(--space-sm) 0 var(--space-md)',
-        display: 'flex',
-        gap: 'var(--space-sm)',
-        alignItems: 'flex-end'
-      }}>
+      <div className="session-input-area">
         <textarea
           ref={textareaRef}
           value={input}
