@@ -9,7 +9,7 @@
   "duration_minutes": 0,
   "phase": "clarity",
   "re_interview_completed": false,
-  "profile_updated": false,
+  "profile_updated": true,
   "safety_state": "engaged",
   "safety_notes": "",
   "summary": "",
@@ -80,6 +80,14 @@
     {
       "role": "assistant",
       "content": "Fair.\n\n**Artist test:** You've already shipped a working system for a contractor — receipts to Telegram to dashboard. You use your own profiling tool daily. You said you're not chasing a product idea, you want to solve different problems for different people. This sentence describes what you're already doing and want to keep doing. It passes.\n\n**Business test:** A business owner with an operational inefficiency hears \"I am a consultant that fixes problems with AI\" — they understand immediately what you might do for them. It's not clever, not jargon, not a pitch. It's plain. It passes.\n\nThe sentence works.\n\nNow one more question before we close Phase 2:\n\nWhen you imagine saying this sentence to someone from your finance world — a colleague, a LinkedIn connection — what happens in your body?"
+    },
+    {
+      "role": "user",
+      "content": "i feel a bit anxious but i think it can be just about the fact that is new, but i also feel like is something real"
+    },
+    {
+      "role": "assistant",
+      "content": "That's the right answer.\n\nAnxiety about something new that's also real is not the same as anxiety about something fake. The first kind fades with repetition. The second kind doesn't.\n\nYou've got the sentence. You passed both tests. You named the feeling accurately.\n\nPhase 2 is complete.\n\n---\n\nHere's where we are:\n\n**Phase 1 (Reflection):** Done. Two contradictions surfaced — your 30-day goal requires visibility but you haven't published anything, and you already identify as an AI consultant but won't claim it publicly.\n\n**Phase 2 (Clarity):** Done. One sentence: *\"I am a consultant that fixes problems with AI.\"*\n\n**Phase 3 (Resistance):** Next. This is where we name the pattern that's been operating underneath the anxiety — the visibility avoidance — and sit with it directly.\n\nWe can start Phase 3 now, or pick it up next session. What do you want to do?"
     }
   ]
 }
