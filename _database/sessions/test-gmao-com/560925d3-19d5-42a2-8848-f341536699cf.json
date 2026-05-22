@@ -248,6 +248,14 @@
     {
       "role": "assistant",
       "content": "Business owners with specific problems they need solved. That's the audience.\n\n**Where do those people actually spend their time? Where would they see you if you were visible?**\n\nNot Instagram, probably. Not your LinkedIn finance circle. So where?"
+    },
+    {
+      "role": "user",
+      "content": "I dont know,"
+    },
+    {
+      "role": "assistant",
+      "content": "You don't know. That's real.\n\nSo here's what I'm seeing:\n\nYou're avoiding Instagram because you don't want to look like a tech bro. You're avoiding LinkedIn because your finance circle might judge you. But you also don't know where your actual audience — business owners with problems — would find you.\n\n**The avoidance has a clear shape. The alternative doesn't.**\n\nYou've been protecting yourself from the wrong audiences without figuring out where the right one is.\n\n**Let me ask it differently:**\n\nYour friend with the contractor business — how did he know you could build something for him? What made him ask you?"
     }
   ]
 }
