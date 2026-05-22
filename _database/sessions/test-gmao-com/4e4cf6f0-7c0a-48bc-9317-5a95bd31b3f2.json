@@ -144,6 +144,14 @@
     {
       "role": "assistant",
       "content": "That's the real one.\n\nNow let's make it specific enough to pass the test.\n\nYou said: \"post the page of the process of building one of the tools.\"\n\nWhich tool — the contractor expense system, or something else?\n\nAnd what does \"the page of the process\" mean — a screenshot? A written description? A before/after? A video?\n\nI want to know exactly what you're committing to so we can both tell on May 28 whether you did it."
+    },
+    {
+      "role": "user",
+      "content": "a agency system that i made for a challenge and it is a webpage with all the details and thinking behind the building"
+    },
+    {
+      "role": "assistant",
+      "content": "Good. Clear.\n\nSo the commitment is:\n\n**\"I will post about my agency system — the webpage showing the details and thinking behind the build — on my personal Instagram profile by May 28.\"**\n\nOne more question: post format. Is this a story, a feed post, a reel, a carousel? What specifically will someone see when they scroll?"
     }
   ]
 }
