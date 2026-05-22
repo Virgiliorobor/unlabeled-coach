@@ -64,6 +64,14 @@
     {
       "role": "assistant",
       "content": "Good. That's a claim.\n\nNow I want to test it. Say that sentence out loud — actually say it, not just read it — and tell me what happens. Does it feel true? Does something resist it?"
+    },
+    {
+      "role": "user",
+      "content": "it feels real"
+    },
+    {
+      "role": "assistant",
+      "content": "Good.\n\n\"I am a consultant that fixes problems with AI.\"\n\nThat's your sentence. No qualification needed.\n\nNow here's the Phase 2 test — it has to pass two lenses:\n\n**Artist test:** Is this something you actually want to be, or just something that sounds credible?\n\n**Business test:** Would a real person with a real problem hear this and think \"I should talk to this person\"?\n\nDoes it pass both?"
     }
   ]
 }
