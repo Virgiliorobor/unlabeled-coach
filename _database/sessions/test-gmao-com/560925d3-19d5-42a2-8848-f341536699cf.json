@@ -72,6 +72,14 @@
     {
       "role": "assistant",
       "content": "Numbers, logic, understanding what companies actually need and how they operate from the inside. That's not a small thing — most builders are guessing at what businesses need. You've spent 15 years seeing it directly.\n\n**When you describe what you're doing now — the building, the AI work — to someone from your finance world, how do you explain it? And what do you usually leave out?**"
+    },
+    {
+      "role": "user",
+      "content": "I dont like to tell many people in my circle of finance about ai, because some high hierarchy people are afraid of IT security breaches and leaking information, so i keep this for me, outside i have helped friends with different items and have entered some challenges"
+    },
+    {
+      "role": "assistant",
+      "content": "That's telling. Inside your finance world, you keep it quiet — there's real professional risk in being seen as the AI person when leadership is anxious about security. So you build in the shadows there.\n\nOutside, you're more open — helping friends, entering challenges. Two different versions of you depending on the audience.\n\n**Is there anything about the finance work you're glad to be done with — or ready to be done with? And anything you'd actually miss if you left it entirely?**"
     }
   ]
 }
