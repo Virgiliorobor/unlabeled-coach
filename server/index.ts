@@ -2,13 +2,10 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import { startScheduler, loadUserRegistry } from './scheduler.js'
 import sessionRouter from './routes/session.js'
 import dashboardRouter from './routes/dashboard.js'
 import communityRouter from './routes/community.js'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const app = express()
 const PORT = parseInt(process.env.PORT || '3001')
