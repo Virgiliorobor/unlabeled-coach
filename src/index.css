@@ -758,6 +758,161 @@ button { cursor: pointer; border: none; background: none; font-family: var(--fon
 }
 
 
+/* ── Phase progress track ───────────────────────────────────── */
+.phase-progress {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.phase-pip {
+  width: 10px;
+  height: 10px;
+  border: var(--border);
+  background: transparent;
+  flex-shrink: 0;
+}
+.phase-pip.done    { background: var(--black); }
+.phase-pip.current { background: var(--yellow); border: var(--border-thick); }
+.phase-pip.pending { background: transparent; }
+
+/* ── Signal row: oblique card + today's prompt ───────────────── */
+.signal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  align-items: start;
+}
+
+.oblique-card {
+  border: var(--border-thick);
+  padding: var(--space-md);
+  box-shadow: var(--shadow);
+  background: var(--canvas);
+}
+.oblique-text {
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.today-prompt-card {
+  padding: var(--space-md);
+  border-left: 3px solid var(--black);
+  background: var(--canvas-dark);
+}
+.today-prompt-text {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  font-style: italic;
+}
+
+/* Quadrant overrides for oblique card */
+[data-quadrant="sanctuary"] .oblique-card {
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+[data-quadrant="sanctuary"] .oblique-text {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  font-style: italic;
+  line-height: 1.9;
+}
+[data-quadrant="sanctuary"] .today-prompt-card {
+  border-left: none;
+  background: transparent;
+  padding: 0;
+}
+[data-quadrant="sanctuary"] .today-prompt-text {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  color: var(--grey);
+}
+
+[data-quadrant="sandbox"] .oblique-card {
+  transform: rotate(-0.4deg);
+  position: relative;
+}
+[data-quadrant="sandbox"] .oblique-card::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%) rotate(1deg);
+  width: 48px;
+  height: 14px;
+  background: rgba(255, 240, 0, 0.7);
+  border: 1px solid rgba(0,0,0,0.1);
+}
+[data-quadrant="sandbox"] .oblique-text {
+  font-family: var(--font-marker);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+[data-quadrant="system"] .oblique-card {
+  border: var(--border-thick);
+  box-shadow: var(--shadow);
+}
+[data-quadrant="system"] .oblique-text {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.7;
+}
+
+/* ── Portfolio block ─────────────────────────────────────────── */
+.portfolio-block {
+  border: var(--border);
+  padding: var(--space-sm) var(--space-md);
+}
+.portfolio-block a:hover { opacity: 0.65; }
+
+/* ── Milestone track ─────────────────────────────────────────── */
+.milestone-track {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: 6px;
+}
+.milestone-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.milestone-pip {
+  width: 24px;
+  height: 8px;
+  border: var(--border);
+  background: transparent;
+}
+.milestone-done    .milestone-pip { background: var(--black); }
+.milestone-current .milestone-pip { background: var(--yellow); border: var(--border-thick); }
+.milestone-pending .milestone-pip { background: transparent; }
+.milestone-missed  .milestone-pip { background: var(--red); }
+
+/* ── 90/12-month condensed grid ──────────────────────────────── */
+.horizon-grid-small {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+/* ── First move block ────────────────────────────────────────── */
+.first-move-block {
+  border: var(--border-thick);
+  padding: var(--space-md);
+  box-shadow: var(--shadow);
+  position: relative;
+  margin-bottom: var(--space-md);
+}
+
+@media (max-width: 640px) {
+  .signal-row         { grid-template-columns: 1fr; }
+  .horizon-grid-small { grid-template-columns: 1fr; }
+}
+
 /* ═══════════════════════════════════════════════════════════
    SNAP-TO-GRID TRANSITION (Sandbox → System)
    The "Wow" moment — messy notes animate into perfect grid.

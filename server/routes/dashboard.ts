@@ -8,7 +8,7 @@ import { requireAuth, issueSession, clearSession } from '../auth.js'
 import { readProfile, writeProfile, fileExists } from '../storage.js'
 import { registerUser } from '../scheduler.js'
 import { v4 as uuidv4 } from 'uuid'
-import { UserProfile } from '../types.js'
+import { UserProfile, Portfolio, FirstMove } from '../types.js'
 
 const router = Router()
 
@@ -79,6 +79,16 @@ router.post('/auth/register', async (req: Request, res: Response) => {
 
     active_commitment: null,
     commitment_history: [],
+
+    portfolio: {
+      url: '',
+      platform: '',
+      status: 'none',
+      entries_count: 0,
+      last_updated: ''
+    },
+    first_move: null,
+    today_prompt: '',
 
     notifications: {
       email,
@@ -164,6 +174,8 @@ router.get('/dashboard', requireAuth, async (req: Request, res: Response) => {
   const reInterviewDue = new Date(profile.re_interview_due)
   const reInterviewOverdue = now >= reInterviewDue
 
+  const emptyPortfolio: Portfolio = { url: '', platform: '', status: 'none', entries_count: 0, last_updated: '' }
+
   res.json({
     profile: {
       slug: profile.slug,
@@ -177,9 +189,12 @@ router.get('/dashboard', requireAuth, async (req: Request, res: Response) => {
       dominant_lens: profile.calibration.dominant_lens,
       resistance_pattern: profile.calibration.resistance_pattern
     },
+    portfolio: profile.portfolio || emptyPortfolio,
+    first_move: profile.first_move || null,
+    today_prompt: profile.today_prompt || '',
     goals: profile.goals,
     active_commitment: profile.active_commitment,
-    commitment_history: profile.commitment_history.slice(-10), // last 10
+    commitment_history: profile.commitment_history.slice(-10),
     notifications: {
       channels: profile.notifications.channels,
       daily_signal_time: profile.notifications.daily_signal_time,
@@ -199,7 +214,7 @@ router.patch('/dashboard/profile', requireAuth, async (req: Request, res: Respon
     return
   }
 
-  const allowed = ['goals', 'notifications', 'build', 'background']
+  const allowed = ['goals', 'notifications', 'build', 'background', 'portfolio', 'first_move']
   for (const key of allowed) {
     if (req.body[key]) {
       (profile as any)[key] = { ...(profile as any)[key], ...req.body[key] }
@@ -250,6 +265,39 @@ router.post('/dashboard/commitment/:id/resolve', requireAuth, async (req: Reques
   await writeProfile(profile)
 
   res.json({ ok: true, resolved })
+})
+
+// ── POST /api/dashboard/first-move/resolve ────────────────────
+// Mark the first move (portfolio) as done or missed.
+
+router.post('/dashboard/first-move/resolve', requireAuth, async (req: Request, res: Response) => {
+  const { slug } = (req as any).user
+  const { status, url } = req.body
+
+  if (!['done', 'missed'].includes(status)) {
+    res.status(400).json({ error: 'status must be done | missed' })
+    return
+  }
+
+  const profile = await readProfile(slug)
+  if (!profile || !profile.first_move) {
+    res.status(404).json({ error: 'First move not found' })
+    return
+  }
+
+  profile.first_move.status = status as 'done' | 'missed'
+
+  if (status === 'done') {
+    profile.portfolio = {
+      ...profile.portfolio,
+      url: url || profile.portfolio?.url || '',
+      status: 'active',
+      last_updated: new Date().toISOString()
+    }
+  }
+
+  await writeProfile(profile)
+  res.json({ ok: true })
 })
 
 export default router
