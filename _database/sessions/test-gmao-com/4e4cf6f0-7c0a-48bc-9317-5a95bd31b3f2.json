@@ -88,6 +88,14 @@
     {
       "role": "assistant",
       "content": "That's the right answer.\n\nAnxiety about something new that's also real is not the same as anxiety about something fake. The first kind fades with repetition. The second kind doesn't.\n\nYou've got the sentence. You passed both tests. You named the feeling accurately.\n\nPhase 2 is complete.\n\n---\n\nHere's where we are:\n\n**Phase 1 (Reflection):** Done. Two contradictions surfaced — your 30-day goal requires visibility but you haven't published anything, and you already identify as an AI consultant but won't claim it publicly.\n\n**Phase 2 (Clarity):** Done. One sentence: *\"I am a consultant that fixes problems with AI.\"*\n\n**Phase 3 (Resistance):** Next. This is where we name the pattern that's been operating underneath the anxiety — the visibility avoidance — and sit with it directly.\n\nWe can start Phase 3 now, or pick it up next session. What do you want to do?"
+    },
+    {
+      "role": "user",
+      "content": "continue"
+    },
+    {
+      "role": "assistant",
+      "content": "Good.\n\nPhase 3 is about naming the resistance pattern precisely and sitting with it — not solving it, just seeing it clearly.\n\nHere's what I've observed across our sessions:\n\nYou've built real things. You have a paying client. You use your own tools daily. You can say \"I am a consultant that fixes problems with AI\" and it feels true.\n\nBut:\n- You haven't published anything about what you're building\n- You keep your AI work hidden from your finance colleagues\n- Your 30-day goal is for someone you don't know to notice your work — but there's nothing visible for them to notice\n- When we talked about what's stopping you, you named Instagram friends making fun of you behind your back\n\nThe pattern is **visibility avoidance**. The work is ready. You're not hiding because the work isn't good enough — you're hiding because publishing it feels like a different kind of exposure than building it alone.\n\nYou came from finance. In that world, you don't show work until it's defensible. You don't put your name on something unless you can stand behind every part of it. That's a real standard that made sense there.\n\nIt doesn't apply here. And I think you know that.\n\nHere's my question:\n\nWhat specifically are you protecting yourself from by staying invisible?"
     }
   ]
 }
