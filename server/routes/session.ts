@@ -96,7 +96,14 @@ router.post('/:session_id/message', requireAuth, async (req: Request, res: Respo
   }
 
   // Run the Claude turn
-  const result = await runTurn(session.chat_log, message.trim(), profile)
+  let result
+  try {
+    result = await runTurn(session.chat_log, message.trim(), profile)
+  } catch (err: any) {
+    console.error('[session] Claude turn failed:', err?.message || err)
+    res.status(500).json({ error: 'Coach unavailable', detail: err?.message || 'Unknown error' })
+    return
+  }
 
   // Append to chat log
   session.chat_log.push({ role: 'user', content: message.trim() })

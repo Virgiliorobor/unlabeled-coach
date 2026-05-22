@@ -47,9 +47,19 @@ if (process.env.NODE_ENV === 'production') {
 // ── STARTUP ───────────────────────────────────────────────────
 
 async function start() {
+  // ── Env var check ─────────────────────────────────────────
+  const required = ['ANTHROPIC_API_KEY', 'SESSION_SECRET']
+  const optional = ['RESEND_API_KEY', 'TELEGRAM_BOT_TOKEN', 'GITHUB_TOKEN']
+  for (const key of required) {
+    if (!process.env[key]) console.error(`[startup] MISSING REQUIRED: ${key}`)
+    else console.log(`[startup] ✓ ${key}`)
+  }
+  for (const key of optional) {
+    if (!process.env[key]) console.warn(`[startup] optional not set: ${key}`)
+    else console.log(`[startup] ✓ ${key}`)
+  }
+
   // Load user registry for scheduler
-  // In production with GitHub storage, this would scan _database/users/
-  // For now the registry builds up as users log in
   loadUserRegistry([])
 
   // Start the notification scheduler
