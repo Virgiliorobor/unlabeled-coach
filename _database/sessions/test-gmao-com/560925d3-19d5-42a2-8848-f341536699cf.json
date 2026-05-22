@@ -176,6 +176,14 @@
     {
       "role": "assistant",
       "content": "Good. Now let's talk about resistance — the stuff that gets in the way.\n\n**What's the thing you keep meaning to do but keep not doing?** The specific task that shows up on every week's list and never gets crossed off."
+    },
+    {
+      "role": "user",
+      "content": "to publish something like to tell the world that i am doing this"
+    },
+    {
+      "role": "assistant",
+      "content": "There it is. You keep meaning to publish — to tell the world you're doing this — and you keep not doing it.\n\nYou said your 30-day goal is for someone you don't know to notice your work and ask you to build something. But you haven't told anyone you're building.\n\n**When you imagine someone from your finance world seeing you post about your AI building work — what do you imagine they think? What would you want to explain or defend?**"
     }
   ]
 }
