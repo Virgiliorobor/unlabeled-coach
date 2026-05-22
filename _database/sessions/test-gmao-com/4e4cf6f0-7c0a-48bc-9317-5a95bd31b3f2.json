@@ -152,6 +152,14 @@
     {
       "role": "assistant",
       "content": "Good. Clear.\n\nSo the commitment is:\n\n**\"I will post about my agency system — the webpage showing the details and thinking behind the build — on my personal Instagram profile by May 28.\"**\n\nOne more question: post format. Is this a story, a feed post, a reel, a carousel? What specifically will someone see when they scroll?"
+    },
+    {
+      "role": "user",
+      "content": "a story and a feed post with the link"
+    },
+    {
+      "role": "assistant",
+      "content": "Clear.\n\nHere's your commitment:\n\n**\"I will post a story and a feed post with a link to my agency system webpage on my personal Instagram profile by May 28.\"**\n\nSay that back to me — the whole sentence — so it's declared, not just agreed to."
     }
   ]
 }
