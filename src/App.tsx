@@ -13,13 +13,13 @@ interface AppUser {
 
 function phaseToQuadrant(phase: string): Quadrant {
   switch (phase) {
-    case 'phase_0': return 'sanctuary'
-    case 'phase_1':
-    case 'phase_2': return 'sandbox'
-    case 'phase_3': return 'system'
-    case 'phase_4':
-    case 'phase_5': return 'workbench'
-    default:        return 'sanctuary'
+    case 'interview':       return 'sanctuary'
+    case 'reflection':
+    case 'clarity':         return 'sandbox'
+    case 'resistance':      return 'system'
+    case 'commitment':
+    case 'accountability':  return 'workbench'
+    default:                return 'sanctuary'
   }
 }
 
