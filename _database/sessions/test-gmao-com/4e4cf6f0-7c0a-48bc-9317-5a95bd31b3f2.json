@@ -160,6 +160,14 @@
     {
       "role": "assistant",
       "content": "Clear.\n\nHere's your commitment:\n\n**\"I will post a story and a feed post with a link to my agency system webpage on my personal Instagram profile by May 28.\"**\n\nSay that back to me — the whole sentence — so it's declared, not just agreed to."
+    },
+    {
+      "role": "user",
+      "content": "I will post a stoyr and a feed post with a link to my agency system webpage on my persona instagram profile by may 28"
+    },
+    {
+      "role": "assistant",
+      "content": "Declared.\n\nThat's your commitment. Public, specific, dated. The people you were protecting yourself from might see it. That's the point.\n\nNow I'm going to generate three things for you:\n\n---\n\n**1. The Share Post** (for posting — edit it or use as-is)\n\n\"I built an AI agency system as a challenge project. Here's the full breakdown — the thinking, the process, how it actually works. [link] First time sharing something like this publicly. More coming.\"\n\n---\n\n**2. The Print-and-Paste Card** (put this where you work)\n\n\"Story + feed post with agency system link on my Instagram. By May 28. — May 22, 2026\"\n\n---\n\n**3. Daily Reminders** (these will arrive each morning)\n\n- Day 1: What's the first thing you need to do to make this post happen?\n- Day 2: Is the webpage ready to share, or does something need to be finished first?\n- Day 3: Have you written the caption yet? What's the first sentence?\n- Day 4: What's the one thing that could stop you from posting — and how do you remove it?\n- Day 5: The deadline is in 2 days. What's still not done?\n- Day 6: If you posted today instead of tomorrow, what would happen?\n- Day 7: Did you post it? What happened?\n\n---\n\nPhase 4 is complete.\n\nWhen we talk next, we'll be in Phase 5 — accountability. I'll ask what happened, what you learned, and what comes next.\n\nOne question before we close: how are you feeling right now about what you just committed to?"
     }
   ]
 }
