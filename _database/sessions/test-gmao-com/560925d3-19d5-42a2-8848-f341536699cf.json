@@ -56,6 +56,14 @@
     {
       "role": "assistant",
       "content": "Fifteen years reading the inside of companies through their numbers. That's real expertise — you know what healthy looks like, what distressed looks like, what the story behind the financials actually is.\n\nAnd you're still doing it, which means you're building alongside the day job, not after leaving it.\n\n**What made you start building something on the side?** Was this a deliberate decision — you saw something you wanted to make — or did something push you toward it?"
+    },
+    {
+      "role": "user",
+      "content": "I started to play with AI and develop some solutions to improve my workflow, this opened a lot of possibilities and i have been building solutions for different items and other things that are not even related to my work"
+    },
+    {
+      "role": "assistant",
+      "content": "So it started as workflow optimization — using AI to make your actual job better — and then the possibilities opened up. Now you're building things that have nothing to do with finance at all.\n\nThat's a common pattern for people with deep domain expertise who discover they can actually build. The tool becomes more interesting than the original problem.\n\n**What skills or judgment from those 15 years of financial analysis do you find yourself using constantly in the new work — even if you wouldn't call them by their old names?**\n\nFor example: pattern recognition, knowing when numbers don't add up, understanding how systems connect, reading between the lines. What from finance shows up when you're building?"
     }
   ]
 }
