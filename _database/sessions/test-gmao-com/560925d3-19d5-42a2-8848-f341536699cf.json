@@ -160,6 +160,14 @@
     {
       "role": "assistant",
       "content": "90 days: more projects, a brand forming, paying clients (plural).\n\n**12 months from now — if this goes the way you actually hope, not the version you'd say out loud to your finance colleagues, what does your life look like?**"
+    },
+    {
+      "role": "user",
+      "content": "being able to work directly in this"
+    },
+    {
+      "role": "assistant",
+      "content": "Being able to work directly in this — meaning this becomes the work, not the side project you hide from the partners.\n\nLet me make sure I understand the full picture across the three horizons:\n\n- **30 days:** Someone you don't know notices your work and asks you to build something\n- **90 days:** Multiple projects, a recognizable brand, paying clients\n- **12 months:** This is your job. You've left finance or you're working on this full-time.\n\nDoes that capture what you actually want?"
     }
   ]
 }
