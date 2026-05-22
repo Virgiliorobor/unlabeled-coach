@@ -144,6 +144,14 @@
     {
       "role": "assistant",
       "content": "Clear. Success looks like: more people coming to you with problems, and getting paid to solve them.\n\nThat's a services model — you as the builder for hire, solving specific problems for specific people. Not a product you scale, but work you do that has value and generates income.\n\nLet's put some timeframes on this.\n\n**30 days from now — what do you want to have done?** Not a milestone you think you should want. The thing you'd actually want to be able to say happened."
+    },
+    {
+      "role": "user",
+      "content": "people starts noticing what iam buiding and how i am building a person that i dont know asks me to build something for them"
+    },
+    {
+      "role": "assistant",
+      "content": "So in 30 days: visibility. Someone you don't already know notices what you're building and asks you to build something for them.\n\nThat's specific. It requires you to be visible somewhere — because strangers can't ask if they can't see.\n\n**90 days from now — what would make this feel like it's working? Not perfection — the first real signal.**"
     }
   ]
 }
