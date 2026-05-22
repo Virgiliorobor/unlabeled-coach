@@ -136,6 +136,14 @@
     {
       "role": "assistant",
       "content": "Good. Specific deadline. Real platform.\n\nOne question to nail down: you said \"either my profile or a new profile.\"\n\nThose are different acts. Your profile means the people you're protecting yourself from might see it. A new profile means starting invisible again.\n\nWhich one moves you toward your 30-day goal — someone you don't know noticing your work?\n\nAnd which one is the visibility avoidance pattern offering you a side door?"
+    },
+    {
+      "role": "user",
+      "content": "ok my personal profile"
+    },
+    {
+      "role": "assistant",
+      "content": "That's the real one.\n\nNow let's make it specific enough to pass the test.\n\nYou said: \"post the page of the process of building one of the tools.\"\n\nWhich tool — the contractor expense system, or something else?\n\nAnd what does \"the page of the process\" mean — a screenshot? A written description? A before/after? A video?\n\nI want to know exactly what you're committing to so we can both tell on May 28 whether you did it."
     }
   ]
 }
