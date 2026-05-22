@@ -320,6 +320,14 @@
     {
       "role": "assistant",
       "content": "Good. Then we've done the work of Phase 1.\n\n**Here's what we surfaced:**\n\n1. Your 30-day goal requires visibility, but you've done nothing to become visible\n2. You've been avoiding platforms based on fears that don't match your actual audience — your friends on Instagram aren't your clients, your finance circle on LinkedIn isn't hiring you for AI work\n3. The version of yourself you'd actually share — the process, the building — isn't the empty tech bro you're afraid of becoming. It's the real thing.\n4. You already think you're a developer/consultant on AI. The only missing piece is claiming it publicly.\n5. The real fear underneath it all: your friends might make fun of you behind your back. People who will never be your clients.\n\n**You're protecting yourself from the wrong people.**\n\n---\n\n**Phase 1 is complete.**\n\n**Next is Phase 2 — Clarity.** That's where we take everything we surfaced and get to one clear sentence about what you actually do and who it's for. The sentence you could say out loud without qualifying it.\n\nDo you want to continue to Phase 2 now, or stop here and pick it up next session?"
+    },
+    {
+      "role": "user",
+      "content": "yes that is accurate"
+    },
+    {
+      "role": "assistant",
+      "content": "I'll take that as confirmation of what we surfaced.\n\n**Do you want to continue to Phase 2 now, or stop here and pick it up next session?**"
     }
   ]
 }
