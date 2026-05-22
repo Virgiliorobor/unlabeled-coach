@@ -304,6 +304,14 @@
     {
       "role": "assistant",
       "content": "There it is.\n\nNot the finance colleagues. Not the abstract fear of looking like a tech bro. Your friends. The people who would see it and make fun of you behind your back.\n\nThat's a real fear. And it's a specific one.\n\n**Let me ask you this:**\n\nAre those friends — the ones who might make fun of you — the same people who would ever hire you to build something? Are they business owners with problems to solve?"
+    },
+    {
+      "role": "user",
+      "content": "No"
+    },
+    {
+      "role": "assistant",
+      "content": "So you're staying invisible to protect yourself from the judgment of people who will never be your clients, while the people who might actually pay you can't find you.\n\n**That's the contradiction.**\n\nYour friends' opinion costs you nothing professionally. But their imagined laughter is costing you the 30-day goal — strangers noticing and asking you to build.\n\n**Let me surface one more thing and then we'll close Phase 1:**\n\nYou said you don't want to look empty. You said the version of yourself you'd share — the process, the building, the real work — isn't empty. You said you think you're a developer/consultant. You've shipped a real tool.\n\nThe only thing standing between you and visibility is the fear that people who don't matter to your future will judge you for doing something real.\n\n**Does that feel accurate, or is there something else underneath it I'm missing?**"
     }
   ]
 }
