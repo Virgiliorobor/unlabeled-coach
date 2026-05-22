@@ -40,6 +40,14 @@
     {
       "role": "assistant",
       "content": "Good to meet you. I'm the Unlabeled coach.\n\nBefore we do anything else, I want to spend about 30 minutes getting an accurate picture of where you actually are — not the elevator pitch version, the honest one. I'll ask about your background, what you're building, and what you actually want. From that I'll build a profile that shapes how I coach you going forward.\n\nThere are no right answers here. The less polished your answers are, the more useful this will be.\n\nLet's start with your background.\n\n**What did you do before this?** Not the LinkedIn version — what did the work actually involve, and how long did you do it?"
+    },
+    {
+      "role": "user",
+      "content": "yes"
+    },
+    {
+      "role": "assistant",
+      "content": "I need a bit more than that to build your profile.\n\n**What did you do before you started building?** What was the actual work — the day-to-day of it — and how many years did you spend doing it?\n\nTake your time. I'm not looking for a title. I'm looking for what you actually did."
     }
   ]
 }
