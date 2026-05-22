@@ -136,6 +136,14 @@
     {
       "role": "assistant",
       "content": "That's honest and useful. You're not sitting on an idea you're avoiding — you genuinely don't have a personal product you're trying to launch. Your interest right now is in the craft itself: learning by building things for other people's problems.\n\nThe contractor system is the clearest example of what you actually do well: see a specific person's problem, build a specific solution, ship it.\n\n**Let me check something before we move to goals.**\n\nRight now, what does success look like for you in this building work? Not the version you'd say in a pitch — the version you'd actually feel. What would make you say \"this is working\"?"
+    },
+    {
+      "role": "user",
+      "content": "if more people asks me to build things for them, if i can charge money for that"
+    },
+    {
+      "role": "assistant",
+      "content": "Clear. Success looks like: more people coming to you with problems, and getting paid to solve them.\n\nThat's a services model — you as the builder for hire, solving specific problems for specific people. Not a product you scale, but work you do that has value and generates income.\n\nLet's put some timeframes on this.\n\n**30 days from now — what do you want to have done?** Not a milestone you think you should want. The thing you'd actually want to be able to say happened."
     }
   ]
 }
