@@ -224,6 +224,14 @@
     {
       "role": "assistant",
       "content": "Got it. Email to jaime.rob@gmail.com, 8am Central Time.\n\n---\n\n**Your profile is set.**\n\nHere's where we are:\n\n- **Phase 0 (Interview):** Complete\n- **Next:** Phase 1 — Reflection\n\nIn Phase 1, we'll dig into the contradictions between what you say you want and what you're actually doing. You said you want strangers to notice your work in 30 days, but you haven't published anything. That gap is where the work starts.\n\nWe don't have to do Phase 1 right now — we can pick it up next session if you want to stop here.\n\n**Do you want to continue into Phase 1 now, or start fresh next time?**"
+    },
+    {
+      "role": "user",
+      "content": "continue to phase 1"
+    },
+    {
+      "role": "assistant",
+      "content": "**Phase 1 — Reflection**\n\nYou said your 30-day goal is for someone you don't know to notice your work and ask you to build something for them.\n\nYou also said the thing you keep meaning to do but keep not doing is publish — tell the world you're doing this.\n\n**What did you actually do this past week toward becoming visible?** Specific things, not intentions."
     }
   ]
 }
