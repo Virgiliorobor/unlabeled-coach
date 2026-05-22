@@ -192,6 +192,14 @@
     {
       "role": "assistant",
       "content": "Two audiences, two fears:\n\nInstagram — you don't want to look like a trend-chaser, a \"tech bro\" doing AI content for show. That's an identity concern.\n\nLinkedIn — you're worried your finance circle will challenge the work *because* it's made with AI. That's a credibility concern tied to your professional reputation.\n\nSo you stay invisible. Which means the 30-day goal — a stranger noticing and asking you to build — can't happen yet.\n\n**If you were certain nobody you respect would judge you for it — what would you ship or share tomorrow?**"
+    },
+    {
+      "role": "user",
+      "content": "the process of building the contractor ticket tool"
+    },
+    {
+      "role": "assistant",
+      "content": "The process of building the contractor ticket tool. Not the polished result — the process. How you actually made it.\n\nThat's the thing you'd share if you weren't worried about judgment.\n\n**One more question on resistance, then we'll wrap up the interview.**\n\nWhat's the version of yourself you're most afraid of becoming? And what's the version you're most afraid of admitting you want to be?"
     }
   ]
 }
