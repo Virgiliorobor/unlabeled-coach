@@ -48,6 +48,14 @@
     {
       "role": "assistant",
       "content": "That's the value proposition — but it's still from your side of the table.\n\nFlip it. Think about your contractor client, the one using the Telegram expense system right now.\n\nBefore you built that for him, what was his actual problem? Not \"he needed better expense tracking\" — what was the pain? What was he doing before, and why did it suck?"
+    },
+    {
+      "role": "user",
+      "content": "well he was missing the budgets, and not knowing where his money went, so i fixed the problem"
+    },
+    {
+      "role": "assistant",
+      "content": "Good. Now stay in his shoes for one more beat.\n\nWhen he was missing budgets and not knowing where his money went — what was the consequence? Was he losing money on projects? Fighting with his accountant? Guessing at bids for new jobs? Stressed at the end of every month?\n\nWhat was the actual cost of that problem before you solved it?"
     }
   ]
 }
