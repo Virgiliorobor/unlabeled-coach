@@ -88,6 +88,14 @@
     {
       "role": "assistant",
       "content": "That's clear. The work itself isn't the problem — it's the environment. The politics, the conservatism, the way new ideas get shut down because the partners want to protect what already exists.\n\nYou're building on the side partly because that's the only place you're allowed to actually build.\n\nLet me read back what I'm hearing about your background before we move on:\n\n**15 years in finance, doing company financial profiles — you understand how businesses work from the inside, what the numbers actually mean. Still doing it, but tired of the politics and the culture that blocks new ideas. You started building with AI to improve your own workflow, discovered you could make things, and now you're building solutions well beyond finance. You keep this quiet at work because of security anxiety from leadership. Outside work, you're more open — helping friends, entering challenges.**\n\nDoes that capture it accurately? Anything I've got wrong?"
+    },
+    {
+      "role": "user",
+      "content": "yes thats right"
+    },
+    {
+      "role": "assistant",
+      "content": "Good. Let's move to what you're actually building.\n\n**What are you building right now?** Describe it as it actually is today — not what it will be, what exists right now.\n\nIf you're working on multiple things, pick the one that feels most real or most important to you."
     }
   ]
 }
