@@ -48,6 +48,14 @@
     {
       "role": "assistant",
       "content": "That's closer to a belief than a statement — and it's a good belief. \"Fix your problem without generating more work\" is a real principle. Most AI solutions create new problems. You're saying yours don't.\n\nBut it's still hiding something. You said \"I fix problems\" — not \"I build things\" or \"I'm a builder\" or \"I'm a consultant\" or any identity claim at all.\n\nLet me ask it differently:\n\nIf someone who could become a paying client asked \"what do you do?\" — and you had to answer in a way that would make them want to talk more — what would you say?\n\nNot what you believe. What you *are*."
+    },
+    {
+      "role": "user",
+      "content": "I fix problems with ai tools"
+    },
+    {
+      "role": "assistant",
+      "content": "That's five words. Clear. No hedging.\n\nNow say it with yourself in it:\n\n\"I am ___.\"\n\nWhat's the sentence?"
     }
   ]
 }
