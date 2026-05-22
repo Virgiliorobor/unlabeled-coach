@@ -152,6 +152,14 @@
     {
       "role": "assistant",
       "content": "So in 30 days: visibility. Someone you don't already know notices what you're building and asks you to build something for them.\n\nThat's specific. It requires you to be visible somewhere — because strangers can't ask if they can't see.\n\n**90 days from now — what would make this feel like it's working? Not perfection — the first real signal.**"
+    },
+    {
+      "role": "user",
+      "content": "more projects, start building a brand, being able to charge to more clients"
+    },
+    {
+      "role": "assistant",
+      "content": "90 days: more projects, a brand forming, paying clients (plural).\n\n**12 months from now — if this goes the way you actually hope, not the version you'd say out loud to your finance colleagues, what does your life look like?**"
     }
   ]
 }
