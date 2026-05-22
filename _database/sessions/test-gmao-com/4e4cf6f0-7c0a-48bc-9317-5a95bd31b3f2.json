@@ -72,6 +72,14 @@
     {
       "role": "assistant",
       "content": "Good.\n\n\"I am a consultant that fixes problems with AI.\"\n\nThat's your sentence. No qualification needed.\n\nNow here's the Phase 2 test — it has to pass two lenses:\n\n**Artist test:** Is this something you actually want to be, or just something that sounds credible?\n\n**Business test:** Would a real person with a real problem hear this and think \"I should talk to this person\"?\n\nDoes it pass both?"
+    },
+    {
+      "role": "user",
+      "content": "you tell me"
+    },
+    {
+      "role": "assistant",
+      "content": "Fair.\n\n**Artist test:** You've already shipped a working system for a contractor — receipts to Telegram to dashboard. You use your own profiling tool daily. You said you're not chasing a product idea, you want to solve different problems for different people. This sentence describes what you're already doing and want to keep doing. It passes.\n\n**Business test:** A business owner with an operational inefficiency hears \"I am a consultant that fixes problems with AI\" — they understand immediately what you might do for them. It's not clever, not jargon, not a pitch. It's plain. It passes.\n\nThe sentence works.\n\nNow one more question before we close Phase 2:\n\nWhen you imagine saying this sentence to someone from your finance world — a colleague, a LinkedIn connection — what happens in your body?"
     }
   ]
 }
