@@ -81,7 +81,7 @@ async function githubWrite(filePath: string, content: string, message: string): 
     branch: GITHUB_BRANCH
   }
   if (sha) body.sha = sha
-  await fetch(url, {
+  const res = await fetch(url, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${GITHUB_TOKEN}`,
@@ -90,6 +90,10 @@ async function githubWrite(filePath: string, content: string, message: string): 
     },
     body: JSON.stringify(body)
   })
+  if (!res.ok) {
+    const errorBody = await res.text().catch(() => 'unknown')
+    throw new Error(`GitHub write failed [${res.status}] for ${filePath}: ${errorBody}`)
+  }
 }
 
 // ── PUBLIC API ───────────────────────────────────────────────

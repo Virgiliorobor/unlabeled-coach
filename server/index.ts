@@ -14,7 +14,7 @@ const PORT = parseInt(process.env.PORT || '3001')
 
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? process.env.CLIENT_URL || false
+    ? (process.env.CLIENT_URL || true)   // true = reflect origin; set CLIENT_URL to restrict to one domain
     : 'http://localhost:5173',
   credentials: true
 }))
@@ -59,6 +59,20 @@ async function start() {
     else console.log(`[startup] ✓ ${key}`)
   }
 
+  // Storage config diagnostics
+  const storageMode = process.env.STORAGE_MODE || 'local'
+  console.log(`[startup] Storage mode: ${storageMode}`)
+  if (storageMode === 'github') {
+    console.log(`[startup] GitHub repo: ${process.env.GITHUB_OWNER || '(MISSING)'}/${process.env.GITHUB_REPO || '(MISSING)'}`)
+    console.log(`[startup] GitHub branch: ${process.env.GITHUB_BRANCH || 'main'}`)
+    if (!process.env.GITHUB_TOKEN) console.error('[startup] MISSING: GITHUB_TOKEN — writes will fail')
+    else console.log('[startup] ✓ GITHUB_TOKEN')
+    if (!process.env.GITHUB_OWNER) console.error('[startup] MISSING: GITHUB_OWNER')
+    if (!process.env.GITHUB_REPO)  console.error('[startup] MISSING: GITHUB_REPO')
+  } else {
+    console.warn('[startup] ⚠ Storage mode is LOCAL — data will be lost on redeploy. Set STORAGE_MODE=github.')
+  }
+
   // Load user registry for scheduler
   loadUserRegistry([])
 
@@ -67,7 +81,6 @@ async function start() {
 
   app.listen(PORT, () => {
     console.log(`[server] Unlabeled running on port ${PORT}`)
-    console.log(`[server] Storage mode: ${process.env.STORAGE_MODE || 'local'}`)
     console.log(`[server] Environment: ${process.env.NODE_ENV || 'development'}`)
   })
 }
