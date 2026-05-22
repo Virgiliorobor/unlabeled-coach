@@ -48,6 +48,14 @@
     {
       "role": "assistant",
       "content": "I need a bit more than that to build your profile.\n\n**What did you do before you started building?** What was the actual work — the day-to-day of it — and how many years did you spend doing it?\n\nTake your time. I'm not looking for a title. I'm looking for what you actually did."
+    },
+    {
+      "role": "user",
+      "content": "I was in finance, i been doing company financial profile, i know how a company looks and how the inside of the numbers work i did this for 15 years and i still doing this"
+    },
+    {
+      "role": "assistant",
+      "content": "Fifteen years reading the inside of companies through their numbers. That's real expertise — you know what healthy looks like, what distressed looks like, what the story behind the financials actually is.\n\nAnd you're still doing it, which means you're building alongside the day job, not after leaving it.\n\n**What made you start building something on the side?** Was this a deliberate decision — you saw something you wanted to make — or did something push you toward it?"
     }
   ]
 }
