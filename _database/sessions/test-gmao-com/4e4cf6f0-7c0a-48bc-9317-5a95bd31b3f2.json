@@ -56,6 +56,14 @@
     {
       "role": "assistant",
       "content": "That's five words. Clear. No hedging.\n\nNow say it with yourself in it:\n\n\"I am ___.\"\n\nWhat's the sentence?"
+    },
+    {
+      "role": "user",
+      "content": "I am a consultant that fixes problems with ai"
+    },
+    {
+      "role": "assistant",
+      "content": "Good. That's a claim.\n\nNow I want to test it. Say that sentence out loud — actually say it, not just read it — and tell me what happens. Does it feel true? Does something resist it?"
     }
   ]
 }
