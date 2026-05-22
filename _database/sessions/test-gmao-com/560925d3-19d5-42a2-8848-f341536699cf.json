@@ -328,6 +328,14 @@
     {
       "role": "assistant",
       "content": "I'll take that as confirmation of what we surfaced.\n\n**Do you want to continue to Phase 2 now, or stop here and pick it up next session?**"
+    },
+    {
+      "role": "user",
+      "content": "stop"
+    },
+    {
+      "role": "assistant",
+      "content": "Good session.\n\n**Here's where we are:**\n\n- **Phase 0 (Interview):** Complete\n- **Phase 1 (Reflection):** Complete\n- **Next session:** Phase 2 — Clarity\n\n**What we surfaced today:**\n- The gap between wanting visibility and staying invisible\n- The fear protecting you isn't about the finance world or looking like a tech bro — it's about your friends judging you\n- Those friends aren't your future clients. You're hiding from the wrong people.\n- The version of yourself you'd actually share — the process, the real work — is already what you want to be. The only missing piece is saying it.\n\n**Between now and next session:**\nYou don't have to do anything. But if you find yourself thinking about what it would feel like to post one thing about the contractor tool build — even if you don't post it — notice what comes up.\n\nI'll be here when you're ready for Phase 2."
     }
   ]
 }
