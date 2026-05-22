@@ -232,6 +232,14 @@
     {
       "role": "assistant",
       "content": "**Phase 1 — Reflection**\n\nYou said your 30-day goal is for someone you don't know to notice your work and ask you to build something for them.\n\nYou also said the thing you keep meaning to do but keep not doing is publish — tell the world you're doing this.\n\n**What did you actually do this past week toward becoming visible?** Specific things, not intentions."
+    },
+    {
+      "role": "user",
+      "content": "nothing"
+    },
+    {
+      "role": "assistant",
+      "content": "Nothing. That's honest.\n\nSo the goal is visibility. The action is zero. And the reason you gave is: you don't want to look like an empty trend-follower on Instagram, and you don't want your finance circle challenging your work on LinkedIn.\n\n**Here's the contradiction I want to name:**\n\nYou want strangers to find you and ask you to build things. But you're invisible. The only way that goal happens is if you're not invisible anymore. Right now, you're protecting yourself from judgment by people who aren't your future clients anyway.\n\nThe finance people on LinkedIn — are they going to hire you to build AI tools? The Instagram audience you're afraid of looking like a tech bro to — are they the contractors and business owners who need what you built for your friend?\n\n**Who is actually the audience that would pay you to build things — and where are they?**"
     }
   ]
 }
