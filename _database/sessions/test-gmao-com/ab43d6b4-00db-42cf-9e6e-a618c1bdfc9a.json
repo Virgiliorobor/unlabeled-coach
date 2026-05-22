@@ -40,6 +40,14 @@
     {
       "role": "assistant",
       "content": "Good to have you back.\n\nLooking at your profile, we're still in the interview phase — I have some basic information but not enough to actually start coaching yet. We've had two sessions, and the profile is still mostly empty.\n\nBefore we go any further today, I need to finish building an accurate picture of where you actually are. Not the pitch version — the honest one.\n\nLet me start with the most basic question:\n\n**What did you do before this?** Not the LinkedIn version — what did the work actually involve, and how long did you do it?"
+    },
+    {
+      "role": "user",
+      "content": "lets start phase 2"
+    },
+    {
+      "role": "assistant",
+      "content": "I understand the impulse to move forward, but I can't coach you effectively without knowing who I'm talking to.\n\nYour profile is essentially blank — I don't know your background, what you're building, what your goals are, or what resistance patterns to watch for. Without that, any coaching I do is generic advice, not calibrated work.\n\nPhase 2 is about getting to one clear sentence about what you're making. I can't help you clarify something I don't know anything about yet.\n\nThe interview takes about 30 minutes. It's the foundation everything else builds on.\n\n**So — what did you do before this?** What was the actual work, and how long did you do it?"
     }
   ]
 }
