@@ -80,6 +80,14 @@
     {
       "role": "assistant",
       "content": "That's telling. Inside your finance world, you keep it quiet — there's real professional risk in being seen as the AI person when leadership is anxious about security. So you build in the shadows there.\n\nOutside, you're more open — helping friends, entering challenges. Two different versions of you depending on the audience.\n\n**Is there anything about the finance work you're glad to be done with — or ready to be done with? And anything you'd actually miss if you left it entirely?**"
+    },
+    {
+      "role": "user",
+      "content": "I dont mind leaving finance, i am a bit tired or boared, not about the work itself but about dealing with the politics inside a company and having to avoid developing new ideas, because the market might not be ready, the partners here want to be conservative and mantain the current status"
+    },
+    {
+      "role": "assistant",
+      "content": "That's clear. The work itself isn't the problem — it's the environment. The politics, the conservatism, the way new ideas get shut down because the partners want to protect what already exists.\n\nYou're building on the side partly because that's the only place you're allowed to actually build.\n\nLet me read back what I'm hearing about your background before we move on:\n\n**15 years in finance, doing company financial profiles — you understand how businesses work from the inside, what the numbers actually mean. Still doing it, but tired of the politics and the culture that blocks new ideas. You started building with AI to improve your own workflow, discovered you could make things, and now you're building solutions well beyond finance. You keep this quiet at work because of security anxiety from leadership. Outside work, you're more open — helping friends, entering challenges.**\n\nDoes that capture it accurately? Anything I've got wrong?"
     }
   ]
 }
