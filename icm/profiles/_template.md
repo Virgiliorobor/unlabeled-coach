@@ -57,11 +57,16 @@ calibration:
   resistance_pattern: ""            # perfectionist | imposter | validator_seeker | scope_expander | identity_anchor | visibility_avoider
   tone: ""                          # direct | structured | balanced
   oblique_subset: []                # array of card IDs from oblique-strategies.md (e.g. ["R1","R4","R7"])
+  behavioral_signals:
+    avoidance_language: []          # exact phrases they use when resisting (e.g. ["I'm not ready yet", "I need to figure out X first"])
+    engagement_triggers: []         # what made them visibly energized in session (e.g. ["talking about first users", "describing the build in plain terms"])
+    excuse_structure: ""            # their default excuse pattern: needs_more_info | not_ready_yet | wrong_time | waiting_for_external | scope_first
 
 # ── PROGRAM STATE ────────────────────────────────────────────
 # DB table: profiles
 program:
   current_phase: ""                 # interview | reflection | clarity | resistance | commitment | accountability
+  phase_started_at: ""              # ISO 8601 — when current phase began (used for time-gating)
   phase_history: []                 # array: [{phase: "", entered_at: "", completed_at: ""}]
   sessions_completed: 0             # integer
   last_session_date: ""             # ISO 8601
@@ -101,6 +106,36 @@ commitment_history: []
 # - ladder_rung: 0
 # - outcome_notes: ""       # what the builder said happened
 # - logged_at: ""
+
+# ── ACTION STEPS ─────────────────────────────────────────────
+# DB table: action_steps (one row per step, linked by user_id)
+# Action steps are coach-prescribed exercises, distinct from commitments.
+# Commitments are public acts. Action steps are private exercises to work through resistance.
+# They are assigned whenever a pattern or contradiction is named — not only in Phase 4.
+action_steps: []
+# Each entry:
+# - step_id: ""             # UUID
+# - text: ""                # exact instruction — specific enough to do without clarification
+# - assigned_at: ""         # ISO 8601
+# - due_date: ""            # ISO 8601 (typically 24-48 hours from assigned)
+# - status: ""              # pending | done | skipped
+# - coach_reason: ""        # why assigned: links to resistance pattern or contradiction surfaced
+# - completion_note: ""     # what the builder reported when they completed it (or why skipped)
+# - phase_assigned: ""      # which phase it was assigned in
+# - exercise_level: 0       # 1-5 — escalating exposure level (from resistance-patterns.md exercise library)
+
+# ── PUBLISHING LOG ───────────────────────────────────────────
+# DB table: publishing_log (one row per published item)
+# Evidence trail of what the builder has actually shipped publicly.
+# This is the most important counter to identity avoidance — visible proof of action.
+publishing_log: []
+# Each entry:
+# - log_id: ""              # UUID
+# - url: ""                 # link to published item (required)
+# - platform: ""            # linkedin | twitter | substack | community | email | blog | other
+# - published_at: ""        # ISO 8601
+# - commitment_id: ""       # which commitment this fulfills (empty if spontaneous)
+# - description: ""         # what was published — 1-2 sentences in the builder's words
 
 # ── NOTIFICATION PREFERENCES ─────────────────────────────────
 # DB table: notifications

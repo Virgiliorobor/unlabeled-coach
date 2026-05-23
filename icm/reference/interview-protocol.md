@@ -67,7 +67,7 @@ Tell the builder what's about to happen:
 
 ---
 
-### SECTION D — Resistance (4 questions)
+### SECTION D — Resistance (4 questions + 2 behavioral signal questions)
 
 **D1.** What's the thing you keep meaning to do but keep not doing? The specific task that appears on every week's list and never gets crossed off.
 
@@ -77,7 +77,13 @@ Tell the builder what's about to happen:
 
 **D4.** What's the version of yourself you're most afraid of becoming? And what's the version you're most afraid of admitting you want to be?
 
-*Profile fields updated: `calibration.resistance_pattern`, `calibration.dominant_lens`*
+**D5 (behavioral signal).** When you've avoided doing something you said you would do — on this project or any other — what do you usually tell yourself? What's your go-to reason?
+*(Listen for the exact words, not the summary. Record verbatim in `avoidance_language`. The pattern is in the phrasing: "I need to figure out X first" = needs_more_info. "It's not ready yet" = not_ready_yet. "The timing isn't right" = wrong_time.)*
+
+**D6 (behavioral signal).** What's the last thing about this project that genuinely excited you — where you felt like it actually could work?
+*(Record what specifically they describe — the use case, the user, the moment of clarity. This is the engagement trigger to return to when motivation drops in later sessions.)*
+
+*Profile fields updated: `calibration.resistance_pattern`, `calibration.dominant_lens`, `calibration.behavioral_signals.avoidance_language` (array), `calibration.behavioral_signals.engagement_triggers` (array), `calibration.behavioral_signals.excuse_structure`*
 
 ---
 
@@ -97,7 +103,32 @@ After completing all sections, read the profile back to the builder:
 
 > "Based on what you've told me, here's what I have: You came from [domain], [years] years. You're building [build description]. Your honest state is [state]. Your 30-day goal is [goal]. I'm seeing [resistance pattern] as the pattern most likely to slow you down, and you're leading with the [dominant lens] lens. Does this feel accurate? Is there anything I've got wrong?"
 
-Wait for confirmation or correction before proceeding to Phase 1.
+Wait for confirmation or correction before proceeding.
+
+---
+
+### FIRST ACTION STEP — assign immediately after profile confirmation
+
+The interview does not end with insight. It ends with a specific exercise. The builder should leave the intake session with one concrete thing to do in the next 24–48 hours. This is the first exercise in their resistance pattern sequence (Level 1).
+
+Assign based on their identified resistance pattern:
+
+| Resistance Pattern | First Exercise (Level 1) |
+|---|---|
+| perfectionist | Write an honest description of your build as it is right now — not what it will be, what it is today. One paragraph. Don't send it to anyone. |
+| imposter | List 5 things you know from your previous career that most builders don't know. Write them as statements of expertise — not qualifications, expertise. |
+| validator_seeker | Make one decision about your build today without asking anyone's opinion. It can be small. Write it down — what you decided and why. |
+| scope_expander | Write down the smallest version of your build that would be honest to show to one real person. What does it have, and what does it explicitly not have? |
+| identity_anchor | Write three sentences describing what you do, as if talking to a stranger who has never heard of your previous career. Use present tense. Don't qualify. |
+| visibility_avoider | Write the post you would publish about your current build if nobody you know professionally would ever see it. Don't publish it. Just write it. |
+
+Say to the builder:
+
+> "Before we next talk, I want you to do one thing: [exercise]. It should take 15–20 minutes. Don't overthink it — the point is to get something out of your head and into words. We'll start there next time."
+
+Then emit `[ACTION_STEP_OUTPUT]` with `exercise_level: 1` and a due date of 48 hours from now.
+
+Emit `[PROFILE_PATCHES]` advancing phase to `reflection` and setting `program.phase_started_at`.
 
 ---
 

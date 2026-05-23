@@ -9,6 +9,8 @@ In Phase 0, the resistance questions (Section D) reveal which pattern is most ac
 
 In Phase 3, name the pattern explicitly using the language in this file. Precision reduces the pattern's power. "You seem resistant to sharing" is not useful. "This is visibility avoidance — the work is ready but publishing it feels like submitting it for professional review, which is the standard you learned in [previous domain], and that standard doesn't apply here" is useful.
 
+**After naming the pattern, immediately assign the next exercise from this builder's exercise library.** Naming without prescribing is incomplete. Each pattern below includes a 5-level exercise library. Level 1 is assigned at the end of Phase 0. Levels advance one per completed session exercise. Do not skip levels — the escalation is intentional.
+
 The Oblique Strategies subset in `reference/oblique-strategies.md` is organized by pattern. Use the pattern to select cards.
 
 ---
@@ -31,6 +33,15 @@ The Oblique Strategies subset in `reference/oblique-strategies.md` is organized 
 
 **Oblique card subset:** R1, R4, R7, R12, R15
 
+**Exercise library — Perfectionist Hold:**
+| Level | Exercise |
+|---|---|
+| 1 | Write an honest description of your build as it is right now — not what it will be, what it is today. One paragraph. Don't send it to anyone. |
+| 2 | Read what you wrote back. Underline every word that softens or hedges ("kind of," "trying to," "eventually," "hoping to"). Rewrite the paragraph without those words. |
+| 3 | Write the email you would send to one potential user showing your current work. Explain what it does and what it doesn't do yet. Don't send it — write it. |
+| 4 | Send that email (or an updated version) to one real person. Tell them it's unfinished. Ask one specific question. |
+| 5 | Show your current work to a stranger — someone who isn't a friend and isn't from your old professional world. Post it in the Unlabeled community or share it publicly. |
+
 ---
 
 ## PATTERN 2 — IMPOSTER ANCHOR
@@ -51,6 +62,15 @@ The Oblique Strategies subset in `reference/oblique-strategies.md` is organized 
 > "You have 12 years of [domain] experience that most technically trained builders don't have and can't get quickly. You're using the gap in your technical knowledge — which is real and normal for someone two years into learning this — as evidence that the whole thing is illegitimate. Those aren't the same thing. What you don't know yet is learnable. What you already know is not learnable quickly."
 
 **Oblique card subset:** R2, R5, R9, R11, R16
+
+**Exercise library — Imposter Anchor:**
+| Level | Exercise |
+|---|---|
+| 1 | List 5 things you know from your previous career that most builders don't know. Write them as statements of expertise — not qualifications, expertise. ("I know how to read a contract for risk." Not "I have a law degree.") |
+| 2 | Write one paragraph about your current build using only your domain expertise. No technical language. No mention of AI or code. What does your background tell you about the problem you're solving that others would miss? |
+| 3 | Tell someone (in writing, not live) what you're building — without apologizing for your technical level or qualifying your experience. Lead with what you know, not what you're learning. |
+| 4 | Publish one insight from your domain applied to your build. Frame it as expertise — because it is. No mention of what you don't know yet. |
+| 5 | Introduce yourself to one new person using your domain expertise and your build together as one identity. Not "former X, now trying to build Y." Just: "I build [thing] for [people] using [expertise]." |
 
 ---
 
@@ -73,6 +93,15 @@ The Oblique Strategies subset in `reference/oblique-strategies.md` is organized 
 
 **Oblique card subset:** R3, R6, R10, R13, R17
 
+**Exercise library — Validator Seeker:**
+| Level | Exercise |
+|---|---|
+| 1 | Make one decision about your build today without asking anyone's opinion. It can be small — a name, a feature to cut, a user to target. Write it down: what you decided and why. |
+| 2 | Write down the next three steps for your build. Share them with no one. Set a deadline for step 1 and execute it before the next session. |
+| 3 | Ship one small thing — a page, a message, a post — without getting anyone's feedback first. Document what happened when you did it without a validator. |
+| 4 | Tell one person a decision you've already made and a deadline you've already set — not to get their opinion, but to tell them what you're doing. Notice the difference between sharing and seeking approval. |
+| 5 | Publish your next decision publicly before you know if it's the right one. Post: "I've decided to [X] by [date]. Here's why." Then do it. |
+
 ---
 
 ## PATTERN 4 — SCOPE EXPANDER
@@ -93,6 +122,15 @@ The Oblique Strategies subset in `reference/oblique-strategies.md` is organized 
 > "You've added [number] things to the launch criteria in the last [timeframe]. Each one was reasonable in isolation. Collectively they've moved the launch date [far]. The version in your head is not the version that needs to ship — it's the version that needs to exist eventually. Those are different things. What is the smallest version of this that would be honest to show to one real person?"
 
 **Oblique card subset:** R4, R7, R8, R14, R18
+
+**Exercise library — Scope Expander:**
+| Level | Exercise |
+|---|---|
+| 1 | Write your current build in one sentence. What exists right now, as it actually is? Not what it will have — what it has. |
+| 2 | List everything that is NOT in this version. Mark each item: does this need to exist before one real person can use what you have today? Anything marked "no" is not a launch blocker. |
+| 3 | Set a hard freeze: for 7 days, no new features, no scope changes, no architecture rethinking. Write down exactly what ships at the end of those 7 days. Commit to it here. |
+| 4 | Show the current frozen version to one real potential user — however incomplete — and ask only: "Does this solve your problem?" Listen to the answer without explaining what's coming. |
+| 5 | Ship the frozen version. Publish that you shipped it. Name one thing it doesn't do yet — and post that too. |
 
 ---
 
@@ -115,6 +153,15 @@ The Oblique Strategies subset in `reference/oblique-strategies.md` is organized 
 
 **Oblique card subset:** R1, R5, R9, R15, R19
 
+**Exercise library — Identity Anchor:**
+| Level | Exercise |
+|---|---|
+| 1 | Write three sentences describing what you do, as if talking to a stranger who has never heard of your previous career. Use present tense. Don't qualify. Don't mention the old title. |
+| 2 | Say out loud — or write — what you're working on to one person in your life who knew you in your previous career. Don't use the old title as a reference point. Notice what you feel compelled to add or explain. |
+| 3 | Write a one-paragraph bio that leads with what you're building and what you know, not where you came from. Your previous domain appears only if it directly explains why you're the right person to build this. |
+| 4 | Use that bio somewhere real — a profile, a community introduction, a message to someone new. Your name is on it. Your previous title is not the headline. |
+| 5 | Introduce yourself to one new person in a professional context using only the new identity. If they ask about your background, answer in one sentence and return to what you're building. |
+
 ---
 
 ## PATTERN 6 — VISIBILITY AVOIDER
@@ -135,3 +182,12 @@ The Oblique Strategies subset in `reference/oblique-strategies.md` is organized 
 > "There's a real difference between performing building and sharing building. You're not being asked to do content about productivity. You're being asked to say, once, in plain language, what you made and what you learned. That's not self-promotion — it's evidence. The people who would benefit from what you're building can't find it if it's invisible. Your discomfort with visibility is costing them access to something they might actually need."
 
 **Oblique card subset:** R2, R6, R11, R16, R20
+
+**Exercise library — Visibility Avoider:**
+| Level | Exercise |
+|---|---|
+| 1 | Write the post you would publish about your current build if nobody you know professionally would ever see it. Don't publish it. Just write it — completely, as if it were going live. |
+| 2 | Read what you wrote. Remove every disclaimer, hedge, or apology ("I know this is rough," "still figuring this out," "not sure if anyone cares"). What's left when you strip the protection? |
+| 3 | Share the stripped version privately with one person — someone from the Unlabeled community or a trusted peer outside your professional network. Ask: "Does this sound like content, or does it sound like something real?" |
+| 4 | Post it in a small, safe space — the Unlabeled community, a private Slack, a small group you trust. Real publication, minimal professional exposure. Note what happens in the 24 hours after. |
+| 5 | Post it where it has professional visibility — LinkedIn, a public blog, your network. The work is the same work you wrote in Exercise 1. The only thing that changed is the audience. |
