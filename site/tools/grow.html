@@ -126,9 +126,33 @@
       margin: 0;
     }
 
+    /* reveal prompt — shown after transform completes */
+    .reveal-prompt {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.4s ease;
+      white-space: nowrap;
+    }
+    .reveal-prompt.visible { opacity: 1; }
+    .reveal-prompt p {
+      font-family: 'EB Garamond', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: rgba(17,17,17,0.38);
+      margin: 0;
+      letter-spacing: 0.01em;
+    }
+
     @media (max-width: 600px) {
       .sep { display: none; }
       .status { display: none; }
+      .reveal-prompt { bottom: 16px; }
+      .reveal-prompt p { font-size: 0.95rem; }
     }
   </style>
 </head>
@@ -158,6 +182,10 @@
   <p>Draw lines with your mouse or finger.</p>
   <p>Add color seeds with Color mode.</p>
   <p>Then Transform.</p>
+</div>
+
+<div class="reveal-prompt" id="revealPrompt">
+  <p id="revealText"></p>
 </div>
 
 <script>
@@ -324,6 +352,28 @@ function erase(p) {
 }
 
 // ── Clear ─────────────────────────────────────────────────────────
+const REVEAL_PROMPTS = [
+  'What do you see now?',
+  'Your pattern was already in there.',
+  'Look longer. Something is emerging.',
+  'The form chose itself.',
+  'What did it want to become?',
+  'It was always this.',
+  'What shape does your work want to take?',
+  'The chaos had a plan.',
+]
+
+function showReveal() {
+  const el = document.getElementById('revealPrompt')
+  const txt = document.getElementById('revealText')
+  txt.textContent = REVEAL_PROMPTS[Math.floor(Math.random() * REVEAL_PROMPTS.length)]
+  el.classList.add('visible')
+}
+
+function hideReveal() {
+  document.getElementById('revealPrompt').classList.remove('visible')
+}
+
 function doClear() {
   if (animId) cancelAnimationFrame(animId)
   strokes = []; seeds = []; didAnything = false; transformed = false
@@ -334,6 +384,7 @@ function doClear() {
   document.getElementById('intro').classList.remove('gone')
   document.getElementById('bSave').style.display = 'none'
   document.getElementById('bXform').textContent = 'Transform'
+  hideReveal()
   mode('draw')
   setStatus('draw something')
 }
@@ -462,6 +513,7 @@ function doTransform() {
   transformed = true
   document.getElementById('bXform').textContent = 'Regenerate'
   document.getElementById('bSave').style.display = 'none'
+  hideReveal()
   clearSeedDots()
 
   // Geometry
@@ -622,6 +674,7 @@ function doTransform() {
       renderMandala(xFx, 1, .85)
       renderRibs(xFx, 1, .88)
       document.getElementById('bSave').style.display = ''
+      setTimeout(showReveal, 600)
       return
     }
 
