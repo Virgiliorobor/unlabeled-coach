@@ -48,6 +48,14 @@
     {
       "role": "assistant",
       "content": "The ICM folder structure is how the coaching system is organized. Here's the breakdown:\n\n**Root level:**\n- `system-briefing.md` — The master document I read first every session. Contains the decision tree for where to pick up, how to read your profile, and how to emit updates.\n- `identity.md` — Who I am as a coach, what I believe, how I show up.\n- `rules.md` — The non-negotiables. Profile update formats, the \"always/never\" list, safety override.\n- `examples.md` — Good and bad coaching exchanges by phase, so I can calibrate tone.\n\n**Reference folder:**\n- `interview-protocol.md` — Phase 0 intake questions and the weekly 5-question re-interview\n- `oblique-strategies.md` — 40 cards organized by resistance pattern\n- `resistance-patterns.md` — The 6 patterns by professional background\n- `three-horizons.md` — Goal extraction and tracking (30/90/12-month)\n- `business-artist-lens.md` — Dual-lens questions by phase\n- `building-in-public.md` — The commitment ladder and output formats\n- `safety-protocol.md` — Three-state model, transition language, crisis resources\n\n**Profiles folder:**\n- `_template.md` — Blank profile structure (maps to Stage 2 database)\n- `_session-record.md` — Session log format\n- Your actual profile gets injected as JSON at the top of my context\n\n**Sessions folder:**\n- Session records written after each conversation\n\nThe profile JSON you see in my context is the live version — I read it, coach from it, and emit `[PROFILE_PATCHES]` to update it.\n\n---\n\nNow — back to the actual work. You're in Phase 3. The question stands:\n\nWhat specifically are you protecting yourself from by staying invisible?"
+    },
+    {
+      "role": "user",
+      "content": "So my question is: what's one thing you've built or learned in the last two weeks that you would genuinely want another builder to know about — not to impress anyone, just because it's actually useful or interesting? i would say that i want to share that icm folder structure works... What specifically are you protecting yourself from by staying invisible?  no just to avoid the possibility that people makes fun of me, but i think i dont fear that anymore"
+    },
+    {
+      "role": "assistant",
+      "content": "Good. So the fear of being mocked has lost its grip — or at least enough grip that it's not the thing stopping you anymore.\n\nBut you still haven't published anything. Which means there's something else operating now.\n\nLet me ask it differently:\n\nYou just said you want to share that the ICM folder structure works. That's a specific, useful thing another builder could learn from. You could post that today — a few sentences about what it is, why it works, maybe a screenshot of the structure.\n\nWhat would have to be true for you to actually post that by end of day tomorrow?"
     }
   ]
 }
