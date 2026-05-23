@@ -50,7 +50,13 @@ async function processUser(slug: string): Promise<void> {
   const profile = await readProfile(slug)
   if (!profile) return
 
-  const { notifications, active_commitment } = profile
+  const { notifications } = profile
+
+  // Find any active commitment across all goals
+  const goalWithCommitment = (profile.goals || []).find(
+    g => g.active_commitment && g.active_commitment.status === 'active'
+  )
+  const active_commitment = goalWithCommitment?.active_commitment || null
 
   // ── Daily signal ──────────────────────────────────────────
   if (
@@ -80,12 +86,12 @@ async function processUser(slug: string): Promise<void> {
       active_commitment.daily_reminders.current_day = day + 1
 
       // Auto-flag as missed if day 7 passed with no update
-      if (day === 7) {
+      if (day === 7 && goalWithCommitment) {
         const dueDate = new Date(active_commitment.due_date)
         if (new Date() > dueDate && active_commitment.status === 'active') {
           active_commitment.status = 'missed'
-          // Move to history
-          profile.commitment_history.push({
+          if (!goalWithCommitment.commitment_history) goalWithCommitment.commitment_history = []
+          goalWithCommitment.commitment_history.push({
             commitment_id: active_commitment.commitment_id,
             text: active_commitment.text,
             declared_at: active_commitment.declared_at,
@@ -95,11 +101,10 @@ async function processUser(slug: string): Promise<void> {
             outcome_notes: 'Auto-flagged as missed — no update received after day 7',
             logged_at: new Date().toISOString()
           })
-          profile.active_commitment = null
+          goalWithCommitment.active_commitment = null
         }
       }
 
-      profile.active_commitment = active_commitment
       await writeProfile(profile)
     }
   }

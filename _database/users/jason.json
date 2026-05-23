@@ -17,26 +17,7 @@
     "shipped": [],
     "target_user": ""
   },
-  "goals": {
-    "thirty_days": {
-      "text": "",
-      "status": "active",
-      "set_at": "2026-05-23T18:51:25.672Z",
-      "last_referenced": "2026-05-23T18:51:25.672Z"
-    },
-    "ninety_days": {
-      "text": "",
-      "status": "active",
-      "set_at": "2026-05-23T18:51:25.672Z",
-      "last_referenced": "2026-05-23T18:51:25.672Z"
-    },
-    "twelve_months": {
-      "text": "",
-      "status": "active",
-      "set_at": "2026-05-23T18:51:25.672Z",
-      "last_referenced": "2026-05-23T18:51:25.672Z"
-    }
-  },
+  "goals": [],
   "calibration": {
     "dominant_lens": "split",
     "resistance_pattern": "",
@@ -49,15 +30,10 @@
     }
   },
   "program": {
-    "current_phase": "interview",
-    "phase_started_at": "2026-05-23T18:51:25.672Z",
-    "phase_history": [],
+    "initial_interview_done": false,
     "sessions_completed": 1,
     "last_session_date": "2026-05-23T20:36:47.895Z"
   },
-  "active_commitment": null,
-  "commitment_history": [],
-  "action_steps": [],
   "publishing_log": [],
   "notifications": {
     "email": "jaime.rob@gmail.com",

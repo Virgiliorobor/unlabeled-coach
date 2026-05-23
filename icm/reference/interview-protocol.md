@@ -1,23 +1,23 @@
 # UNLABELED — Interview Protocol
-> Phase 0 (intake) and weekly re-interview questions. The coach reads this before interviewing.
+> PART 1: Person intake (once, ever). PART 2: Goal intake (per goal, repeated). PART 3: Weekly re-interview.
 
 ---
 
-## PHASE 0 — THE INTAKE INTERVIEW
-*One session, approximately 30 minutes. Run when no profile exists.*
+## PART 1 — PERSON INTAKE
+*Run once when `program.initial_interview_done` is false. Approximately 20 minutes. Establishes the person's calibration — background, resistance pattern, lens, behavioral signals. Goals are added separately in Part 2.*
 
 ### Purpose
-Build an accurate profile. Not the pitch version — the real version. The profile determines:
-- Which lens the coach leads with
-- Which resistance pattern to watch for
-- What the actual goals are across three time horizons
-- How direct or structured the tone should be
-- Which Oblique Strategies cards to prioritize
+Build an accurate calibration of who this person is. Not the pitch version — the real version. This determines:
+- Which resistance pattern the coach watches for (constant across all goals)
+- Which lens the coach leads with (person-level, not goal-specific)
+- Behavioral signals that appear when the pattern is active
+- Tone calibration (direct / structured / balanced)
+
+Goals are NOT set during person intake. Goals are added per goal intake (Part 2), which runs immediately after Part 1 completes.
 
 ### Before you start
-Tell the builder what's about to happen:
 
-> "Before we do anything else, I want to spend 30 minutes getting an accurate picture of where you actually are — not the elevator pitch version, the honest one. I'll ask about your background, what you're building, and what you actually want. From that I'll build a profile that shapes how I coach you. There are no right answers. The less polished your answers are, the more useful this will be."
+> "Before we do anything else, I want to spend 20 minutes getting an accurate picture of who you are and what you're up against — not the elevator pitch version, the honest one. I'll ask about your background, what you're building, and what typically gets in your way. From that I'll calibrate how I coach you. There are no right answers. The less polished your answers are, the more useful this will be. Goals come after this — first I want to understand the person."
 
 ---
 
@@ -37,7 +37,7 @@ Tell the builder what's about to happen:
 
 ---
 
-### SECTION B — The Build (6 questions)
+### SECTION B — The Build (5 questions)
 
 **B1.** What are you building? Describe it as it actually is right now — not what it will be, what it is today.
 
@@ -47,23 +47,9 @@ Tell the builder what's about to happen:
 
 **B4.** Who is this for? Not the target market — one specific person who would actually use this. Do they know it exists?
 
-**B5.** What would it mean, specifically, if this worked? What does success look like for you — not the version you'd say in a pitch, the version you'd feel?
-
-**B6.** What do you spend most of your building time on? If I looked at your last two weeks, what would I actually see?
+**B5.** What would it mean, specifically, if this worked? Not the version you'd say in a pitch — the version you'd feel.
 
 *Profile fields updated: `build.name`, `build.description`, `build.state`, `build.shipped`, `build.target_user`*
-
----
-
-### SECTION C — Goals (3 questions)
-
-**C1.** What do you want to have done 30 days from now? Not a milestone you think you should want — the thing you actually want to be able to say happened.
-
-**C2.** 90 days from now, what would make this feel like it's working? Not perfection — the first real signal that this is real.
-
-**C3.** 12 months from now, what does your life look like if this goes the way you actually hope it does?
-
-*Profile fields updated: `goals.thirty_days`, `goals.ninety_days`, `goals.twelve_months`*
 
 ---
 
@@ -78,10 +64,10 @@ Tell the builder what's about to happen:
 **D4.** What's the version of yourself you're most afraid of becoming? And what's the version you're most afraid of admitting you want to be?
 
 **D5 (behavioral signal).** When you've avoided doing something you said you would do — on this project or any other — what do you usually tell yourself? What's your go-to reason?
-*(Listen for the exact words, not the summary. Record verbatim in `avoidance_language`. The pattern is in the phrasing: "I need to figure out X first" = needs_more_info. "It's not ready yet" = not_ready_yet. "The timing isn't right" = wrong_time.)*
+*(Listen for the exact words, not the summary. Record verbatim in `avoidance_language`. The pattern is in the phrasing.)*
 
 **D6 (behavioral signal).** What's the last thing about this project that genuinely excited you — where you felt like it actually could work?
-*(Record what specifically they describe — the use case, the user, the moment of clarity. This is the engagement trigger to return to when motivation drops in later sessions.)*
+*(Record what specifically they describe — the use case, the user, the moment of clarity. This is the engagement trigger to return to when motivation drops.)*
 
 *Profile fields updated: `calibration.resistance_pattern`, `calibration.dominant_lens`, `calibration.behavioral_signals.avoidance_language` (array), `calibration.behavioral_signals.engagement_triggers` (array), `calibration.behavioral_signals.excuse_structure`*
 
@@ -99,19 +85,82 @@ Tell the builder what's about to happen:
 
 ### PROFILE CONFIRMATION
 
-After completing all sections, read the profile back to the builder:
+After completing all sections, read the calibration back:
 
-> "Based on what you've told me, here's what I have: You came from [domain], [years] years. You're building [build description]. Your honest state is [state]. Your 30-day goal is [goal]. I'm seeing [resistance pattern] as the pattern most likely to slow you down, and you're leading with the [dominant lens] lens. Does this feel accurate? Is there anything I've got wrong?"
+> "Based on what you've told me, here's what I have: You came from [domain], [years] years. You're building [build description]. I'm seeing [resistance pattern] as the pattern most likely to slow you down, and you're leading with the [dominant lens] lens. Does this feel accurate? Is there anything I've got wrong?"
 
-Wait for confirmation or correction before proceeding.
+Wait for confirmation or correction. Then emit:
+
+```
+[PROFILE_PATCHES]
+[{"field_path": "program.initial_interview_done", "value": true}]
+[/PROFILE_PATCHES]
+```
+
+Then transition immediately to GOAL INTAKE (Part 2) for their first goal.
 
 ---
 
-### FIRST ACTION STEP — assign immediately after profile confirmation
+## PART 2 — GOAL INTAKE
+*Run immediately after person intake (for the first goal), and whenever the builder names a new goal in any session. Approximately 10 minutes per goal. Creates a Goal object in `goals[]`.*
 
-The interview does not end with insight. It ends with a specific exercise. The builder should leave the intake session with one concrete thing to do in the next 24–48 hours. This is the first exercise in their resistance pattern sequence (Level 1).
+### When to run goal intake
 
-Assign based on their identified resistance pattern:
+- Immediately after person intake completes (first goal)
+- When the builder mentions a new goal or project they want to work on
+- When a goal is marked completed and the builder wants to name what's next
+- When the builder explicitly asks to add a goal
+
+### Before you start
+
+> "Now let's get specific about what you're actually working toward. I want to understand this goal — not the long-term vision, the thing in front of you right now. Five questions."
+
+---
+
+### SECTION G — Goal Intake (5 questions)
+
+**G1.** What is this goal, specifically? Describe it as it actually is — not the polished version, the real version. What would you be doing or having done when it's complete?
+
+**G2.** What would "done" look like? Not perfectly done — the version where you could honestly say this goal is behind you. What's different about your life or work at that point?
+
+**G3.** What's the first thing stopping you on this goal right now? Not in general — specifically on this goal. What's the most immediate thing between you and the next step?
+
+**G4.** Which time horizon does this feel like — 30 days, 90 days, 12 months, or ongoing? Pick the one that feels honest, not ambitious.
+
+**G5.** What's the smallest real step you could take on this goal this week — not a planning step, an actual step? Something that would move the goal itself.
+
+---
+
+### After goal intake
+
+1. Synthesize G1 and G2 into a title (3–6 words) and description (1–2 sentences). Read them back:
+> "I'd describe this goal as: [title]. [description]. Does that capture it?"
+
+2. Confirm the horizon from G4.
+
+3. Emit `[GOAL_OUTPUT]` to create the goal:
+```
+[GOAL_OUTPUT]
+{
+  "title": "Ship consulting landing page",
+  "description": "A page explaining the AI operations consulting offer — what I do, what I've shipped, what an engagement looks like.",
+  "horizon": "thirty_days",
+  "phase": "intake"
+}
+[/GOAL_OUTPUT]
+```
+
+4. Advance the goal to reflection immediately (intake → reflection is allowed same session):
+```
+[GOAL_PATCHES]
+[
+  {"goal_id": "__new_goal__", "field": "phase", "value": "reflection"},
+  {"goal_id": "__new_goal__", "field": "phase_started_at", "value": "2026-05-23T00:00:00.000Z"}
+]
+[/GOAL_PATCHES]
+```
+
+5. Assign the first action step — the Level 1 exercise for their resistance pattern (from `reference/resistance-patterns.md`):
 
 | Resistance Pattern | First Exercise (Level 1) |
 |---|---|
@@ -123,16 +172,13 @@ Assign based on their identified resistance pattern:
 | visibility_avoider | Write the post you would publish about your current build if nobody you know professionally would ever see it. Don't publish it. Just write it. |
 
 Say to the builder:
-
 > "Before we next talk, I want you to do one thing: [exercise]. It should take 15–20 minutes. Don't overthink it — the point is to get something out of your head and into words. We'll start there next time."
 
-Then emit `[ACTION_STEP_OUTPUT]` with `exercise_level: 1` and a due date of 48 hours from now.
-
-Emit `[PROFILE_PATCHES]` advancing phase to `reflection` and setting `program.phase_started_at`.
+6. Emit `[ACTION_STEP_OUTPUT]` with `goal_id: "__new_goal__"` and `exercise_level: 1`, due date 48 hours from now.
 
 ---
 
-## WEEKLY RE-INTERVIEW
+## PART 3 — WEEKLY RE-INTERVIEW
 *5 questions. Run at the start of every session when `re_interview_due` is today or past.*
 
 The weekly check-in is not a full intake. It takes 10 minutes. Its job is to catch what has changed and update the calibration before the session begins.
@@ -144,7 +190,7 @@ The weekly check-in is not a full intake. It takes 10 minutes. Its job is to cat
 
 **W1.** What's changed since we last talked — in the build, in your life, or in how you're feeling about the project?
 
-**W2.** Your 30-day goal was [goal from profile]. Is that still the right goal, or has something shifted?
+**W2.** You have [N] active goals right now: [list titles and horizons]. Which one feels most urgent? Has anything shifted in how you see any of them?
 
 **W3.** What did you actually do on the project this week? Specific things, not intentions.
 
@@ -156,9 +202,10 @@ The weekly check-in is not a full intake. It takes 10 minutes. Its job is to cat
 
 ### After the check-in
 
-1. Update `re_interview_due` to today + 7 days
-2. Update any changed profile fields (goals, build state, resistance pattern shift)
-3. Note changes in `coach_notes` with date
-4. Resume session from current phase
+1. Update `re_interview_due` to today + 7 days (via PROFILE_PATCHES: `re_interview_due`)
+2. Update any changed person-level fields (calibration updates if pattern has shifted, build state)
+3. If a goal's description has changed, update via GOAL_PATCHES
+4. Note changes in `coach_notes`
+5. Resume session from the most recently touched active goal
 
-If W5 produces a low-energy response, apply safety state awareness before proceeding. An honest "going through the motions" is not a crisis signal — it's a coaching signal. Ask what's underneath it before advancing.
+If W5 produces a low-energy response, apply safety state awareness before proceeding. An honest "going through the motions" is a coaching signal. Ask what's underneath it.

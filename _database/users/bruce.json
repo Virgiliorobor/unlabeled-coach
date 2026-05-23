@@ -23,26 +23,153 @@
     "target_user": "Operations director at a mid-size manufacturer losing $50k+ per month on unplanned downtime with no systematic visibility into why"
   },
 
-  "goals": {
-    "thirty_days": {
-      "text": "Have one real conversation with an operations director at a company I don't currently work for — no pitch, just ask about their downtime problem and listen",
+  "goals": [
+    {
+      "goal_id": "g-30d-bruce-001",
+      "title": "First real external conversation",
+      "description": "Have one real conversation with an operations director at a company I don't currently work for — no pitch, just ask about their downtime problem and listen.",
+      "horizon": "thirty_days",
+      "phase": "commitment",
+      "phase_started_at": "2026-05-20T14:00:00.000Z",
+      "phase_history": [
+        {"phase": "intake", "entered_at": "2026-05-14T09:00:00.000Z", "completed_at": "2026-05-14T10:30:00.000Z"},
+        {"phase": "reflection", "entered_at": "2026-05-14T10:30:00.000Z", "completed_at": "2026-05-17T11:00:00.000Z"},
+        {"phase": "clarity", "entered_at": "2026-05-17T11:00:00.000Z", "completed_at": "2026-05-19T09:00:00.000Z"},
+        {"phase": "resistance", "entered_at": "2026-05-19T09:00:00.000Z", "completed_at": "2026-05-20T14:00:00.000Z"}
+      ],
+      "added_at": "2026-05-14T09:00:00.000Z",
+      "last_touched": "2026-05-22T09:15:00.000Z",
       "status": "active",
-      "set_at": "2026-05-15T09:00:00.000Z",
-      "last_referenced": "2026-05-22T09:00:00.000Z"
+      "action_steps": [
+        {
+          "step_id": "s1a2b3c4-d5e6-f789-0abc-def123456780",
+          "goal_id": "g-30d-bruce-001",
+          "text": "Write three sentences describing what you do, as if talking to a stranger who has never heard of your previous career. Use present tense. Don't qualify. Don't mention plant manager.",
+          "assigned_at": "2026-05-14T10:30:00.000Z",
+          "due_date": "2026-05-16T23:59:00.000Z",
+          "status": "done",
+          "coach_reason": "identity_anchor pattern active — first exercise establishes present-tense identity without the old title as a crutch",
+          "completion_note": "Took me 20 minutes. First 5 attempts all started with 'I used to be...' or 'I come from...' Finally got to: 'I build AI systems that predict and prevent unplanned downtime in manufacturing plants. I've deployed two systems that are running live right now. I'm doing this for other companies.' Felt uncomfortable to write. Also felt true.",
+          "phase_assigned": "reflection",
+          "exercise_level": 1
+        },
+        {
+          "step_id": "s2b3c4d5-e6f7-8901-bcde-f01234567891",
+          "goal_id": "g-30d-bruce-001",
+          "text": "Write one paragraph about your current build using only your domain expertise — no technical language, no mention of AI or code. What does your 22 years on the floor tell you about the problem you're solving that most people selling to manufacturing would miss?",
+          "assigned_at": "2026-05-17T11:00:00.000Z",
+          "due_date": "2026-05-19T23:59:00.000Z",
+          "status": "done",
+          "coach_reason": "identity_anchor level 2 — shift from 'I'm not technical enough' to 'my floor knowledge is the product'",
+          "completion_note": "Easier than expected once I stopped trying to sound like a developer. Wrote about how shift supervisors don't trust dashboard data they didn't generate themselves, and why every AI tool for manufacturing fails if it doesn't account for the 2am culture on a plant floor. That's not something you learn from a laptop.",
+          "phase_assigned": "clarity",
+          "exercise_level": 2
+        },
+        {
+          "step_id": "s3c4d5e6-f7a8-9012-cdef-012345678902",
+          "goal_id": "g-30d-bruce-001",
+          "text": "Write a one-paragraph bio that leads with what you're building and what you know — not where you came from. Your 22 years appears only if it directly explains why you're the right person to build this. Then post it in the Unlabeled community.",
+          "assigned_at": "2026-05-19T09:00:00.000Z",
+          "due_date": "2026-05-21T23:59:00.000Z",
+          "status": "done",
+          "coach_reason": "identity_anchor level 3 — real publication in a safe space, bio leads with the build not the title",
+          "completion_note": "Posted it. Someone in the community replied asking if I'd talked to companies in automotive tier 1. First time anyone external has shown interest. The bio that led with 'I build AI systems for manufacturing operations' got a response. The seven bios I wrote that started with 'Former plant manager' got nothing because I never sent them.",
+          "phase_assigned": "resistance",
+          "exercise_level": 3
+        },
+        {
+          "step_id": "s4d5e6f7-a8b9-0123-defa-123456789013",
+          "goal_id": "g-30d-bruce-001",
+          "text": "Use the bio in a real introduction. Find one operations director or plant manager on LinkedIn you don't know personally. Send them the bio — not as a pitch, as an introduction. 'I build X for Y. Thought it might be relevant to what you're working on.' That's it. No ask.",
+          "assigned_at": "2026-05-22T09:15:00.000Z",
+          "due_date": "2026-05-25T23:59:00.000Z",
+          "status": "pending",
+          "coach_reason": "identity_anchor level 4 — first use of the new identity in a direct professional interaction outside a safe space",
+          "completion_note": "",
+          "phase_assigned": "commitment",
+          "exercise_level": 4
+        }
+      ],
+      "active_commitment": {
+        "commitment_id": "c1d2e3f4-a5b6-7890-cdef-123456789abc",
+        "text": "Post a 3-sentence description of the downtime tracking system on LinkedIn — what it does, the result (23% reduction in unplanned downtime), and that I am now available to build this for other manufacturers. By Thursday May 28.",
+        "declared_at": "2026-05-22T09:15:00.000Z",
+        "due_date": "2026-05-28T23:59:00.000Z",
+        "status": "active",
+        "ladder_rung": 5,
+        "public_platform": "linkedin",
+        "share_post": "Built an AI alert system for our plant floor 6 months ago. Machine states tracked in real time, shift supervisors get a Telegram message before a failure cascades. Result: 23% reduction in unplanned downtime. I'm now available to build this for other manufacturers. If you're losing shifts to equipment failures you didn't see coming, let's talk.",
+        "print_card": "Post the downtime system on LinkedIn by Thursday May 28. — May 22, 2026",
+        "daily_reminders": {
+          "day_1": "You have the 23% number. You have the live system. What's the first sentence?",
+          "day_2": "Have you drafted the post yet? The shift supervisor story is in there — use it.",
+          "day_3": "What's stopping you from posting the draft you already have?",
+          "day_4": "Someone on a plant floor right now is dealing with the exact problem your system solves. They can't find you if this isn't posted.",
+          "day_5": "Thursday is tomorrow. What version could you post in the next hour?",
+          "day_6": "Today. What time are you posting?",
+          "day_7": "Did you post it? What happened in the first 24 hours?",
+          "current_day": 2,
+          "started_at": "2026-05-22T09:15:00.000Z"
+        }
+      },
+      "commitment_history": [
+        {
+          "commitment_id": "a1b2c3d4-e5f6-7890-abcd-ef0987654321",
+          "text": "Post in the Unlabeled community — describe the quality escape classifier: what it does, how it works, what changed on the line. Three sentences. By May 20.",
+          "declared_at": "2026-05-17T11:00:00.000Z",
+          "due_date": "2026-05-20T23:59:00.000Z",
+          "status": "done",
+          "ladder_rung": 3,
+          "outcome_notes": "Did it. Posted Tuesday night. Three people responded within 24 hours. One asked if I'd worked with food manufacturing. I realized I'd been sitting on this for months for no reason. The fear was bigger than the actual risk.",
+          "logged_at": "2026-05-21T08:00:00.000Z"
+        },
+        {
+          "commitment_id": "b2c3d4e5-f6a7-8901-bcde-f01234567890",
+          "text": "Send my new bio to one person from my professional network — not a friend, someone I respect but don't know well. Just the bio, no ask. By May 18.",
+          "declared_at": "2026-05-15T10:00:00.000Z",
+          "due_date": "2026-05-18T23:59:00.000Z",
+          "status": "missed",
+          "ladder_rung": 2,
+          "outcome_notes": "Didn't do it. Kept rewriting the bio. Got to version 7. None of them felt right. Classic — the identity anchor pattern doing exactly what the coach said it would. The bio wasn't the problem.",
+          "logged_at": "2026-05-19T09:00:00.000Z"
+        }
+      ]
     },
-    "ninety_days": {
-      "text": "Close one paid engagement outside my current employer — an AI operations audit for a manufacturer, $5,000 to $15,000. Doesn't have to be perfect. Has to be real.",
+    {
+      "goal_id": "g-90d-bruce-001",
+      "title": "First paid engagement",
+      "description": "Close one paid engagement outside my current employer — an AI operations audit for a manufacturer, $5,000 to $15,000. Doesn't have to be perfect. Has to be real.",
+      "horizon": "ninety_days",
+      "phase": "reflection",
+      "phase_started_at": "2026-05-14T10:30:00.000Z",
+      "phase_history": [
+        {"phase": "intake", "entered_at": "2026-05-14T09:00:00.000Z", "completed_at": "2026-05-14T10:30:00.000Z"}
+      ],
+      "added_at": "2026-05-14T09:00:00.000Z",
+      "last_touched": "2026-05-20T09:00:00.000Z",
       "status": "active",
-      "set_at": "2026-05-15T09:00:00.000Z",
-      "last_referenced": "2026-05-20T09:00:00.000Z"
+      "action_steps": [],
+      "active_commitment": null,
+      "commitment_history": []
     },
-    "twelve_months": {
-      "text": "I have left the plant manager role. I am billing $20,000+ per month as an AI operations consultant for manufacturers. When someone asks what I do, I say consultant — not former plant manager.",
+    {
+      "goal_id": "g-12m-bruce-001",
+      "title": "Full-time consultant",
+      "description": "I have left the plant manager role. I am billing $20,000+ per month as an AI operations consultant for manufacturers. When someone asks what I do, I say consultant — not former plant manager.",
+      "horizon": "twelve_months",
+      "phase": "reflection",
+      "phase_started_at": "2026-05-14T10:30:00.000Z",
+      "phase_history": [
+        {"phase": "intake", "entered_at": "2026-05-14T09:00:00.000Z", "completed_at": "2026-05-14T10:30:00.000Z"}
+      ],
+      "added_at": "2026-05-14T09:00:00.000Z",
+      "last_touched": "2026-05-15T09:00:00.000Z",
       "status": "active",
-      "set_at": "2026-05-15T09:00:00.000Z",
-      "last_referenced": "2026-05-15T09:00:00.000Z"
+      "action_steps": [],
+      "active_commitment": null,
+      "commitment_history": []
     }
-  },
+  ],
 
   "calibration": {
     "dominant_lens": "business",
@@ -66,130 +193,15 @@
   },
 
   "program": {
-    "current_phase": "commitment",
-    "phase_started_at": "2026-05-20T14:00:00.000Z",
-    "phase_history": [
-      {
-        "phase": "interview",
-        "entered_at": "2026-05-14T09:00:00.000Z",
-        "completed_at": "2026-05-14T10:30:00.000Z"
-      },
-      {
-        "phase": "reflection",
-        "entered_at": "2026-05-14T10:30:00.000Z",
-        "completed_at": "2026-05-17T11:00:00.000Z"
-      },
-      {
-        "phase": "clarity",
-        "entered_at": "2026-05-17T11:00:00.000Z",
-        "completed_at": "2026-05-19T09:00:00.000Z"
-      },
-      {
-        "phase": "resistance",
-        "entered_at": "2026-05-19T09:00:00.000Z",
-        "completed_at": "2026-05-20T14:00:00.000Z"
-      }
-    ],
+    "initial_interview_done": true,
     "sessions_completed": 6,
     "last_session_date": "2026-05-22T09:15:00.000Z"
   },
 
-  "active_commitment": {
-    "commitment_id": "c1d2e3f4-a5b6-7890-cdef-123456789abc",
-    "text": "Post a 3-sentence description of the downtime tracking system on LinkedIn — what it does, the result (23% reduction in unplanned downtime), and that I am now available to build this for other manufacturers. By Thursday May 28.",
-    "declared_at": "2026-05-22T09:15:00.000Z",
-    "due_date": "2026-05-28T23:59:00.000Z",
-    "status": "active",
-    "ladder_rung": 5,
-    "public_platform": "linkedin",
-    "share_post": "Built an AI alert system for our plant floor 6 months ago. Machine states tracked in real time, shift supervisors get a Telegram message before a failure cascades. Result: 23% reduction in unplanned downtime. I'm now available to build this for other manufacturers. If you're losing shifts to equipment failures you didn't see coming, let's talk.",
-    "print_card": "Post the downtime system on LinkedIn by Thursday May 28. — May 22, 2026",
-    "daily_reminders": {
-      "day_1": "You have the 23% number. You have the live system. What's the first sentence?",
-      "day_2": "Have you drafted the post yet? The shift supervisor story is in there — use it.",
-      "day_3": "What's stopping you from posting the draft you already have?",
-      "day_4": "Someone on a plant floor right now is dealing with the exact problem your system solves. They can't find you if this isn't posted.",
-      "day_5": "Thursday is tomorrow. What version could you post in the next hour?",
-      "day_6": "Today. What time are you posting?",
-      "day_7": "Did you post it? What happened in the first 24 hours?",
-      "current_day": 2,
-      "started_at": "2026-05-22T09:15:00.000Z"
-    }
-  },
-
-  "commitment_history": [
-    {
-      "commitment_id": "a1b2c3d4-e5f6-7890-abcd-ef0987654321",
-      "text": "Post in the Unlabeled community — describe the quality escape classifier: what it does, how it works, what changed on the line. Three sentences. By May 20.",
-      "declared_at": "2026-05-17T11:00:00.000Z",
-      "due_date": "2026-05-20T23:59:00.000Z",
-      "status": "done",
-      "ladder_rung": 3,
-      "outcome_notes": "Did it. Posted Tuesday night. Three people responded within 24 hours. One asked if I'd worked with food manufacturing. I realized I'd been sitting on this for months for no reason. The fear was bigger than the actual risk.",
-      "logged_at": "2026-05-21T08:00:00.000Z"
-    },
-    {
-      "commitment_id": "b2c3d4e5-f6a7-8901-bcde-f01234567890",
-      "text": "Send my new bio to one person from my professional network — not a friend, someone I respect but don't know well. Just the bio, no ask. By May 18.",
-      "declared_at": "2026-05-15T10:00:00.000Z",
-      "due_date": "2026-05-18T23:59:00.000Z",
-      "status": "missed",
-      "ladder_rung": 2,
-      "outcome_notes": "Didn't do it. Kept rewriting the bio. Got to version 7. None of them felt right. Classic — the identity anchor pattern doing exactly what the coach said it would. The bio wasn't the problem.",
-      "logged_at": "2026-05-19T09:00:00.000Z"
-    }
-  ],
-
-  "action_steps": [
-    {
-      "step_id": "s1a2b3c4-d5e6-f789-0abc-def123456780",
-      "text": "Write three sentences describing what you do, as if talking to a stranger who has never heard of your previous career. Use present tense. Don't qualify. Don't mention plant manager.",
-      "assigned_at": "2026-05-14T10:30:00.000Z",
-      "due_date": "2026-05-16T23:59:00.000Z",
-      "status": "done",
-      "coach_reason": "identity_anchor pattern active — first exercise establishes present-tense identity without the old title as a crutch",
-      "completion_note": "Took me 20 minutes. First 5 attempts all started with 'I used to be...' or 'I come from...' Finally got to: 'I build AI systems that predict and prevent unplanned downtime in manufacturing plants. I've deployed two systems that are running live right now. I'm doing this for other companies.' Felt uncomfortable to write. Also felt true.",
-      "phase_assigned": "reflection",
-      "exercise_level": 1
-    },
-    {
-      "step_id": "s2b3c4d5-e6f7-8901-bcde-f01234567891",
-      "text": "Write one paragraph about your current build using only your domain expertise — no technical language, no mention of AI or code. What does your 22 years on the floor tell you about the problem you're solving that most people selling to manufacturing would miss?",
-      "assigned_at": "2026-05-17T11:00:00.000Z",
-      "due_date": "2026-05-19T23:59:00.000Z",
-      "status": "done",
-      "coach_reason": "identity_anchor level 2 — shift from 'I'm not technical enough' to 'my floor knowledge is the product'",
-      "completion_note": "Easier than expected once I stopped trying to sound like a developer. Wrote about how shift supervisors don't trust dashboard data they didn't generate themselves, and why every AI tool for manufacturing fails if it doesn't account for the 2am culture on a plant floor. That's not something you learn from a laptop.",
-      "phase_assigned": "clarity",
-      "exercise_level": 2
-    },
-    {
-      "step_id": "s3c4d5e6-f7a8-9012-cdef-012345678902",
-      "text": "Write a one-paragraph bio that leads with what you're building and what you know — not where you came from. Your 22 years appears only if it directly explains why you're the right person to build this. Then post it in the Unlabeled community.",
-      "assigned_at": "2026-05-19T09:00:00.000Z",
-      "due_date": "2026-05-21T23:59:00.000Z",
-      "status": "done",
-      "coach_reason": "identity_anchor level 3 — real publication in a safe space, bio leads with the build not the title",
-      "completion_note": "Posted it. Someone in the community replied asking if I'd talked to companies in automotive tier 1. First time anyone external has shown interest. The bio that led with 'I build AI systems for manufacturing operations' got a response. The seven bios I wrote that started with 'Former plant manager' got nothing because I never sent them.",
-      "phase_assigned": "resistance",
-      "exercise_level": 3
-    },
-    {
-      "step_id": "s4d5e6f7-a8b9-0123-defa-123456789013",
-      "text": "Use the bio in a real introduction. Find one operations director or plant manager on LinkedIn you don't know personally. Send them the bio — not as a pitch, as an introduction. 'I build X for Y. Thought it might be relevant to what you're working on.' That's it. No ask.",
-      "assigned_at": "2026-05-22T09:15:00.000Z",
-      "due_date": "2026-05-25T23:59:00.000Z",
-      "status": "pending",
-      "coach_reason": "identity_anchor level 4 — first use of the new identity in a direct professional interaction outside a safe space",
-      "completion_note": "",
-      "phase_assigned": "commitment",
-      "exercise_level": 4
-    }
-  ],
-
   "publishing_log": [
     {
       "log_id": "p1a2b3c4-d5e6-f789-0abc-def123456780",
+      "goal_id": "g-30d-bruce-001",
       "url": "https://unlabeled.app/community/post/quality-escape-classifier",
       "platform": "community",
       "published_at": "2026-05-20T21:45:00.000Z",
@@ -198,6 +210,7 @@
     },
     {
       "log_id": "p2b3c4d5-e6f7-8901-bcde-f01234567891",
+      "goal_id": "g-30d-bruce-001",
       "url": "https://unlabeled.app/community/post/bruce-intro",
       "platform": "community",
       "published_at": "2026-05-21T19:30:00.000Z",
@@ -222,5 +235,5 @@
     "flagged_sessions": []
   },
 
-  "coach_notes": "[2026-05-14]: Phase 0 complete. 22 years manufacturing operations, plant manager level. Parallel builder — still employed. Shipped two live AI systems: downtime tracker (23% improvement, 6 months live) and quality escape classifier (3 months live). These are not prototypes — they are running on a real floor with real results. Identity pattern is clear and strong: he introduces himself as 'former plant manager' even when describing tools that are actively deployed and producing measurable results. The previous career carries status and legibility that the new work doesn't have yet in his social context. His specific fear: being seen as just another tech bro selling AI to manufacturers without ever having stood on a floor. His irony: that floor experience is his entire competitive advantage and he can't see it yet. Resistance pattern: identity_anchor. Dominant lens: business (talks about downtime cost, ROI, client acquisition — artist lens almost entirely suppressed). [2026-05-17]: Phase 1 complete. Two contradictions surfaced and named. (1) He has more deployed, results-producing AI work than 90% of people calling themselves AI consultants — but introduces himself as a plant manager. (2) His 30-day goal requires an external conversation with a decision-maker, but he has published nothing and introduced himself to no one outside his current employer. Both contradictions accepted without defensiveness — he recognizes them immediately. Action step 1 completed: three-sentence present-tense identity description. His note on completing it ('felt uncomfortable to write, also felt true') is the most important thing he's said. [2026-05-19]: Phase 2 complete. Clarity reached. One-sentence statement: 'I build AI systems that prevent unplanned downtime and quality escapes in manufacturing plants.' Passes both tests: artist test (this is exactly what he's been doing and wants to keep doing) and business test (an operations director would understand immediately what this means and whether they need it). Also named what makes him different: he has been on the floor at 2am. Every tool he builds accounts for shift culture, supervisor trust, and the reality that dashboards fail if operators didn't generate the data. That is not a credential — it is embedded in the product. [2026-05-20]: Phase 3 complete. Named the identity anchor pattern explicitly. Used language from resistance-patterns.md — he recognized it immediately. 'You know exactly what you're doing. The ambiguity is protection, not confusion.' He agreed without pushback. Oblique card deployed: R9 ('What would your work look like if you didn't have to explain it?') — he sat with it for a few minutes and said 'it would just be the 23% number.' That's the post. Action step 3 (bio in community) completed — got a reply. Pattern cracking. [2026-05-22]: Phase 4 session. Active commitment declared: LinkedIn post about the downtime system, specific, with the 23% number, by May 28. Rung 5 — professional visibility. This is the right rung for where he is now. Previous missed commitment (bio to network contact) debriefed honestly: seven rewrites, never sent. Named it as the pattern doing exactly what it does. Pending action step: DM one operations director using the bio. Commitment and action step running in parallel this week."
+  "coach_notes": "[2026-05-14]: Phase 0 complete. 22 years manufacturing operations, plant manager level. Parallel builder — still employed. Shipped two live AI systems: downtime tracker (23% improvement, 6 months live) and quality escape classifier (3 months live). These are not prototypes — they are running on a real floor with real results. Identity pattern is clear and strong: he introduces himself as 'former plant manager' even when describing tools that are actively deployed and producing measurable results. Resistance pattern: identity_anchor. Dominant lens: business. [2026-05-17]: Reflection phase done on 30d goal. Two contradictions surfaced: (1) More deployed AI work than 90% calling themselves AI consultants — but introduces as plant manager. (2) 30-day goal requires external conversation, but has published nothing. Both accepted without defensiveness. [2026-05-19]: Clarity reached. One-sentence: 'I build AI systems that prevent unplanned downtime and quality escapes in manufacturing plants.' Named what makes him different: 22 years on the floor at 2am. That is embedded in the product. [2026-05-20]: Resistance phase done. Named identity_anchor explicitly. R9 card deployed. Action step 3 (bio in community) completed — got a reply. Pattern cracking. [2026-05-22]: 30d goal at commitment phase. LinkedIn post declared — specific, 23% number, by May 28. Rung 5. Previous missed commitment (bio to network contact) debriefed: seven rewrites, never sent."
 }

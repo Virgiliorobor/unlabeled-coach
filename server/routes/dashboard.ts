@@ -1,6 +1,8 @@
 /**
- * /api/dashboard — user profile, goals, commitments, session history.
+ * /api/dashboard — user profile, goals portfolio, publishing log.
  * Also handles onboarding (profile creation) and auth (login/logout).
+ * Portfolio model: goals[] is the primary data structure. Phases, action steps,
+ * and commitments live inside each goal.
  */
 
 import { Router, Request, Response } from 'express'
@@ -13,7 +15,6 @@ import { UserProfile, PublishingLogEntry } from '../types.js'
 const router = Router()
 
 // ── POST /api/auth/register ───────────────────────────────────
-// Creates a new user profile. Called after Phase 0 interview is complete.
 
 router.post('/auth/register', async (req: Request, res: Response) => {
   const { email, slug, display_name } = req.body
@@ -23,7 +24,6 @@ router.post('/auth/register', async (req: Request, res: Response) => {
     return
   }
 
-  // Sanitize slug
   const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 40)
   const profilePath = `_database/users/${cleanSlug}.json`
 
@@ -57,11 +57,7 @@ router.post('/auth/register', async (req: Request, res: Response) => {
       target_user: ''
     },
 
-    goals: {
-      thirty_days: { text: '', status: 'active', set_at: now.toISOString(), last_referenced: now.toISOString() },
-      ninety_days: { text: '', status: 'active', set_at: now.toISOString(), last_referenced: now.toISOString() },
-      twelve_months: { text: '', status: 'active', set_at: now.toISOString(), last_referenced: now.toISOString() }
-    },
+    goals: [],
 
     calibration: {
       dominant_lens: 'split',
@@ -76,16 +72,11 @@ router.post('/auth/register', async (req: Request, res: Response) => {
     },
 
     program: {
-      current_phase: 'interview',
-      phase_started_at: now.toISOString(),
-      phase_history: [],
+      initial_interview_done: false,
       sessions_completed: 0,
       last_session_date: ''
     },
 
-    active_commitment: null,
-    commitment_history: [],
-    action_steps: [],
     publishing_log: [],
 
     notifications: {
@@ -115,7 +106,6 @@ router.post('/auth/register', async (req: Request, res: Response) => {
 })
 
 // ── POST /api/auth/login ──────────────────────────────────────
-// Email-based login — finds profile by email and issues session.
 
 router.post('/auth/login', async (req: Request, res: Response) => {
   const { email } = req.body
@@ -126,7 +116,6 @@ router.post('/auth/login', async (req: Request, res: Response) => {
 
   const profile = await findProfileByEmail(email.trim().toLowerCase())
   if (!profile) {
-    // Deliberately vague — don't reveal whether the email exists
     res.status(200).json({ ok: true, message: 'If that email is registered, you are now logged in.' })
     return
   }
@@ -136,7 +125,6 @@ router.post('/auth/login', async (req: Request, res: Response) => {
 })
 
 // ── POST /api/auth/dev-login ──────────────────────────────────
-// Development only — login by slug directly.
 
 router.post('/auth/dev-login', async (req: Request, res: Response) => {
   if (process.env.NODE_ENV === 'production') {
@@ -161,7 +149,7 @@ router.post('/auth/logout', (req: Request, res: Response) => {
 })
 
 // ── GET /api/dashboard ────────────────────────────────────────
-// Returns everything the dashboard needs in one call.
+// Returns everything the dashboard needs — portfolio model.
 
 router.get('/dashboard', requireAuth, async (req: Request, res: Response) => {
   const { slug } = (req as any).user
@@ -175,24 +163,48 @@ router.get('/dashboard', requireAuth, async (req: Request, res: Response) => {
   const reInterviewDue = new Date(profile.re_interview_due)
   const reInterviewOverdue = now >= reInterviewDue
 
-  // Phase progress — days elapsed and minimum requirements per phase
   const PHASE_MINIMUM_DAYS: Record<string, number> = {
-    interview: 0, reflection: 3, clarity: 3, resistance: 3, commitment: 0, accountability: 0
+    intake: 0, reflection: 3, clarity: 3, resistance: 3, commitment: 0, accountability: 0
   }
-  const phaseStarted = profile.program.phase_started_at
-    ? new Date(profile.program.phase_started_at)
-    : new Date(profile.created_at)
-  const daysElapsed = Math.floor((now.getTime() - phaseStarted.getTime()) / (1000 * 60 * 60 * 24))
-  const minimumDays = PHASE_MINIMUM_DAYS[profile.program.current_phase] ?? 0
-  const completedSteps = (profile.action_steps || []).filter(s => s.status === 'done').length
 
-  // Action steps — all pending + last 5 completed, most recent first
-  const allSteps = profile.action_steps || []
-  const pendingSteps = allSteps.filter(s => s.status === 'pending')
-  const recentDoneSteps = allSteps
-    .filter(s => s.status === 'done')
-    .sort((a, b) => new Date(b.assigned_at).getTime() - new Date(a.assigned_at).getTime())
-    .slice(0, 5)
+  // Build enriched goal objects with phase progress
+  const goals = (profile.goals || []).map(goal => {
+    const phaseStarted = goal.phase_started_at ? new Date(goal.phase_started_at) : now
+    const daysElapsed = Math.floor((now.getTime() - phaseStarted.getTime()) / (1000 * 60 * 60 * 24))
+    const minimumDays = PHASE_MINIMUM_DAYS[goal.phase] ?? 0
+    const completedSteps = (goal.action_steps || []).filter(s => s.status === 'done').length
+
+    const allSteps = goal.action_steps || []
+    const pendingSteps = allSteps.filter(s => s.status === 'pending')
+    const recentDoneSteps = allSteps
+      .filter(s => s.status === 'done')
+      .sort((a, b) => new Date(b.assigned_at).getTime() - new Date(a.assigned_at).getTime())
+      .slice(0, 3)
+
+    return {
+      goal_id: goal.goal_id,
+      title: goal.title,
+      description: goal.description,
+      horizon: goal.horizon,
+      phase: goal.phase,
+      phase_started_at: goal.phase_started_at,
+      added_at: goal.added_at,
+      last_touched: goal.last_touched,
+      status: goal.status,
+      phase_progress: {
+        days_elapsed: daysElapsed,
+        minimum_days: minimumDays,
+        time_gate_clear: daysElapsed >= minimumDays,
+        completed_action_steps: completedSteps
+      },
+      action_steps: {
+        pending: pendingSteps,
+        recent_done: recentDoneSteps
+      },
+      active_commitment: goal.active_commitment,
+      commitment_history: (goal.commitment_history || []).slice(-5)
+    }
+  })
 
   // Publishing log — most recent first
   const publishingLog = (profile.publishing_log || [])
@@ -205,7 +217,7 @@ router.get('/dashboard', requireAuth, async (req: Request, res: Response) => {
       build_name: profile.build.name,
       build_description: profile.build.description,
       build_state: profile.build.state,
-      current_phase: profile.program.current_phase,
+      initial_interview_done: profile.program.initial_interview_done,
       sessions_completed: profile.program.sessions_completed,
       last_session_date: profile.program.last_session_date,
       re_interview_due: profile.re_interview_due,
@@ -213,18 +225,7 @@ router.get('/dashboard', requireAuth, async (req: Request, res: Response) => {
       dominant_lens: profile.calibration.dominant_lens,
       resistance_pattern: profile.calibration.resistance_pattern
     },
-    phase_progress: {
-      current_phase: profile.program.current_phase,
-      phase_started_at: profile.program.phase_started_at || profile.created_at,
-      days_elapsed: daysElapsed,
-      minimum_days: minimumDays,
-      time_gate_clear: daysElapsed >= minimumDays,
-      completed_action_steps: completedSteps
-    },
-    goals: profile.goals,
-    active_commitment: profile.active_commitment,
-    commitment_history: profile.commitment_history.slice(-10),
-    action_steps: { pending: pendingSteps, recent_done: recentDoneSteps },
+    goals,
     publishing_log: publishingLog,
     notifications: {
       channels: profile.notifications.channels,
@@ -235,7 +236,7 @@ router.get('/dashboard', requireAuth, async (req: Request, res: Response) => {
 })
 
 // ── PATCH /api/dashboard/profile ─────────────────────────────
-// Update profile fields (goals, notifications, build info).
+// Update person-level fields (notifications, build info, background).
 
 router.patch('/dashboard/profile', requireAuth, async (req: Request, res: Response) => {
   const { slug } = (req as any).user
@@ -245,7 +246,7 @@ router.patch('/dashboard/profile', requireAuth, async (req: Request, res: Respon
     return
   }
 
-  const allowed = ['goals', 'notifications', 'build', 'background']
+  const allowed = ['notifications', 'build', 'background']
   for (const key of allowed) {
     if (req.body[key]) {
       (profile as any)[key] = { ...(profile as any)[key], ...req.body[key] }
@@ -256,8 +257,79 @@ router.patch('/dashboard/profile', requireAuth, async (req: Request, res: Respon
   res.json({ ok: true })
 })
 
+// ── POST /api/dashboard/goals ─────────────────────────────────
+// Create a new goal directly (without a coaching session).
+
+router.post('/dashboard/goals', requireAuth, async (req: Request, res: Response) => {
+  const { slug } = (req as any).user
+  const { title, description, horizon } = req.body
+
+  if (!title || !horizon) {
+    res.status(400).json({ error: 'title and horizon are required' })
+    return
+  }
+
+  const profile = await readProfile(slug)
+  if (!profile) {
+    res.status(404).json({ error: 'Profile not found' })
+    return
+  }
+
+  const now = new Date().toISOString()
+  const goal = {
+    goal_id: uuidv4(),
+    title,
+    description: description || '',
+    horizon,
+    phase: 'intake' as const,
+    phase_started_at: now,
+    phase_history: [],
+    added_at: now,
+    last_touched: now,
+    status: 'active' as const,
+    action_steps: [],
+    active_commitment: null,
+    commitment_history: []
+  }
+
+  profile.goals.push(goal)
+  await writeProfile(profile)
+  res.json({ ok: true, goal })
+})
+
+// ── PATCH /api/dashboard/goals/:id ───────────────────────────
+// Update a goal's metadata (title, description, status, horizon).
+
+router.patch('/dashboard/goals/:id', requireAuth, async (req: Request, res: Response) => {
+  const { slug } = (req as any).user
+  const { id } = req.params
+
+  const profile = await readProfile(slug)
+  if (!profile) {
+    res.status(404).json({ error: 'Profile not found' })
+    return
+  }
+
+  const goal = (profile.goals || []).find(g => g.goal_id === id)
+  if (!goal) {
+    res.status(404).json({ error: 'Goal not found' })
+    return
+  }
+
+  const allowed = ['title', 'description', 'status', 'horizon']
+  for (const key of allowed) {
+    if (req.body[key] !== undefined) {
+      (goal as any)[key] = req.body[key]
+    }
+  }
+  goal.last_touched = new Date().toISOString()
+
+  await writeProfile(profile)
+  res.json({ ok: true, goal })
+})
+
 // ── POST /api/dashboard/commitment/:id/resolve ───────────────
-// Mark the active commitment as done, missed, or partial.
+// Mark the active commitment in any goal as done, missed, or partial.
 
 router.post('/dashboard/commitment/:id/resolve', requireAuth, async (req: Request, res: Response) => {
   const { slug } = (req as any).user
@@ -275,31 +347,34 @@ router.post('/dashboard/commitment/:id/resolve', requireAuth, async (req: Reques
     return
   }
 
-  if (!profile.active_commitment || profile.active_commitment.commitment_id !== id) {
+  const goal = (profile.goals || []).find(g => g.active_commitment?.commitment_id === id)
+  if (!goal || !goal.active_commitment) {
     res.status(404).json({ error: 'Active commitment not found' })
     return
   }
 
   const resolved = {
-    commitment_id: profile.active_commitment.commitment_id,
-    text: profile.active_commitment.text,
-    declared_at: profile.active_commitment.declared_at,
-    due_date: profile.active_commitment.due_date,
+    commitment_id: goal.active_commitment.commitment_id,
+    text: goal.active_commitment.text,
+    declared_at: goal.active_commitment.declared_at,
+    due_date: goal.active_commitment.due_date,
     status: status as 'done' | 'missed' | 'partial',
-    ladder_rung: profile.active_commitment.ladder_rung,
+    ladder_rung: goal.active_commitment.ladder_rung,
     outcome_notes: outcome_notes || '',
     logged_at: new Date().toISOString()
   }
 
-  profile.commitment_history.push(resolved)
-  profile.active_commitment = null
-  await writeProfile(profile)
+  if (!goal.commitment_history) goal.commitment_history = []
+  goal.commitment_history.push(resolved)
+  goal.active_commitment = null
+  goal.last_touched = new Date().toISOString()
 
+  await writeProfile(profile)
   res.json({ ok: true, resolved })
 })
 
 // ── POST /api/dashboard/action-step/:id/complete ─────────────
-// Mark an action step as done with an optional completion note.
+// Mark an action step as done (searches across all goals).
 
 router.post('/action-step/:id/complete', requireAuth, async (req: Request, res: Response) => {
   const { slug } = (req as any).user
@@ -309,17 +384,26 @@ router.post('/action-step/:id/complete', requireAuth, async (req: Request, res: 
   const profile = await readProfile(slug)
   if (!profile) { res.status(404).json({ error: 'Profile not found' }); return }
 
-  const step = (profile.action_steps || []).find(s => s.step_id === id)
-  if (!step) { res.status(404).json({ error: 'Action step not found' }); return }
+  let foundStep = null
+  for (const goal of profile.goals || []) {
+    const step = (goal.action_steps || []).find(s => s.step_id === id)
+    if (step) {
+      step.status = 'done'
+      step.completion_note = completion_note || ''
+      goal.last_touched = new Date().toISOString()
+      foundStep = step
+      break
+    }
+  }
 
-  step.status = 'done'
-  step.completion_note = completion_note || ''
+  if (!foundStep) { res.status(404).json({ error: 'Action step not found' }); return }
+
   await writeProfile(profile)
-  res.json({ ok: true, step })
+  res.json({ ok: true, step: foundStep })
 })
 
 // ── POST /api/dashboard/action-step/:id/skip ─────────────────
-// Mark an action step as skipped with a required reason.
+// Mark an action step as skipped (searches across all goals).
 
 router.post('/action-step/:id/skip', requireAuth, async (req: Request, res: Response) => {
   const { slug } = (req as any).user
@@ -329,21 +413,30 @@ router.post('/action-step/:id/skip', requireAuth, async (req: Request, res: Resp
   const profile = await readProfile(slug)
   if (!profile) { res.status(404).json({ error: 'Profile not found' }); return }
 
-  const step = (profile.action_steps || []).find(s => s.step_id === id)
-  if (!step) { res.status(404).json({ error: 'Action step not found' }); return }
+  let foundStep = null
+  for (const goal of profile.goals || []) {
+    const step = (goal.action_steps || []).find(s => s.step_id === id)
+    if (step) {
+      step.status = 'skipped'
+      step.completion_note = reason || ''
+      goal.last_touched = new Date().toISOString()
+      foundStep = step
+      break
+    }
+  }
 
-  step.status = 'skipped'
-  step.completion_note = reason || ''
+  if (!foundStep) { res.status(404).json({ error: 'Action step not found' }); return }
+
   await writeProfile(profile)
-  res.json({ ok: true, step })
+  res.json({ ok: true, step: foundStep })
 })
 
 // ── POST /api/dashboard/publishing-log ───────────────────────
-// Manually add a publishing log entry (proof of a public act outside a session).
+// Manually add a publishing log entry.
 
 router.post('/publishing-log', requireAuth, async (req: Request, res: Response) => {
   const { slug } = (req as any).user
-  const { url, platform, description, commitment_id } = req.body
+  const { url, platform, description, commitment_id, goal_id } = req.body
 
   if (!url || !description) {
     res.status(400).json({ error: 'url and description are required' })
@@ -355,6 +448,7 @@ router.post('/publishing-log', requireAuth, async (req: Request, res: Response) 
 
   const entry: PublishingLogEntry = {
     log_id: uuidv4(),
+    goal_id: goal_id || '',
     url,
     platform: platform || 'other',
     published_at: new Date().toISOString(),

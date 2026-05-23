@@ -6,71 +6,88 @@
   "re_interview_due": "2026-05-29T01:02:42.148Z",
   "background": {
     "domain": "finance",
-    "domain_detail": "Company financial profiles and analysis — reading the inside of companies through their numbers",
+    "domain_detail": "Company financial profiles and analysis \u2014 reading the inside of companies through their numbers",
     "years_experience": 15,
     "transition_type": "parallel_build"
   },
   "build": {
     "name": "AI solutions for specific business problems",
-    "description": "Building targeted automation tools for specific clients' operational problems. Main shipped product: Telegram-based expense tracking system for a contractor — photos of receipts sent via Telegram are processed, allocated to project budgets, and displayed on a dashboard. Also maintains an internal deep-research financial profiling tool used daily in his finance job. Not chasing a single product — interested in learning by solving different problems for different people.",
+    "description": "Building targeted automation tools for specific clients' operational problems. Main shipped product: Telegram-based expense tracking system for a contractor \u2014 photos of receipts sent via Telegram are processed, allocated to project budgets, and displayed on a dashboard. Also maintains an internal deep-research financial profiling tool used daily in his finance job. Not chasing a single product \u2014 interested in learning by solving different problems for different people.",
     "state": "shipped",
     "shipped": [
       "Telegram receipt processing + project budget dashboard for contractor client (actively used)"
     ],
     "target_user": "Business owners with specific operational inefficiencies they need automated"
   },
-  "goals": {
-    "thirty_days": {
-      "text": "Someone I don't know notices my work and asks me to build something for them",
+  "goals": [
+    {
+      "goal_id": "188b70d8-e475-4a11-b4ef-83927134a228",
+      "title": "Someone I don't know notices my work and asks me t",
+      "description": "Someone I don't know notices my work and asks me to build something for them",
+      "horizon": "thirty_days",
+      "phase": "intake",
+      "phase_started_at": "2026-05-23T00:00:00.000Z",
+      "phase_history": [],
+      "added_at": "2026-05-22T01:02:42.148Z",
+      "last_touched": "2026-05-22T01:02:42.148Z",
       "status": "active",
-      "set_at": "2026-05-22T01:02:42.148Z",
-      "last_referenced": "2026-05-22T01:02:42.148Z"
+      "action_steps": [],
+      "active_commitment": null,
+      "commitment_history": []
     },
-    "ninety_days": {
-      "text": "Multiple projects running, a recognizable brand forming, paying clients beyond friends",
+    {
+      "goal_id": "4be5fa12-f30e-42da-8882-47cb4ae7010b",
+      "title": "Multiple projects running, a recognizable brand fo",
+      "description": "Multiple projects running, a recognizable brand forming, paying clients beyond friends",
+      "horizon": "ninety_days",
+      "phase": "intake",
+      "phase_started_at": "2026-05-23T00:00:00.000Z",
+      "phase_history": [],
+      "added_at": "2026-05-22T01:02:42.148Z",
+      "last_touched": "2026-05-22T01:02:42.148Z",
       "status": "active",
-      "set_at": "2026-05-22T01:02:42.148Z",
-      "last_referenced": "2026-05-22T01:02:42.148Z"
+      "action_steps": [],
+      "active_commitment": null,
+      "commitment_history": []
     },
-    "twelve_months": {
-      "text": "Building AI solutions is my main job — not a side project hidden from my finance colleagues",
+    {
+      "goal_id": "b47f1e1d-e847-4c5d-b5b5-2b5fab5a29ed",
+      "title": "Building AI solutions is my main job \u2014 not a side ",
+      "description": "Building AI solutions is my main job \u2014 not a side project hidden from my finance colleagues",
+      "horizon": "twelve_months",
+      "phase": "intake",
+      "phase_started_at": "2026-05-23T00:00:00.000Z",
+      "phase_history": [],
+      "added_at": "2026-05-22T01:02:42.148Z",
+      "last_touched": "2026-05-22T01:02:42.148Z",
       "status": "active",
-      "set_at": "2026-05-22T01:02:42.148Z",
-      "last_referenced": "2026-05-22T01:02:42.148Z"
+      "action_steps": [],
+      "active_commitment": null,
+      "commitment_history": []
     }
-  },
+  ],
   "calibration": {
     "dominant_lens": "business",
     "resistance_pattern": "visibility_avoider",
     "tone": "direct",
     "oblique_subset": [],
     "behavioral_signals": {
-      "avoidance_language": ["I don't want to look like I'm doing content", "I'll share it when there's something real to share"],
-      "engagement_triggers": ["describing the Telegram receipt system to a real client", "talking about solving specific operational problems"],
+      "avoidance_language": [
+        "I don't want to look like I'm doing content",
+        "I'll share it when there's something real to share"
+      ],
+      "engagement_triggers": [
+        "describing the Telegram receipt system to a real client",
+        "talking about solving specific operational problems"
+      ],
       "excuse_structure": "not_ready_yet"
     }
   },
   "program": {
-    "current_phase": "resistance",
-    "phase_started_at": "2026-05-22T19:00:00.000Z",
-    "phase_history": [
-      {
-        "phase": "interview",
-        "entered_at": "2026-05-22T01:02:42.148Z",
-        "completed_at": "2026-05-22T02:00:00.000Z"
-      },
-      {
-        "phase": "reflection",
-        "entered_at": "2026-05-22T02:00:00.000Z",
-        "completed_at": "2026-05-22T19:00:00.000Z"
-      }
-    ],
+    "initial_interview_done": true,
     "sessions_completed": 5,
     "last_session_date": "2026-05-22T22:00:17.425Z"
   },
-  "active_commitment": null,
-  "commitment_history": [],
-  "action_steps": [],
   "publishing_log": [],
   "notifications": {
     "email": "jaime.rob@gmail.com",
@@ -88,5 +105,5 @@
     "last_state_change": "2026-05-22T01:02:42.148Z",
     "flagged_sessions": []
   },
-  "coach_notes": "[2026-05-22]: Completed Phase 0 interview. 15 years finance, parallel builder, keeps AI work hidden from finance colleagues due to leadership security anxiety. Shipped contractor expense system (Telegram + dashboard) — only shipped thing. Internal profiling tool exists but never shown externally. Not chasing a product idea — wants to build solutions for other people's specific problems and get paid for it. Completed Phase 1 reflection: two contradictions surfaced and named — (1) 30-day goal requires visibility but zero publishing has happened; (2) already self-identifies as AI developer/consultant but won't claim it publicly. Core resistance pattern confirmed: visibility_avoider. Real blocker is specific: fears Instagram friends making fun behind his back. Recognized that the people he's protecting himself from (finance circle, Instagram friends) are NOT his target clients. The version of himself he would share if not afraid — process of building, the real work — is the exact opposite of the empty tech bro he fears becoming. Ready for Phase 2 (Clarity): define the one-sentence statement of what he is actually making and building toward. [2026-05-22]: Completed Phase 2. One-sentence identity claim: 'I am a consultant that fixes problems with AI.' Passed both artist test (this is what he's already doing and wants to keep doing) and business test (a business owner with a problem would understand immediately). When imagining saying this to finance colleagues, reported anxiety but recognized it as 'new but real' — not fake. Anxiety about something new and real fades with repetition. Ready for Phase 3 (Resistance)."
+  "coach_notes": "[2026-05-22]: Completed Phase 0 interview. 15 years finance, parallel builder, keeps AI work hidden from finance colleagues due to leadership security anxiety. Shipped contractor expense system (Telegram + dashboard) \u2014 only shipped thing. Internal profiling tool exists but never shown externally. Not chasing a product idea \u2014 wants to build solutions for other people's specific problems and get paid for it. Completed Phase 1 reflection: two contradictions surfaced and named \u2014 (1) 30-day goal requires visibility but zero publishing has happened; (2) already self-identifies as AI developer/consultant but won't claim it publicly. Core resistance pattern confirmed: visibility_avoider. Real blocker is specific: fears Instagram friends making fun behind his back. Recognized that the people he's protecting himself from (finance circle, Instagram friends) are NOT his target clients. The version of himself he would share if not afraid \u2014 process of building, the real work \u2014 is the exact opposite of the empty tech bro he fears becoming. Ready for Phase 2 (Clarity): define the one-sentence statement of what he is actually making and building toward. [2026-05-22]: Completed Phase 2. One-sentence identity claim: 'I am a consultant that fixes problems with AI.' Passed both artist test (this is what he's already doing and wants to keep doing) and business test (a business owner with a problem would understand immediately). When imagining saying this to finance colleagues, reported anxiety but recognized it as 'new but real' \u2014 not fake. Anxiety about something new and real fades with repetition. Ready for Phase 3 (Resistance)."
 }
