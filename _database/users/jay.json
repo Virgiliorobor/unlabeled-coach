@@ -17,40 +17,24 @@
     "shipped": [],
     "target_user": ""
   },
-  "goals": {
-    "thirty_days": {
-      "text": "",
-      "status": "active",
-      "set_at": "2026-05-23T18:46:43.868Z",
-      "last_referenced": "2026-05-23T18:46:43.868Z"
-    },
-    "ninety_days": {
-      "text": "",
-      "status": "active",
-      "set_at": "2026-05-23T18:46:43.868Z",
-      "last_referenced": "2026-05-23T18:46:43.868Z"
-    },
-    "twelve_months": {
-      "text": "",
-      "status": "active",
-      "set_at": "2026-05-23T18:46:43.868Z",
-      "last_referenced": "2026-05-23T18:46:43.868Z"
-    }
-  },
+  "goals": [],
   "calibration": {
     "dominant_lens": "split",
     "resistance_pattern": "",
     "tone": "balanced",
-    "oblique_subset": []
+    "oblique_subset": [],
+    "behavioral_signals": {
+      "avoidance_language": [],
+      "engagement_triggers": [],
+      "excuse_structure": ""
+    }
   },
   "program": {
-    "current_phase": "interview",
-    "phase_history": [],
+    "initial_interview_done": false,
     "sessions_completed": 1,
     "last_session_date": "2026-05-23T18:50:39.717Z"
   },
-  "active_commitment": null,
-  "commitment_history": [],
+  "publishing_log": [],
   "notifications": {
     "email": "virgilio.robor@gmail.com",
     "telegram_chat_id": null,

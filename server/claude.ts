@@ -64,6 +64,7 @@ export interface ProfilePatch {
 }
 
 export interface CommitmentOutput {
+  goal_id: string
   text: string
   due_date: string
   ladder_rung: number
@@ -74,6 +75,7 @@ export interface CommitmentOutput {
 }
 
 export interface ActionStepOutput {
+  goal_id: string
   text: string
   due_date: string
   coach_reason: string
@@ -82,15 +84,31 @@ export interface ActionStepOutput {
 }
 
 export interface PublishingLogEntryOutput {
+  goal_id: string
   url: string
   platform: string
   description: string
   commitment_id: string
 }
 
+export interface GoalOutput {
+  title: string
+  description: string
+  horizon: 'thirty_days' | 'ninety_days' | 'twelve_months' | 'ongoing'
+  phase: string
+}
+
+export interface GoalPatch {
+  goal_id: string
+  field: string
+  value: unknown
+}
+
 export interface ClaudeResponse {
   message: string
   profile_patches: ProfilePatch[]
+  goal_output: GoalOutput | null
+  goal_patches: GoalPatch[]
   commitment_output: CommitmentOutput | null
   action_step_output: ActionStepOutput | null
   publishing_log_entry: PublishingLogEntryOutput | null
@@ -139,6 +157,24 @@ function parsePublishingLogEntry(raw: string | null): PublishingLogEntryOutput |
   }
 }
 
+function parseGoalOutput(raw: string | null): GoalOutput | null {
+  if (!raw) return null
+  try {
+    return JSON.parse(raw) as GoalOutput
+  } catch {
+    return null
+  }
+}
+
+function parseGoalPatches(raw: string | null): GoalPatch[] {
+  if (!raw) return []
+  try {
+    return JSON.parse(raw) as GoalPatch[]
+  } catch {
+    return []
+  }
+}
+
 function detectSafetyState(text: string): 'engaged' | 'watchful' | 'redirected' {
   if (text.includes('[SAFETY:redirected]')) return 'redirected'
   if (text.includes('[SAFETY:watchful]')) return 'watchful'
@@ -148,6 +184,8 @@ function detectSafetyState(text: string): 'engaged' | 'watchful' | 'redirected' 
 function stripControlBlocks(text: string): string {
   return text
     .replace(/\[PROFILE_PATCHES\][\s\S]*?\[\/PROFILE_PATCHES\]/gi, '')
+    .replace(/\[GOAL_OUTPUT\][\s\S]*?\[\/GOAL_OUTPUT\]/gi, '')
+    .replace(/\[GOAL_PATCHES\][\s\S]*?\[\/GOAL_PATCHES\]/gi, '')
     .replace(/\[COMMITMENT_OUTPUT\][\s\S]*?\[\/COMMITMENT_OUTPUT\]/gi, '')
     .replace(/\[ACTION_STEP_OUTPUT\][\s\S]*?\[\/ACTION_STEP_OUTPUT\]/gi, '')
     .replace(/\[PUBLISHING_LOG_ENTRY\][\s\S]*?\[\/PUBLISHING_LOG_ENTRY\]/gi, '')
@@ -187,6 +225,8 @@ export async function runTurn(
 
   const safetyState = detectSafetyState(rawText)
   const patchesRaw = extractBlock(rawText, 'PROFILE_PATCHES')
+  const goalOutputRaw = extractBlock(rawText, 'GOAL_OUTPUT')
+  const goalPatchesRaw = extractBlock(rawText, 'GOAL_PATCHES')
   const commitmentRaw = extractBlock(rawText, 'COMMITMENT_OUTPUT')
   const actionStepRaw = extractBlock(rawText, 'ACTION_STEP_OUTPUT')
   const publishingRaw = extractBlock(rawText, 'PUBLISHING_LOG_ENTRY')
@@ -194,6 +234,8 @@ export async function runTurn(
   return {
     message: stripControlBlocks(rawText),
     profile_patches: parseProfilePatches(patchesRaw),
+    goal_output: parseGoalOutput(goalOutputRaw),
+    goal_patches: parseGoalPatches(goalPatchesRaw),
     commitment_output: parseCommitmentOutput(commitmentRaw),
     action_step_output: parseActionStepOutput(actionStepRaw),
     publishing_log_entry: parsePublishingLogEntry(publishingRaw),
