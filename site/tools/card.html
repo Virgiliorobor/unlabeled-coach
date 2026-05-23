@@ -60,29 +60,46 @@
     }
 
     /* mode label — today vs random */
+    /* sanctuary: mode label is a whisper, not a shout */
     .mode-label {
-      font-family: var(--font-mono);
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--grey);
+      font-family: var(--font-serif);
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--grey-light);
       display: block;
       margin-bottom: var(--space-lg);
       transition: opacity 0.3s;
+      letter-spacing: 0.01em;
     }
 
     .controls {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: var(--space-sm);
+      gap: var(--space-md);
     }
+
+    /* sanctuary: text links, not buttons */
+    .draw-btn {
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--black);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      padding: 0;
+      transition: opacity 0.2s;
+    }
+    .draw-btn:hover { opacity: 0.45; }
 
     .today-btn {
       font-family: var(--font-serif);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-style: italic;
-      color: var(--grey);
+      color: var(--grey-light);
       background: none;
       border: none;
       cursor: pointer;
@@ -91,8 +108,8 @@
       transition: opacity 0.2s;
       padding: 0;
     }
-    .today-btn:hover { color: var(--black); }
-    .today-btn:disabled { opacity: 0.25; cursor: default; text-decoration: none; }
+    .today-btn:hover { color: var(--grey); }
+    .today-btn:disabled { opacity: 0.2; cursor: default; text-decoration: none; }
 
     .footer-nav {
       margin-top: var(--space-xl);
@@ -120,7 +137,7 @@
     <span class="mode-label" id="modeLabel"></span>
 
     <div class="controls">
-      <button class="btn-primary" onclick="drawRandom()">Draw another</button>
+      <button class="draw-btn" onclick="drawRandom()">Draw another →</button>
       <button class="today-btn" id="todayBtn" onclick="showToday()" disabled>
         Back to today's card
       </button>

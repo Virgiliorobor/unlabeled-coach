@@ -23,16 +23,8 @@
       justify-content: space-between;
       align-items: center;
       padding: var(--space-sm) 0;
-      border-bottom: var(--border);
+      border-bottom: var(--border-thick);
       margin-bottom: var(--space-md);
-    }
-
-    .tool-label {
-      font-family: var(--font-mono);
-      font-size: 0.6rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--grey);
     }
 
     /* Catalog row */
@@ -42,6 +34,16 @@
       gap: var(--space-sm);
       margin-bottom: var(--space-sm);
       flex-wrap: wrap;
+    }
+
+    .catalog-label {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--grey);
+      white-space: nowrap;
     }
 
     select {
@@ -127,6 +129,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: var(--space-sm);
+      padding-bottom: var(--space-xs);
+      border-bottom: var(--border-thick);
     }
 
     /* The page — cream background, physical look */
@@ -211,13 +215,14 @@
     <!-- Header -->
     <div class="page-header">
       <a href="../index.html" class="nav-back">← Unlabeled</a>
-      <span class="tool-label">Blackout</span>
+      <span class="dymo-label">Blackout</span>
     </div>
 
     <!-- Input section -->
     <div class="input-section">
 
       <div class="catalog-row">
+        <span class="catalog-label">Source →</span>
         <select id="catalogSelect" onchange="loadCatalog()">
           <option value="">— Paste your own text —</option>
           <option value="reckoning">The Reckoning</option>
@@ -253,7 +258,7 @@
     <!-- Result section -->
     <div class="result-section" id="resultSection">
       <div class="result-label-row">
-        <span class="label">Result</span>
+        <span class="dymo-label">Result</span>
       </div>
 
       <div class="blackout-page" id="blackoutPage"></div>

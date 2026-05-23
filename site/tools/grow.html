@@ -6,7 +6,7 @@
   <title>Grow — Unlabeled</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=EB+Garamond:ital@1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=EB+Garamond:ital@1&family=Permanent+Marker&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../design.css">
   <style>
     *, *::before, *::after { touch-action: none; }
@@ -71,6 +71,8 @@
       box-shadow: 2px 2px 0 #666;
     }
     .tbtn.prime:hover { box-shadow: none; transform: translate(2px,2px); }
+    /* sandbox: yellow highlight during active transform */
+    .tbtn.prime.animating { background: #FFF000; color: #111; box-shadow: 2px 2px 0 #111; }
 
     .spacer { flex: 1; min-width: 8px; }
 
@@ -107,11 +109,11 @@
       transition: opacity .3s;
     }
 
-    /* instructions */
+    /* sandbox: intro floats at a slight angle */
     .intro {
       position: absolute;
       top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%) rotate(-0.6deg);
       text-align: center;
       pointer-events: none;
       transition: opacity .6s;
@@ -126,12 +128,12 @@
       margin: 0;
     }
 
-    /* reveal prompt — shown after transform completes */
+    /* sandbox: reveal prompt is handwritten, slightly tilted */
     .reveal-prompt {
       position: absolute;
       bottom: 28px;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translateX(-50%) rotate(-1.2deg);
       text-align: center;
       pointer-events: none;
       opacity: 0;
@@ -140,10 +142,9 @@
     }
     .reveal-prompt.visible { opacity: 1; }
     .reveal-prompt p {
-      font-family: 'EB Garamond', serif;
-      font-style: italic;
-      font-size: 1.05rem;
-      color: rgba(17,17,17,0.38);
+      font-family: 'Permanent Marker', cursive;
+      font-size: 1.1rem;
+      color: rgba(17,17,17,0.3);
       margin: 0;
       letter-spacing: 0.01em;
     }
@@ -512,6 +513,7 @@ function doTransform() {
   if (animId) cancelAnimationFrame(animId)
   transformed = true
   document.getElementById('bXform').textContent = 'Regenerate'
+  document.getElementById('bXform').classList.add('animating')
   document.getElementById('bSave').style.display = 'none'
   hideReveal()
   clearSeedDots()
@@ -674,6 +676,7 @@ function doTransform() {
       renderMandala(xFx, 1, .85)
       renderRibs(xFx, 1, .88)
       document.getElementById('bSave').style.display = ''
+      document.getElementById('bXform').classList.remove('animating')
       setTimeout(showReveal, 600)
       return
     }
