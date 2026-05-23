@@ -17,6 +17,39 @@ const MAX_TOKENS = parseInt(process.env.ANTHROPIC_MAX_TOKENS || '8192')
 // The profile is injected fresh on every turn so the coach always has
 // the current state — phase, active commitment, re-interview due date.
 
+function loadReferenceAuthors(): string {
+  interface Quote { page_number: number; text: string }
+  const parseQuotes = (raw: string): Quote[] => {
+    try { return JSON.parse(raw) as Quote[] } catch { return [] }
+  }
+  const formatQuotes = (quotes: Quote[]): string =>
+    quotes.map(q => `"${q.text}"`).join('\n')
+
+  const creativeAct1 = parseQuotes(readICMFile('reference/Referenceauthors/creative act 1.json'))
+  const creativeAct2 = parseQuotes(readICMFile('reference/Referenceauthors/creative act 2.json'))
+  const makeIdeas    = parseQuotes(readICMFile('reference/Referenceauthors/make ideas happen.json'))
+  const publishWork  = parseQuotes(readICMFile('reference/Referenceauthors/publishyourwork.json'))
+  const unstuck      = parseQuotes(readICMFile('reference/Referenceauthors/unstuck book.json'))
+
+  return `## REFERENCE AUTHORS
+These curated passages inform how you coach. Draw on them when a quote or idea
+is genuinely relevant — as a lens, not a citation. Never name the book or author
+in session unless the builder has mentioned them. Let these ideas shape your
+questions, not your speech.
+
+### The Creative Act — Rick Rubin
+${formatQuotes([...creativeAct1, ...makeIdeas])}
+
+### Making Ideas Happen — Scott Belsky
+${formatQuotes(creativeAct2)}
+
+### Show Your Work — Austin Kleon
+${formatQuotes(publishWork)}
+
+### Unstuck — Dr. Emily Musgrove
+${formatQuotes(unstuck)}`
+}
+
 function buildSystemPrompt(profile: UserProfile | null): string {
   const readme    = readICMFile('AI_README.md')
   const identity  = readICMFile('identity.md')
@@ -31,6 +64,7 @@ function buildSystemPrompt(profile: UserProfile | null): string {
   const building  = readICMFile('reference/building-in-public.md')
   const safety    = readICMFile('reference/safety-protocol.md')
   const interview = readICMFile('reference/interview-protocol.md')
+  const authors   = loadReferenceAuthors()
 
   const profileSection = profile
     ? `\n\n---\n## ACTIVE USER PROFILE\n\`\`\`json\n${JSON.stringify(profile, null, 2)}\n\`\`\`\n---\n`
@@ -50,7 +84,8 @@ function buildSystemPrompt(profile: UserProfile | null): string {
     horizons,
     lens,
     building,
-    safety
+    safety,
+    authors
   ].join('\n\n')
 }
 
