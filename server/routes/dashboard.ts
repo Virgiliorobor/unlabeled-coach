@@ -8,7 +8,7 @@ import { requireAuth, issueSession, clearSession } from '../auth.js'
 import { readProfile, writeProfile, fileExists } from '../storage.js'
 import { registerUser } from '../scheduler.js'
 import { v4 as uuidv4 } from 'uuid'
-import { UserProfile } from '../types.js'
+import { UserProfile, PublishingLogEntry } from '../types.js'
 
 const router = Router()
 
@@ -67,11 +67,17 @@ router.post('/auth/register', async (req: Request, res: Response) => {
       dominant_lens: 'split',
       resistance_pattern: '',
       tone: 'balanced',
-      oblique_subset: []
+      oblique_subset: [],
+      behavioral_signals: {
+        avoidance_language: [],
+        engagement_triggers: [],
+        excuse_structure: ''
+      }
     },
 
     program: {
       current_phase: 'interview',
+      phase_started_at: now.toISOString(),
       phase_history: [],
       sessions_completed: 0,
       last_session_date: ''
@@ -79,6 +85,8 @@ router.post('/auth/register', async (req: Request, res: Response) => {
 
     active_commitment: null,
     commitment_history: [],
+    action_steps: [],
+    publishing_log: [],
 
     notifications: {
       email,
@@ -164,10 +172,35 @@ router.get('/dashboard', requireAuth, async (req: Request, res: Response) => {
   const reInterviewDue = new Date(profile.re_interview_due)
   const reInterviewOverdue = now >= reInterviewDue
 
+  // Phase progress — days elapsed and minimum requirements per phase
+  const PHASE_MINIMUM_DAYS: Record<string, number> = {
+    interview: 0, reflection: 3, clarity: 3, resistance: 3, commitment: 0, accountability: 0
+  }
+  const phaseStarted = profile.program.phase_started_at
+    ? new Date(profile.program.phase_started_at)
+    : new Date(profile.created_at)
+  const daysElapsed = Math.floor((now.getTime() - phaseStarted.getTime()) / (1000 * 60 * 60 * 24))
+  const minimumDays = PHASE_MINIMUM_DAYS[profile.program.current_phase] ?? 0
+  const completedSteps = (profile.action_steps || []).filter(s => s.status === 'done').length
+
+  // Action steps — all pending + last 5 completed, most recent first
+  const allSteps = profile.action_steps || []
+  const pendingSteps = allSteps.filter(s => s.status === 'pending')
+  const recentDoneSteps = allSteps
+    .filter(s => s.status === 'done')
+    .sort((a, b) => new Date(b.assigned_at).getTime() - new Date(a.assigned_at).getTime())
+    .slice(0, 5)
+
+  // Publishing log — most recent first
+  const publishingLog = (profile.publishing_log || [])
+    .slice()
+    .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
+
   res.json({
     profile: {
       slug: profile.slug,
       build_name: profile.build.name,
+      build_description: profile.build.description,
       build_state: profile.build.state,
       current_phase: profile.program.current_phase,
       sessions_completed: profile.program.sessions_completed,
@@ -177,9 +210,19 @@ router.get('/dashboard', requireAuth, async (req: Request, res: Response) => {
       dominant_lens: profile.calibration.dominant_lens,
       resistance_pattern: profile.calibration.resistance_pattern
     },
+    phase_progress: {
+      current_phase: profile.program.current_phase,
+      phase_started_at: profile.program.phase_started_at || profile.created_at,
+      days_elapsed: daysElapsed,
+      minimum_days: minimumDays,
+      time_gate_clear: daysElapsed >= minimumDays,
+      completed_action_steps: completedSteps
+    },
     goals: profile.goals,
     active_commitment: profile.active_commitment,
-    commitment_history: profile.commitment_history.slice(-10), // last 10
+    commitment_history: profile.commitment_history.slice(-10),
+    action_steps: { pending: pendingSteps, recent_done: recentDoneSteps },
+    publishing_log: publishingLog,
     notifications: {
       channels: profile.notifications.channels,
       daily_signal_time: profile.notifications.daily_signal_time,
@@ -250,6 +293,76 @@ router.post('/dashboard/commitment/:id/resolve', requireAuth, async (req: Reques
   await writeProfile(profile)
 
   res.json({ ok: true, resolved })
+})
+
+// ── POST /api/dashboard/action-step/:id/complete ─────────────
+// Mark an action step as done with an optional completion note.
+
+router.post('/action-step/:id/complete', requireAuth, async (req: Request, res: Response) => {
+  const { slug } = (req as any).user
+  const { id } = req.params
+  const { completion_note } = req.body
+
+  const profile = await readProfile(slug)
+  if (!profile) { res.status(404).json({ error: 'Profile not found' }); return }
+
+  const step = (profile.action_steps || []).find(s => s.step_id === id)
+  if (!step) { res.status(404).json({ error: 'Action step not found' }); return }
+
+  step.status = 'done'
+  step.completion_note = completion_note || ''
+  await writeProfile(profile)
+  res.json({ ok: true, step })
+})
+
+// ── POST /api/dashboard/action-step/:id/skip ─────────────────
+// Mark an action step as skipped with a required reason.
+
+router.post('/action-step/:id/skip', requireAuth, async (req: Request, res: Response) => {
+  const { slug } = (req as any).user
+  const { id } = req.params
+  const { reason } = req.body
+
+  const profile = await readProfile(slug)
+  if (!profile) { res.status(404).json({ error: 'Profile not found' }); return }
+
+  const step = (profile.action_steps || []).find(s => s.step_id === id)
+  if (!step) { res.status(404).json({ error: 'Action step not found' }); return }
+
+  step.status = 'skipped'
+  step.completion_note = reason || ''
+  await writeProfile(profile)
+  res.json({ ok: true, step })
+})
+
+// ── POST /api/dashboard/publishing-log ───────────────────────
+// Manually add a publishing log entry (proof of a public act outside a session).
+
+router.post('/publishing-log', requireAuth, async (req: Request, res: Response) => {
+  const { slug } = (req as any).user
+  const { url, platform, description, commitment_id } = req.body
+
+  if (!url || !description) {
+    res.status(400).json({ error: 'url and description are required' })
+    return
+  }
+
+  const profile = await readProfile(slug)
+  if (!profile) { res.status(404).json({ error: 'Profile not found' }); return }
+
+  const entry: PublishingLogEntry = {
+    log_id: uuidv4(),
+    url,
+    platform: platform || 'other',
+    published_at: new Date().toISOString(),
+    commitment_id: commitment_id || '',
+    description
+  }
+
+  if (!profile.publishing_log) profile.publishing_log = []
+  profile.publishing_log.push(entry)
+  await writeProfile(profile)
+  res.json({ ok: true, entry })
 })
 
 export default router
