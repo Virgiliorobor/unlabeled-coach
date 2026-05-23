@@ -43,10 +43,16 @@
     "dominant_lens": "business",
     "resistance_pattern": "visibility_avoider",
     "tone": "direct",
-    "oblique_subset": []
+    "oblique_subset": [],
+    "behavioral_signals": {
+      "avoidance_language": ["I don't want to look like I'm doing content", "I'll share it when there's something real to share"],
+      "engagement_triggers": ["describing the Telegram receipt system to a real client", "talking about solving specific operational problems"],
+      "excuse_structure": "not_ready_yet"
+    }
   },
   "program": {
     "current_phase": "resistance",
+    "phase_started_at": "2026-05-22T19:00:00.000Z",
     "phase_history": [
       {
         "phase": "interview",
@@ -64,6 +70,8 @@
   },
   "active_commitment": null,
   "commitment_history": [],
+  "action_steps": [],
+  "publishing_log": [],
   "notifications": {
     "email": "jaime.rob@gmail.com",
     "telegram_chat_id": null,
