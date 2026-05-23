@@ -217,6 +217,42 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange }: Props
         </button>
       </div>
 
+      {/* Early-phase guide — shown when profile is still being built */}
+      {profile.current_phase === 'interview' && (
+        <div className="phase-guide" style={{ marginBottom: 'var(--space-md)' }}>
+          <span className="label" style={{ display: 'block', marginBottom: 6 }}>
+            {!goals.thirty_days.text
+              ? 'Intake interview in progress'
+              : 'Interview nearly complete'}
+          </span>
+          <p className="text-small" style={{ marginBottom: 'var(--space-xs)' }}>
+            {!goals.thirty_days.text
+              ? 'Start a session to build your profile. The coach will pick up exactly where you left off — you can stop between sections and come back.'
+              : 'Your background and goals are saved. Start a session to finish the resistance and notification sections.'}
+          </p>
+          <div className="interview-checklist">
+            <span className={`interview-check ${profile.resistance_pattern ? 'done' : goals.thirty_days.text ? 'active' : 'pending'}`}>
+              {goals.thirty_days.text ? '✓' : '○'} Goals set
+            </span>
+            <span className={`interview-check ${first_move ? 'done' : profile.resistance_pattern ? 'active' : 'pending'}`}>
+              {profile.resistance_pattern ? '✓' : '○'} Pattern named
+            </span>
+            <span className={`interview-check ${first_move ? 'active' : 'pending'}`}>
+              {first_move ? '✓' : '○'} First move set
+            </span>
+          </div>
+        </div>
+      )}
+
+      {profile.current_phase === 'reflection' && (
+        <div className="phase-guide" style={{ marginBottom: 'var(--space-md)' }}>
+          <span className="label" style={{ display: 'block', marginBottom: 6 }}>Phase 1 — Reflection</span>
+          <p className="text-small">
+            The coach is surfacing contradictions between what you say you want and what you're actually doing. Keep showing up — the pattern becomes visible through conversation.
+          </p>
+        </div>
+      )}
+
       <hr />
 
       {/* Signal row: oblique card + today's prompt */}

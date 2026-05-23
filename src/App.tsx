@@ -67,7 +67,7 @@ export default function App() {
 
   const handleOnboardingComplete = (slug: string) => {
     setUser({ slug, user_id: slug })
-    setCurrentPhase('phase_0')
+    setCurrentPhase('interview')
     setView('dashboard')
   }
 
