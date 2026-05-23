@@ -88,6 +88,14 @@
     {
       "role": "assistant",
       "content": "Ah. So you've already published somewhere. That's new information.\n\nWhat did you post in the Skool community, and when?"
+    },
+    {
+      "role": "user",
+      "content": "many times like for the past 3months"
+    },
+    {
+      "role": "assistant",
+      "content": "So you've been publishing for three months in a community where nobody knows you.\n\nAnd your 30-day goal is for someone you don't know to notice your work and ask you to build something.\n\nHere's what I'm seeing: the Skool posts haven't produced that outcome yet. Which means either the content isn't landing, the audience isn't right, or the posts aren't positioned as \"here's what I build, hire me.\"\n\nInstagram is where people *do* know you. That's a different game — not anonymous builder sharing, but claiming this identity to your actual network.\n\nSo the question sharpens:\n\nThe Skool posts are comfortable now. Instagram is where the real exposure lives. You said the fear of being mocked has lost its grip.\n\nWhat's the actual difference between what you've been posting in Skool and what you'd post on Instagram? Is it the content, the tone, or the fact that posting on Instagram makes it real to people who knew you as a finance guy?"
     }
   ]
 }
