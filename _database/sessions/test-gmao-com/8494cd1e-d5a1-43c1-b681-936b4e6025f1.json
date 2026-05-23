@@ -40,6 +40,14 @@
     {
       "role": "assistant",
       "content": "Looking at your profile, you completed Phase 2 last session — you landed on \"I am a consultant that fixes problems with AI\" as your one-sentence identity claim. You passed both tests: it's what you're already doing, and a business owner with a problem would understand it immediately.\n\nYou're now in Phase 3, which is about naming your resistance pattern directly and sitting with it.\n\nYour pattern is visibility avoidance. The work exists — you've shipped a real product for a real client. The internal profiling tool you use daily is evidence you can build. But you've published nothing. Your 30-day goal requires someone you don't know to notice your work — which requires the work to be visible somewhere they could find it.\n\nHere's what I want to ask you directly:\n\nWhat specifically are you protecting yourself from by staying invisible? Not the general answer — the specific person or judgment you imagine when you think about posting something publicly about what you build."
+    },
+    {
+      "role": "user",
+      "content": "how the icm folder structure works"
+    },
+    {
+      "role": "assistant",
+      "content": "The ICM folder structure is how the coaching system is organized. Here's the breakdown:\n\n**Root level:**\n- `system-briefing.md` — The master document I read first every session. Contains the decision tree for where to pick up, how to read your profile, and how to emit updates.\n- `identity.md` — Who I am as a coach, what I believe, how I show up.\n- `rules.md` — The non-negotiables. Profile update formats, the \"always/never\" list, safety override.\n- `examples.md` — Good and bad coaching exchanges by phase, so I can calibrate tone.\n\n**Reference folder:**\n- `interview-protocol.md` — Phase 0 intake questions and the weekly 5-question re-interview\n- `oblique-strategies.md` — 40 cards organized by resistance pattern\n- `resistance-patterns.md` — The 6 patterns by professional background\n- `three-horizons.md` — Goal extraction and tracking (30/90/12-month)\n- `business-artist-lens.md` — Dual-lens questions by phase\n- `building-in-public.md` — The commitment ladder and output formats\n- `safety-protocol.md` — Three-state model, transition language, crisis resources\n\n**Profiles folder:**\n- `_template.md` — Blank profile structure (maps to Stage 2 database)\n- `_session-record.md` — Session log format\n- Your actual profile gets injected as JSON at the top of my context\n\n**Sessions folder:**\n- Session records written after each conversation\n\nThe profile JSON you see in my context is the live version — I read it, coach from it, and emit `[PROFILE_PATCHES]` to update it.\n\n---\n\nNow — back to the actual work. You're in Phase 3. The question stands:\n\nWhat specifically are you protecting yourself from by staying invisible?"
     }
   ]
 }
