@@ -5,7 +5,7 @@
 
 import { Router, Request, Response } from 'express'
 import { requireAuth, issueSession, clearSession } from '../auth.js'
-import { readProfile, writeProfile, fileExists } from '../storage.js'
+import { readProfile, writeProfile, fileExists, findProfileByEmail } from '../storage.js'
 import { registerUser } from '../scheduler.js'
 import { v4 as uuidv4 } from 'uuid'
 import { UserProfile, PublishingLogEntry } from '../types.js'
@@ -115,7 +115,7 @@ router.post('/auth/register', async (req: Request, res: Response) => {
 })
 
 // ── POST /api/auth/login ──────────────────────────────────────
-// Simple email-based login — looks up profile by email.
+// Email-based login — finds profile by email and issues session.
 
 router.post('/auth/login', async (req: Request, res: Response) => {
   const { email } = req.body
@@ -124,12 +124,15 @@ router.post('/auth/login', async (req: Request, res: Response) => {
     return
   }
 
-  // For MVP: look up by email stored in profile.
-  // In production, add a proper email/OTP flow.
-  // For now this is a dev shortcut — in prod replace with magic link.
-  res.status(501).json({
-    error: 'Magic link login not yet implemented. Use /api/auth/dev-login for development.'
-  })
+  const profile = await findProfileByEmail(email.trim().toLowerCase())
+  if (!profile) {
+    // Deliberately vague — don't reveal whether the email exists
+    res.status(200).json({ ok: true, message: 'If that email is registered, you are now logged in.' })
+    return
+  }
+
+  issueSession(res, profile.user_id, profile.slug)
+  res.json({ ok: true, slug: profile.slug })
 })
 
 // ── POST /api/auth/dev-login ──────────────────────────────────

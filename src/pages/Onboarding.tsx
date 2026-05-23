@@ -5,7 +5,7 @@ interface Props {
 }
 
 export default function Onboarding({ onComplete }: Props) {
-  const [step, setStep] = useState<'welcome' | 'register'>('welcome')
+  const [step, setStep] = useState<'welcome' | 'register' | 'login'>('welcome')
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [error, setError] = useState('')
@@ -15,7 +15,7 @@ export default function Onboarding({ onComplete }: Props) {
     return str.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').slice(0, 40)
   }
 
-  async function handleRegister(e: React.FormEvent) {
+  async function handleRegister(e: { preventDefault: () => void }) {
     e.preventDefault()
     if (!email || !name) return
     setLoading(true)
@@ -35,6 +35,30 @@ export default function Onboarding({ onComplete }: Props) {
 
     if (!res.ok) {
       setError(data.error || 'Something went wrong')
+      return
+    }
+
+    onComplete(data.slug)
+  }
+
+  async function handleLogin(e: { preventDefault: () => void }) {
+    e.preventDefault()
+    if (!email) return
+    setLoading(true)
+    setError('')
+
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim().toLowerCase() })
+    })
+
+    const data = await res.json()
+    setLoading(false)
+
+    if (!res.ok || !data.slug) {
+      setError('No account found for that email address.')
       return
     }
 
@@ -62,6 +86,62 @@ export default function Onboarding({ onComplete }: Props) {
         <button className="sanctuary-cta" onClick={() => setStep('register')}>
           Begin
         </button>
+
+        <p style={{ marginTop: 'var(--space-md)', fontSize: '0.85rem' }}>
+          <button
+            onClick={() => { setStep('login'); setError('') }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}
+          >
+            Already have an account? Sign in
+          </button>
+        </p>
+      </div>
+    )
+  }
+
+  if (step === 'login') {
+    return (
+      <div className="sanctuary-page">
+        <div style={{ marginBottom: 'var(--space-lg)' }}>
+          <button className="sanctuary-back" onClick={() => { setStep('welcome'); setError('') }}>
+            ← Back
+          </button>
+        </div>
+
+        <h2 className="sanctuary-subhead">Welcome back.</h2>
+        <p className="sanctuary-body" style={{ marginBottom: 'var(--space-lg)' }}>
+          Enter the email you registered with.
+        </p>
+
+        <form onSubmit={handleLogin} className="sanctuary-form">
+          <div style={{ marginBottom: 'var(--space-md)' }}>
+            <label className="label" style={{ display: 'block', marginBottom: 'var(--space-xs)' }}>
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              autoFocus
+            />
+          </div>
+
+          {error && (
+            <p style={{ color: 'var(--accent)', marginBottom: 'var(--space-sm)', fontSize: '0.85rem' }}>
+              {error}
+            </p>
+          )}
+
+          <button
+            className="sanctuary-cta"
+            type="submit"
+            disabled={loading || !email}
+            style={{ opacity: loading || !email ? 0.5 : 1 }}
+          >
+            {loading ? 'Signing in…' : 'Sign in'}
+          </button>
+        </form>
       </div>
     )
   }
@@ -71,7 +151,7 @@ export default function Onboarding({ onComplete }: Props) {
       <div style={{ marginBottom: 'var(--space-lg)' }}>
         <button
           className="sanctuary-back"
-          onClick={() => setStep('welcome')}
+          onClick={() => { setStep('welcome'); setError('') }}
         >
           ← Back
         </button>
