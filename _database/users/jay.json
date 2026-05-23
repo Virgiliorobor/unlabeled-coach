@@ -2,7 +2,7 @@
   "user_id": "1f19b42c-2c56-4fba-8ee8-d9b9d8ed871d",
   "slug": "jay",
   "created_at": "2026-05-23T18:46:43.868Z",
-  "last_updated": "2026-05-23T18:46:43.868Z",
+  "last_updated": "2026-05-23T18:50:40.767Z",
   "re_interview_due": "2026-05-30T18:46:43.868Z",
   "background": {
     "domain": "",
@@ -46,8 +46,8 @@
   "program": {
     "current_phase": "interview",
     "phase_history": [],
-    "sessions_completed": 0,
-    "last_session_date": ""
+    "sessions_completed": 1,
+    "last_session_date": "2026-05-23T18:50:39.717Z"
   },
   "active_commitment": null,
   "commitment_history": [],
