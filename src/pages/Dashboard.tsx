@@ -19,10 +19,41 @@ interface ActiveCommitment {
   daily_reminders: Record<string, string | number>
 }
 
+interface ActionStep {
+  step_id: string
+  text: string
+  assigned_at: string
+  due_date: string
+  status: 'pending' | 'done' | 'skipped'
+  coach_reason: string
+  completion_note: string
+  phase_assigned: string
+  exercise_level: number
+}
+
+interface PublishingEntry {
+  log_id: string
+  url: string
+  platform: string
+  published_at: string
+  commitment_id: string
+  description: string
+}
+
+interface PhaseProgress {
+  current_phase: string
+  phase_started_at: string
+  days_elapsed: number
+  minimum_days: number
+  time_gate_clear: boolean
+  completed_action_steps: number
+}
+
 interface DashboardData {
   profile: {
     slug: string
     build_name: string
+    build_description: string
     build_state: string
     current_phase: string
     sessions_completed: number
@@ -32,6 +63,7 @@ interface DashboardData {
     dominant_lens: string
     resistance_pattern: string
   }
+  phase_progress: PhaseProgress
   goals: {
     thirty_days: Goal
     ninety_days: Goal
@@ -44,6 +76,11 @@ interface DashboardData {
     due_date: string
     outcome_notes: string
   }>
+  action_steps: {
+    pending: ActionStep[]
+    recent_done: ActionStep[]
+  }
+  publishing_log: PublishingEntry[]
 }
 
 interface Props {
@@ -62,20 +99,54 @@ function daysUntil(iso: string): number {
   return Math.ceil((new Date(iso).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
 }
 
+function phaseLabel(phase: string): string {
+  const labels: Record<string, string> = {
+    interview: 'Phase 0 — Interview',
+    reflection: 'Phase 1 — Reflection',
+    clarity: 'Phase 2 — Clarity',
+    resistance: 'Phase 3 — Resistance',
+    commitment: 'Phase 4 — Commitment',
+    accountability: 'Phase 5 — Accountability'
+  }
+  return labels[phase] || phase
+}
+
+function platformLabel(p: string): string {
+  const labels: Record<string, string> = {
+    linkedin: 'LinkedIn', twitter: 'X/Twitter', substack: 'Substack',
+    community: 'Community', email: 'Email', blog: 'Blog', other: 'Published'
+  }
+  return labels[p] || p
+}
+
 export default function Dashboard({ slug, onStartSession, onPhaseChange }: Props) {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetch('/api/dashboard', { credentials: 'include' })
-      .then(r => r.json())
-      .then(d => {
-        setData(d)
-        setLoading(false)
-        if (d?.profile?.current_phase) onPhaseChange?.(d.profile.current_phase)
-      })
-      .catch(() => setLoading(false))
-  }, [])
+  // Action step completion state
+  const [completingStep, setCompletingStep] = useState<string | null>(null)
+  const [completionNote, setCompletionNote] = useState('')
+  const [skippingStep, setSkippingStep] = useState<string | null>(null)
+  const [skipReason, setSkipReason] = useState('')
+
+  // Publishing proof state
+  const [showProofForm, setShowProofForm] = useState(false)
+  const [proofUrl, setProofUrl] = useState('')
+  const [proofPlatform, setProofPlatform] = useState('community')
+  const [proofDescription, setProofDescription] = useState('')
+  const [submittingProof, setSubmittingProof] = useState(false)
+
+  async function load() {
+    const r = await fetch('/api/dashboard', { credentials: 'include' })
+    if (r.ok) {
+      const d = await r.json()
+      setData(d)
+      if (d?.profile?.current_phase) onPhaseChange?.(d.profile.current_phase)
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [])
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
@@ -84,13 +155,55 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange }: Props
 
   async function resolveCommitment(id: string, status: 'done' | 'missed' | 'partial') {
     await fetch(`/api/dashboard/commitment/${id}/resolve`, {
-      method: 'POST',
-      credentials: 'include',
+      method: 'POST', credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status })
     })
-    const r = await fetch('/api/dashboard', { credentials: 'include' })
-    setData(await r.json())
+    load()
+  }
+
+  async function completeStep(id: string) {
+    await fetch(`/api/dashboard/action-step/${id}/complete`, {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ completion_note: completionNote })
+    })
+    setCompletingStep(null)
+    setCompletionNote('')
+    load()
+  }
+
+  async function skipStep(id: string) {
+    await fetch(`/api/dashboard/action-step/${id}/skip`, {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason: skipReason })
+    })
+    setSkippingStep(null)
+    setSkipReason('')
+    load()
+  }
+
+  async function submitProof(e: { preventDefault: () => void }) {
+    e.preventDefault()
+    if (!proofUrl || !proofDescription) return
+    setSubmittingProof(true)
+    await fetch('/api/dashboard/publishing-log', {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: proofUrl,
+        platform: proofPlatform,
+        description: proofDescription,
+        commitment_id: data?.active_commitment?.commitment_id || ''
+      })
+    })
+    setProofUrl('')
+    setProofPlatform('community')
+    setProofDescription('')
+    setShowProofForm(false)
+    setSubmittingProof(false)
+    load()
   }
 
   if (loading) {
@@ -103,9 +216,10 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange }: Props
 
   if (!data) return null
 
-  const { profile, goals, active_commitment, commitment_history } = data
+  const { profile, phase_progress, goals, active_commitment, commitment_history, action_steps, publishing_log } = data
   const reInterviewDays = daysUntil(profile.re_interview_due)
   const isOverdue = active_commitment ? daysUntil(active_commitment.due_date) <= 0 : false
+  const hasPendingSteps = action_steps.pending.length > 0
 
   return (
     <div className="container" style={{ paddingTop: 'var(--space-lg)', paddingBottom: 'var(--space-xl)' }}>
@@ -128,50 +242,196 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange }: Props
         </div>
       )}
 
-      {/* Start session */}
-      <div style={{ marginBottom: 'var(--space-lg)' }}>
-        <button className="btn-primary" onClick={onStartSession}>
-          Start session
-        </button>
-        <span className="label" style={{ marginLeft: 'var(--space-sm)' }}>
-          Phase: {profile.current_phase} · Session {profile.sessions_completed + 1}
-        </span>
+      {/* Phase progress bar */}
+      <div style={{ marginBottom: 'var(--space-lg)', padding: 'var(--space-sm) 0', borderBottom: '2px solid var(--black)' }}>
+        <div className="flex justify-between items-baseline" style={{ marginBottom: 4 }}>
+          <span className="dymo-label" style={{ fontSize: '0.7rem' }}>{phaseLabel(profile.current_phase)}</span>
+          <span className="mono" style={{ fontSize: '0.7rem', color: 'var(--grey-mid)' }}>
+            {phase_progress.minimum_days > 0
+              ? `Day ${phase_progress.days_elapsed} of ${phase_progress.minimum_days} minimum`
+              : `Session ${profile.sessions_completed + 1}`}
+          </span>
+        </div>
+        {phase_progress.minimum_days > 0 && (
+          <div style={{ height: 4, background: 'var(--grey-light)', position: 'relative' }}>
+            <div style={{
+              position: 'absolute', top: 0, left: 0, height: '100%',
+              width: `${Math.min(100, (phase_progress.days_elapsed / phase_progress.minimum_days) * 100)}%`,
+              background: phase_progress.time_gate_clear ? '#2d6a2d' : 'var(--black)'
+            }} />
+          </div>
+        )}
+        <div className="flex justify-between items-center" style={{ marginTop: 4 }}>
+          <span className="label" style={{ fontSize: '0.65rem', color: 'var(--grey-mid)' }}>
+            {phase_progress.completed_action_steps} exercise{phase_progress.completed_action_steps !== 1 ? 's' : ''} completed
+          </span>
+          <button className="btn-primary" onClick={onStartSession} style={{ padding: '6px 16px', fontSize: '0.8rem' }}>
+            Start session
+          </button>
+        </div>
       </div>
 
-      <hr />
+      {/* ── CURRENT EXERCISE ──────────────────────────────── */}
+      {hasPendingSteps && (
+        <div style={{ marginBottom: 'var(--space-lg)' }}>
+          <h2 className="dymo-label" style={{ marginBottom: 'var(--space-sm)', fontSize: '0.75rem' }}>
+            Current exercise
+          </h2>
+          {action_steps.pending.map(step => (
+            <div key={step.step_id} className="tape-border" style={{ marginBottom: 'var(--space-sm)', padding: 'var(--space-sm)' }}>
+              <div className="flex justify-between items-baseline" style={{ marginBottom: 'var(--space-xs)' }}>
+                <span className="mono" style={{ fontSize: '0.65rem', color: 'var(--grey-mid)' }}>
+                  Level {step.exercise_level} · {step.phase_assigned}
+                </span>
+                <span className="label" style={{ fontSize: '0.65rem', color: daysUntil(step.due_date) <= 0 ? 'var(--accent)' : 'var(--grey-mid)' }}>
+                  due {formatDate(step.due_date)}
+                  {daysUntil(step.due_date) <= 0 && ' · overdue'}
+                </span>
+              </div>
 
-      {/* Active commitment */}
+              <p style={{ marginBottom: 'var(--space-sm)', lineHeight: 1.5 }}>{step.text}</p>
+
+              {step.coach_reason && (
+                <p style={{ fontSize: '0.8rem', color: 'var(--grey-mid)', marginBottom: 'var(--space-sm)', fontStyle: 'italic' }}>
+                  {step.coach_reason}
+                </p>
+              )}
+
+              {completingStep === step.step_id ? (
+                <div>
+                  <textarea
+                    value={completionNote}
+                    onChange={e => setCompletionNote(e.target.value)}
+                    placeholder="What did you do? What came up? (optional)"
+                    rows={3}
+                    style={{ width: '100%', marginBottom: 'var(--space-xs)', fontFamily: 'inherit', fontSize: '0.9rem', padding: 8, border: '1px solid var(--black)', resize: 'vertical' }}
+                  />
+                  <div className="flex gap-sm">
+                    <button className="btn-primary" style={{ fontSize: '0.8rem' }} onClick={() => completeStep(step.step_id)}>
+                      Done — save note
+                    </button>
+                    <button className="btn-ghost" onClick={() => setCompletingStep(null)}>Cancel</button>
+                  </div>
+                </div>
+              ) : skippingStep === step.step_id ? (
+                <div>
+                  <textarea
+                    value={skipReason}
+                    onChange={e => setSkipReason(e.target.value)}
+                    placeholder="What got in the way? (the coach will see this)"
+                    rows={2}
+                    style={{ width: '100%', marginBottom: 'var(--space-xs)', fontFamily: 'inherit', fontSize: '0.9rem', padding: 8, border: '1px solid var(--black)', resize: 'vertical' }}
+                  />
+                  <div className="flex gap-sm">
+                    <button className="btn-ghost" onClick={() => skipStep(step.step_id)}>Skip with reason</button>
+                    <button className="btn-ghost" onClick={() => setSkippingStep(null)}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex gap-sm">
+                  <button className="btn-ghost" onClick={() => { setCompletingStep(step.step_id); setSkippingStep(null) }}>
+                    Mark done
+                  </button>
+                  <button className="btn-ghost" style={{ color: 'var(--grey-mid)' }} onClick={() => { setSkippingStep(step.step_id); setCompletingStep(null) }}>
+                    Skip
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── ACTIVE COMMITMENT ─────────────────────────────── */}
       {active_commitment ? (
-        <div className={`commitment-block tape-border${isOverdue ? ' overdue' : ''}`}
-             style={{ margin: 'var(--space-md) 0' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--space-xs)', marginBottom: 'var(--space-xs)' }}>
-            <span className="dymo-label" style={{ fontSize: '0.65rem' }}>Active commitment</span>
-            <span className="label">due {formatDate(active_commitment.due_date)}</span>
-            {isOverdue && (
-              <span className="overdue-marker label">overdue</span>
+        <div style={{ marginBottom: 'var(--space-lg)' }}>
+          <h2 className="dymo-label" style={{ marginBottom: 'var(--space-sm)', fontSize: '0.75rem' }}>Active commitment</h2>
+          <div className={`commitment-block tape-border${isOverdue ? ' overdue' : ''}`}>
+            <div className="flex justify-between items-baseline" style={{ marginBottom: 'var(--space-xs)' }}>
+              <span className="label" style={{ fontSize: '0.65rem' }}>
+                Rung {active_commitment.ladder_rung}
+              </span>
+              <span className="label" style={{ color: isOverdue ? 'var(--accent)' : 'inherit' }}>
+                due {formatDate(active_commitment.due_date)}
+                {isOverdue && <span className="overdue-marker label"> · overdue</span>}
+              </span>
+            </div>
+
+            <p style={{ marginBottom: 'var(--space-sm)' }}>{active_commitment.text}</p>
+
+            {active_commitment.share_post && (
+              <div style={{ marginBottom: 'var(--space-sm)', padding: 'var(--space-sm)', background: 'var(--grey-light)', borderLeft: '3px solid var(--black)' }}>
+                <span className="label" style={{ display: 'block', marginBottom: 4, fontSize: '0.65rem' }}>Ready to post</span>
+                <p style={{ fontSize: '0.9rem', fontStyle: 'italic' }}>{active_commitment.share_post}</p>
+              </div>
+            )}
+
+            <div className="flex gap-sm" style={{ marginBottom: 'var(--space-sm)' }}>
+              <button className="btn-ghost" onClick={() => resolveCommitment(active_commitment.commitment_id, 'done')}>
+                Mark done
+              </button>
+              <button className="btn-ghost" onClick={() => resolveCommitment(active_commitment.commitment_id, 'partial')}>
+                Partial
+              </button>
+              <button className="btn-ghost" onClick={() => resolveCommitment(active_commitment.commitment_id, 'missed')}>
+                Missed
+              </button>
+            </div>
+
+            {/* Add proof of publication */}
+            {!showProofForm ? (
+              <button
+                className="label"
+                style={{ color: 'var(--grey-mid)', fontSize: '0.75rem', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+                onClick={() => setShowProofForm(true)}
+              >
+                + Add proof of publication
+              </button>
+            ) : (
+              <form onSubmit={submitProof} style={{ marginTop: 'var(--space-xs)' }}>
+                <div style={{ display: 'grid', gap: 8 }}>
+                  <input
+                    type="url"
+                    value={proofUrl}
+                    onChange={e => setProofUrl(e.target.value)}
+                    placeholder="URL to what you published"
+                    required
+                    style={{ fontFamily: 'inherit', fontSize: '0.9rem', padding: 8, border: '1px solid var(--black)', width: '100%' }}
+                  />
+                  <select
+                    value={proofPlatform}
+                    onChange={e => setProofPlatform(e.target.value)}
+                    style={{ fontFamily: 'inherit', fontSize: '0.9rem', padding: 8, border: '1px solid var(--black)' }}
+                  >
+                    <option value="community">Unlabeled Community</option>
+                    <option value="linkedin">LinkedIn</option>
+                    <option value="twitter">X / Twitter</option>
+                    <option value="substack">Substack</option>
+                    <option value="blog">Blog</option>
+                    <option value="email">Email (no URL)</option>
+                    <option value="other">Other</option>
+                  </select>
+                  <textarea
+                    value={proofDescription}
+                    onChange={e => setProofDescription(e.target.value)}
+                    placeholder="What did you publish? One or two sentences."
+                    rows={2}
+                    required
+                    style={{ fontFamily: 'inherit', fontSize: '0.9rem', padding: 8, border: '1px solid var(--black)', resize: 'vertical' }}
+                  />
+                  <div className="flex gap-sm">
+                    <button type="submit" className="btn-primary" disabled={submittingProof} style={{ fontSize: '0.8rem' }}>
+                      {submittingProof ? 'Saving…' : 'Save proof'}
+                    </button>
+                    <button type="button" className="btn-ghost" onClick={() => setShowProofForm(false)}>Cancel</button>
+                  </div>
+                </div>
+              </form>
             )}
           </div>
-          <p style={{ marginBottom: 'var(--space-sm)' }}>{active_commitment.text}</p>
-          <div className="flex gap-sm">
-            <button className="btn-ghost" onClick={() => resolveCommitment(active_commitment.commitment_id, 'done')}>
-              Mark done
-            </button>
-            <button className="btn-ghost" onClick={() => resolveCommitment(active_commitment.commitment_id, 'partial')}>
-              Partial
-            </button>
-            <button className="btn-ghost" onClick={() => resolveCommitment(active_commitment.commitment_id, 'missed')}>
-              Missed
-            </button>
-          </div>
-          {active_commitment.share_post && (
-            <div style={{ marginTop: 'var(--space-sm)', padding: 'var(--space-sm)', background: 'var(--grey-light)', borderLeft: '3px solid var(--black)' }}>
-              <span className="label" style={{ display: 'block', marginBottom: 4 }}>Share post — ready to use</span>
-              <p style={{ fontSize: '0.9rem', fontStyle: 'italic' }}>{active_commitment.share_post}</p>
-            </div>
-          )}
         </div>
       ) : (
-        <div style={{ margin: 'var(--space-md) 0' }}>
+        <div style={{ marginBottom: 'var(--space-lg)' }}>
           <span className="label">No active commitment</span>
           <p className="text-muted text-small" style={{ marginTop: 4 }}>
             Declare one in your next session.
@@ -181,54 +441,123 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange }: Props
 
       <hr />
 
-      {/* Three horizons */}
+      {/* ── THREE HORIZONS ────────────────────────────────── */}
       <div style={{ margin: 'var(--space-md) 0' }}>
         <h2 className="dymo-label" style={{ marginBottom: 'var(--space-md)', fontSize: '0.75rem' }}>Three horizons</h2>
         <div className="horizon-grid">
-
-          <div className="horizon-cell">
-            <span className="label" style={{ display: 'block', marginBottom: 'var(--space-xs)' }}>30 days</span>
-            <p style={{ fontSize: '0.95rem' }}>
-              {goals.thirty_days.text || <span className="text-muted">Not set yet</span>}
-            </p>
-          </div>
-
-          <div className="horizon-cell">
-            <span className="label" style={{ display: 'block', marginBottom: 'var(--space-xs)' }}>90 days</span>
-            <p style={{ fontSize: '0.95rem' }}>
-              {goals.ninety_days.text || <span className="text-muted">Not set yet</span>}
-            </p>
-          </div>
-
           <div className="horizon-cell">
             <span className="label" style={{ display: 'block', marginBottom: 'var(--space-xs)' }}>12 months</span>
             <p style={{ fontSize: '0.95rem' }}>
               {goals.twelve_months.text || <span className="text-muted">Not set yet</span>}
             </p>
           </div>
-
+          <div className="horizon-cell">
+            <span className="label" style={{ display: 'block', marginBottom: 'var(--space-xs)' }}>90 days</span>
+            <p style={{ fontSize: '0.95rem' }}>
+              {goals.ninety_days.text || <span className="text-muted">Not set yet</span>}
+            </p>
+          </div>
+          <div className="horizon-cell">
+            <span className="label" style={{ display: 'block', marginBottom: 'var(--space-xs)' }}>30 days</span>
+            <p style={{ fontSize: '0.95rem' }}>
+              {goals.thirty_days.text || <span className="text-muted">Not set yet</span>}
+            </p>
+            {active_commitment && (
+              <div style={{ marginTop: 'var(--space-xs)', paddingTop: 'var(--space-xs)', borderTop: '1px solid var(--grey-light)' }}>
+                <span className="label" style={{ fontSize: '0.65rem', color: 'var(--grey-mid)', display: 'block', marginBottom: 2 }}>Current commitment</span>
+                <p style={{ fontSize: '0.8rem' }}>{active_commitment.text}</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       <hr />
 
-      {/* Commitment history */}
+      {/* ── PUBLISHING LOG ────────────────────────────────── */}
+      <div style={{ margin: 'var(--space-md) 0' }}>
+        <div className="flex justify-between items-baseline" style={{ marginBottom: 'var(--space-sm)' }}>
+          <h2 className="dymo-label" style={{ fontSize: '0.75rem' }}>
+            Published {publishing_log.length > 0 && `(${publishing_log.length})`}
+          </h2>
+          {!showProofForm && (
+            <button
+              className="label"
+              style={{ fontSize: '0.7rem', color: 'var(--grey-mid)', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+              onClick={() => setShowProofForm(true)}
+            >
+              + Add
+            </button>
+          )}
+        </div>
+
+        {publishing_log.length === 0 ? (
+          <p className="text-muted text-small">Nothing published yet — your first public act goes here.</p>
+        ) : (
+          <div className="flex flex-col">
+            {publishing_log.map((entry) => (
+              <div key={entry.log_id} className="log-row" style={{ padding: '8px 0', borderBottom: '1px solid var(--grey-light)' }}>
+                <div className="flex justify-between items-baseline" style={{ marginBottom: 2 }}>
+                  <span className="mono" style={{ fontSize: '0.7rem' }}>{platformLabel(entry.platform)}</span>
+                  <span className="label" style={{ fontSize: '0.65rem', color: 'var(--grey-mid)' }}>{formatDate(entry.published_at)}</span>
+                </div>
+                <p className="text-small" style={{ marginBottom: 2 }}>{entry.description}</p>
+                {entry.url && entry.url !== 'direct message — no url' && (
+                  <a
+                    href={entry.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mono"
+                    style={{ fontSize: '0.7rem', color: 'var(--grey-mid)', wordBreak: 'break-all' }}
+                  >
+                    {entry.url}
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <hr />
+
+      {/* ── COMPLETED EXERCISES ───────────────────────────── */}
+      {action_steps.recent_done.length > 0 && (
+        <div style={{ margin: 'var(--space-md) 0' }}>
+          <h2 className="dymo-label" style={{ marginBottom: 'var(--space-sm)', fontSize: '0.75rem' }}>
+            Completed exercises
+          </h2>
+          <div className="flex flex-col">
+            {action_steps.recent_done.map(step => (
+              <div key={step.step_id} className="log-row flex justify-between items-start" style={{ padding: '8px 0' }}>
+                <div style={{ flex: 1 }}>
+                  <p className="text-small commitment-done">{step.text}</p>
+                  {step.completion_note && (
+                    <p style={{ fontSize: '0.75rem', color: 'var(--grey-mid)', marginTop: 2, fontStyle: 'italic' }}>
+                      "{step.completion_note}"
+                    </p>
+                  )}
+                </div>
+                <span className="mono" style={{ marginLeft: 'var(--space-sm)', fontSize: '0.65rem', color: 'var(--grey-mid)', whiteSpace: 'nowrap' }}>
+                  Lv {step.exercise_level} · {formatDate(step.assigned_at)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── COMMITMENT HISTORY ────────────────────────────── */}
       {commitment_history.length > 0 && (
         <div style={{ margin: 'var(--space-md) 0' }}>
-          <h2 className="dymo-label" style={{ marginBottom: 'var(--space-md)', fontSize: '0.75rem' }}>Commitment log</h2>
+          <h2 className="dymo-label" style={{ marginBottom: 'var(--space-sm)', fontSize: '0.75rem' }}>Commitment log</h2>
           <div className="flex flex-col">
             {commitment_history.slice().reverse().map((c, i) => (
               <div key={i} className="log-row flex justify-between items-center">
-                <p className={`text-small flex-1${c.status === 'done' ? ' commitment-done' : ''}`}>
-                  {c.text}
-                </p>
+                <p className={`text-small flex-1${c.status === 'done' ? ' commitment-done' : ''}`}>{c.text}</p>
                 <span className="mono" style={{
                   marginLeft: 'var(--space-sm)',
-                  color: c.status === 'done'
-                    ? '#2d6a2d'
-                    : c.status === 'missed'
-                    ? 'var(--accent)'
-                    : 'var(--grey-mid)'
+                  color: c.status === 'done' ? '#2d6a2d' : c.status === 'missed' ? 'var(--accent)' : 'var(--grey-mid)'
                 }}>
                   {c.status}
                 </span>
@@ -238,12 +567,12 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange }: Props
         </div>
       )}
 
-      {/* Footer info */}
+      {/* Footer */}
       <div style={{ marginTop: 'var(--space-lg)' }}>
-        <span className="label text-muted">
+        <span className="label text-muted" style={{ fontSize: '0.7rem' }}>
           Next check-in in {reInterviewDays > 0 ? `${reInterviewDays} days` : 'now'}
-          {profile.dominant_lens && profile.dominant_lens !== 'split' && ` · ${profile.dominant_lens}-dominant`}
           {profile.resistance_pattern && ` · ${profile.resistance_pattern.replace(/_/g, ' ')}`}
+          {profile.dominant_lens && profile.dominant_lens !== 'split' && ` · ${profile.dominant_lens}-dominant`}
         </span>
       </div>
 

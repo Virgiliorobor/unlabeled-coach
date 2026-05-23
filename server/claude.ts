@@ -73,10 +73,27 @@ export interface CommitmentOutput {
   daily_reminders: Record<string, string>
 }
 
+export interface ActionStepOutput {
+  text: string
+  due_date: string
+  coach_reason: string
+  phase_assigned: string
+  exercise_level: number
+}
+
+export interface PublishingLogEntryOutput {
+  url: string
+  platform: string
+  description: string
+  commitment_id: string
+}
+
 export interface ClaudeResponse {
   message: string
   profile_patches: ProfilePatch[]
   commitment_output: CommitmentOutput | null
+  action_step_output: ActionStepOutput | null
+  publishing_log_entry: PublishingLogEntryOutput | null
   safety_state: 'engaged' | 'watchful' | 'redirected'
 }
 
@@ -104,6 +121,24 @@ function parseCommitmentOutput(raw: string | null): CommitmentOutput | null {
   }
 }
 
+function parseActionStepOutput(raw: string | null): ActionStepOutput | null {
+  if (!raw) return null
+  try {
+    return JSON.parse(raw) as ActionStepOutput
+  } catch {
+    return null
+  }
+}
+
+function parsePublishingLogEntry(raw: string | null): PublishingLogEntryOutput | null {
+  if (!raw) return null
+  try {
+    return JSON.parse(raw) as PublishingLogEntryOutput
+  } catch {
+    return null
+  }
+}
+
 function detectSafetyState(text: string): 'engaged' | 'watchful' | 'redirected' {
   if (text.includes('[SAFETY:redirected]')) return 'redirected'
   if (text.includes('[SAFETY:watchful]')) return 'watchful'
@@ -114,6 +149,8 @@ function stripControlBlocks(text: string): string {
   return text
     .replace(/\[PROFILE_PATCHES\][\s\S]*?\[\/PROFILE_PATCHES\]/gi, '')
     .replace(/\[COMMITMENT_OUTPUT\][\s\S]*?\[\/COMMITMENT_OUTPUT\]/gi, '')
+    .replace(/\[ACTION_STEP_OUTPUT\][\s\S]*?\[\/ACTION_STEP_OUTPUT\]/gi, '')
+    .replace(/\[PUBLISHING_LOG_ENTRY\][\s\S]*?\[\/PUBLISHING_LOG_ENTRY\]/gi, '')
     .replace(/\[SAFETY:[^\]]+\]/gi, '')
     .trim()
 }
@@ -151,11 +188,15 @@ export async function runTurn(
   const safetyState = detectSafetyState(rawText)
   const patchesRaw = extractBlock(rawText, 'PROFILE_PATCHES')
   const commitmentRaw = extractBlock(rawText, 'COMMITMENT_OUTPUT')
+  const actionStepRaw = extractBlock(rawText, 'ACTION_STEP_OUTPUT')
+  const publishingRaw = extractBlock(rawText, 'PUBLISHING_LOG_ENTRY')
 
   return {
     message: stripControlBlocks(rawText),
     profile_patches: parseProfilePatches(patchesRaw),
     commitment_output: parseCommitmentOutput(commitmentRaw),
+    action_step_output: parseActionStepOutput(actionStepRaw),
+    publishing_log_entry: parsePublishingLogEntry(publishingRaw),
     safety_state: safetyState
   }
 }

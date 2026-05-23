@@ -9,6 +9,33 @@ export interface UserGoal {
   last_referenced: string
 }
 
+export interface ActionStep {
+  step_id: string
+  text: string
+  assigned_at: string
+  due_date: string
+  status: 'pending' | 'done' | 'skipped'
+  coach_reason: string
+  completion_note: string
+  phase_assigned: string
+  exercise_level: number
+}
+
+export interface PublishingLogEntry {
+  log_id: string
+  url: string
+  platform: string
+  published_at: string
+  commitment_id: string
+  description: string
+}
+
+export interface BehavioralSignals {
+  avoidance_language: string[]
+  engagement_triggers: string[]
+  excuse_structure: string
+}
+
 export interface DailyReminders {
   day_1: string
   day_2: string
@@ -89,11 +116,13 @@ export interface UserProfile {
     resistance_pattern: string
     tone: 'direct' | 'structured' | 'balanced'
     oblique_subset: string[]
+    behavioral_signals: BehavioralSignals
   }
 
   // program
   program: {
     current_phase: 'interview' | 'reflection' | 'clarity' | 'resistance' | 'commitment' | 'accountability'
+    phase_started_at: string
     phase_history: PhaseHistoryEntry[]
     sessions_completed: number
     last_session_date: string
@@ -102,6 +131,10 @@ export interface UserProfile {
   // commitment
   active_commitment: ActiveCommitment | null
   commitment_history: CommitmentHistory[]
+
+  // action steps and publishing evidence
+  action_steps: ActionStep[]
+  publishing_log: PublishingLogEntry[]
 
   // notifications
   notifications: {

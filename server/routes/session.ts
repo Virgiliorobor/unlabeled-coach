@@ -6,10 +6,10 @@
 import { Router, Request, Response } from 'express'
 import { requireAuth } from '../auth.js'
 import { readProfile, writeProfile, readSession, writeSession } from '../storage.js'
-import { runTurn, CommitmentOutput } from '../claude.js'
+import { runTurn, CommitmentOutput, ActionStepOutput, PublishingLogEntryOutput } from '../claude.js'
 import { registerUser } from '../scheduler.js'
 import { v4 as uuidv4 } from 'uuid'
-import { ChatMessage, SessionRecord, ActiveCommitment, DailyReminders } from '../types.js'
+import { ChatMessage, SessionRecord, ActiveCommitment, DailyReminders, ActionStep, PublishingLogEntry } from '../types.js'
 
 const router = Router()
 
@@ -146,6 +146,26 @@ router.post('/:session_id/message', requireAuth, async (req: Request, res: Respo
     registerUser(slug)
   }
 
+  // Handle action step output
+  let newActionStep: ActionStep | null = null
+  if (profile && result.action_step_output) {
+    newActionStep = buildActionStep(result.action_step_output)
+    if (!profile.action_steps) profile.action_steps = []
+    profile.action_steps.push(newActionStep)
+    session.profile_updated = true
+    await writeProfile(profile)
+  }
+
+  // Handle publishing log entry
+  let newPublishingEntry: PublishingLogEntry | null = null
+  if (profile && result.publishing_log_entry) {
+    newPublishingEntry = buildPublishingLogEntry(result.publishing_log_entry)
+    if (!profile.publishing_log) profile.publishing_log = []
+    profile.publishing_log.push(newPublishingEntry)
+    session.profile_updated = true
+    await writeProfile(profile)
+  }
+
   // Save session
   await writeSession(session)
 
@@ -153,6 +173,8 @@ router.post('/:session_id/message', requireAuth, async (req: Request, res: Respo
     message: result.message,
     safety_state: result.safety_state,
     commitment_output: result.commitment_output,
+    action_step: newActionStep,
+    publishing_log_entry: newPublishingEntry,
     profile_updated: session.profile_updated
   })
 })
@@ -214,6 +236,31 @@ function applyPatch(obj: any, path: string, value: unknown): void {
     current = current[keys[i]]
   }
   current[keys[keys.length - 1]] = value
+}
+
+function buildActionStep(output: ActionStepOutput): ActionStep {
+  return {
+    step_id: uuidv4(),
+    text: output.text,
+    assigned_at: new Date().toISOString(),
+    due_date: output.due_date,
+    status: 'pending',
+    coach_reason: output.coach_reason || '',
+    completion_note: '',
+    phase_assigned: output.phase_assigned || '',
+    exercise_level: output.exercise_level || 1
+  }
+}
+
+function buildPublishingLogEntry(output: PublishingLogEntryOutput): PublishingLogEntry {
+  return {
+    log_id: uuidv4(),
+    url: output.url || '',
+    platform: output.platform || '',
+    published_at: new Date().toISOString(),
+    commitment_id: output.commitment_id || '',
+    description: output.description || ''
+  }
 }
 
 function buildCommitment(output: CommitmentOutput): ActiveCommitment {
