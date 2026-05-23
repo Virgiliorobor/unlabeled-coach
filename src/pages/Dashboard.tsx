@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import ProgressMap from '../components/ProgressMap'
+import { AGENTS, AgentId } from './AgentChat'
 
 interface ActionStep {
   step_id: string
@@ -88,6 +89,7 @@ interface Props {
   slug: string
   onStartSession: () => void
   onPhaseChange?: (phase: string) => void
+  onEnterAgent?: (id: AgentId) => void
 }
 
 function formatDate(iso: string): string {
@@ -124,7 +126,7 @@ function horizonLabel(h: string): string {
   return labels[h] || h
 }
 
-export default function Dashboard({ slug, onStartSession, onPhaseChange }: Props) {
+export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnterAgent }: Props) {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [expandedGoal, setExpandedGoal] = useState<string | null>(null)
@@ -639,6 +641,56 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange }: Props
             ))}
           </div>
         )}
+      </div>
+
+      {/* Agent Library */}
+      <div style={{ marginTop: 'var(--space-lg)' }}>
+        <div style={{
+          borderBottom: '2px solid var(--black)', paddingBottom: 6, marginBottom: 12,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
+        }}>
+          <span className="label" style={{ fontSize: '0.65rem', letterSpacing: '0.12em' }}>SPECIALIST AGENTS</span>
+          <span className="mono" style={{ fontSize: '0.55rem', color: 'var(--grey-mid)' }}>each one ends with an action</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          {AGENTS.map(agent => (
+            <div
+              key={agent.id}
+              style={{
+                border: '2px solid var(--black)',
+                boxShadow: '3px 3px 0px var(--black)',
+                padding: '12px 14px',
+                background: 'var(--bg)',
+                cursor: 'pointer',
+                transition: 'box-shadow 0.1s, transform 0.1s',
+              }}
+              onClick={() => onEnterAgent?.(agent.id)}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.boxShadow = '1px 1px 0px var(--black)'
+                ;(e.currentTarget as HTMLElement).style.transform = 'translate(2px,2px)'
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.boxShadow = '3px 3px 0px var(--black)'
+                ;(e.currentTarget as HTMLElement).style.transform = 'translate(0,0)'
+              }}
+            >
+              <div style={{ marginBottom: 4 }}>
+                <span className="mono" style={{ fontSize: '0.55rem', color: 'var(--grey-mid)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  {agent.author}
+                </span>
+              </div>
+              <div style={{ fontWeight: 600, fontSize: '0.75rem', marginBottom: 6, lineHeight: 1.2 }}>
+                {agent.name}
+              </div>
+              <p style={{ fontSize: '0.65rem', color: 'var(--grey-mid)', lineHeight: 1.4, margin: 0 }}>
+                {agent.description}
+              </p>
+              <div style={{ marginTop: 10, textAlign: 'right' }}>
+                <span className="mono" style={{ fontSize: '0.6rem', letterSpacing: '0.1em' }}>ENTER →</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Footer */}

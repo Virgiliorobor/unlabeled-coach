@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import Dashboard from './pages/Dashboard'
 import Session from './pages/Session'
 import Onboarding from './pages/Onboarding'
+import AgentChat, { AgentId } from './pages/AgentChat'
 
-type AppView = 'loading' | 'onboarding' | 'dashboard' | 'session'
+type AppView = 'loading' | 'onboarding' | 'dashboard' | 'session' | 'agent'
 type Quadrant = 'sanctuary' | 'sandbox' | 'system' | 'workbench'
 
 interface AppUser {
@@ -29,6 +30,7 @@ export default function App() {
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
   const [openingMessage, setOpeningMessage] = useState<string | null>(null)
   const [currentPhase, setCurrentPhase] = useState<string>('phase_0')
+  const [activeAgentId, setActiveAgentId] = useState<AgentId | null>(null)
   const prevQuadrantRef = useRef<Quadrant>('sanctuary')
 
   // Apply quadrant to <html> data attribute; trigger snap animation on sandbox→system
@@ -116,11 +118,21 @@ export default function App() {
     )
   }
 
+  if (view === 'agent' && activeAgentId) {
+    return (
+      <AgentChat
+        agentId={activeAgentId}
+        onBack={() => { setActiveAgentId(null); setView('dashboard') }}
+      />
+    )
+  }
+
   return (
     <Dashboard
       slug={user?.slug || ''}
       onStartSession={handleStartSession}
       onPhaseChange={setCurrentPhase}
+      onEnterAgent={(id: AgentId) => { setActiveAgentId(id); setView('agent') }}
     />
   )
 }
