@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import ProgressMap from '../components/ProgressMap'
 
 interface Goal {
   text: string
@@ -99,17 +100,6 @@ function daysUntil(iso: string): number {
   return Math.ceil((new Date(iso).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
 }
 
-function phaseLabel(phase: string): string {
-  const labels: Record<string, string> = {
-    interview: 'Phase 0 — Interview',
-    reflection: 'Phase 1 — Reflection',
-    clarity: 'Phase 2 — Clarity',
-    resistance: 'Phase 3 — Resistance',
-    commitment: 'Phase 4 — Commitment',
-    accountability: 'Phase 5 — Accountability'
-  }
-  return labels[phase] || phase
-}
 
 function platformLabel(p: string): string {
   const labels: Record<string, string> = {
@@ -235,6 +225,22 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange }: Props
         </div>
       </div>
 
+      {/* Mission Map */}
+      <ProgressMap
+        currentPhase={profile.current_phase}
+        daysElapsed={phase_progress.days_elapsed}
+        goals={goals}
+        activeCommitment={active_commitment}
+        publishingCount={publishing_log.length}
+        pendingStepCount={action_steps.pending.length}
+        completedStepCount={phase_progress.completed_action_steps}
+        currentExerciseLevel={
+          action_steps.pending[0]?.exercise_level ??
+          (action_steps.recent_done[0]?.exercise_level ?? 0)
+        }
+        commitmentHistory={commitment_history}
+      />
+
       {/* Re-interview banner */}
       {profile.re_interview_overdue && (
         <div className="deadline-tape" style={{ marginBottom: 'var(--space-md)' }}>
@@ -242,33 +248,11 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange }: Props
         </div>
       )}
 
-      {/* Phase progress bar */}
-      <div style={{ marginBottom: 'var(--space-lg)', padding: 'var(--space-sm) 0', borderBottom: '2px solid var(--black)' }}>
-        <div className="flex justify-between items-baseline" style={{ marginBottom: 4 }}>
-          <span className="dymo-label" style={{ fontSize: '0.7rem' }}>{phaseLabel(profile.current_phase)}</span>
-          <span className="mono" style={{ fontSize: '0.7rem', color: 'var(--grey-mid)' }}>
-            {phase_progress.minimum_days > 0
-              ? `Day ${phase_progress.days_elapsed} of ${phase_progress.minimum_days} minimum`
-              : `Session ${profile.sessions_completed + 1}`}
-          </span>
-        </div>
-        {phase_progress.minimum_days > 0 && (
-          <div style={{ height: 4, background: 'var(--grey-light)', position: 'relative' }}>
-            <div style={{
-              position: 'absolute', top: 0, left: 0, height: '100%',
-              width: `${Math.min(100, (phase_progress.days_elapsed / phase_progress.minimum_days) * 100)}%`,
-              background: phase_progress.time_gate_clear ? '#2d6a2d' : 'var(--black)'
-            }} />
-          </div>
-        )}
-        <div className="flex justify-between items-center" style={{ marginTop: 4 }}>
-          <span className="label" style={{ fontSize: '0.65rem', color: 'var(--grey-mid)' }}>
-            {phase_progress.completed_action_steps} exercise{phase_progress.completed_action_steps !== 1 ? 's' : ''} completed
-          </span>
-          <button className="btn-primary" onClick={onStartSession} style={{ padding: '6px 16px', fontSize: '0.8rem' }}>
-            Start session
-          </button>
-        </div>
+      {/* Start session button */}
+      <div style={{ marginBottom: 'var(--space-md)', display: 'flex', justifyContent: 'flex-end' }}>
+        <button className="btn-primary" onClick={onStartSession}>
+          Start session
+        </button>
       </div>
 
       {/* ── CURRENT EXERCISE ──────────────────────────────── */}
