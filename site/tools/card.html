@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oblique Card — Unlabeled</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400;1,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../design.css">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: var(--space-md);
+    }
+
+    .card-wrap {
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-lg);
+    }
+
+    /* The card itself — floats, breathes */
+    .card {
+      padding: var(--space-lg) var(--space-md);
+      margin-bottom: var(--space-lg);
+      transition: opacity 0.22s ease;
+    }
+    .card.fading { opacity: 0; }
+
+    .card-text {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-style: italic;
+      font-weight: 400;
+      line-height: 1.45;
+      letter-spacing: -0.01em;
+      color: var(--black);
+    }
+
+    .card-index {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--grey-light);
+      margin-top: var(--space-md);
+      display: block;
+    }
+
+    /* mode label — today vs random */
+    .mode-label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--grey);
+      display: block;
+      margin-bottom: var(--space-lg);
+      transition: opacity 0.3s;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .today-btn {
+      font-family: var(--font-serif);
+      font-size: 0.9rem;
+      font-style: italic;
+      color: var(--grey);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: opacity 0.2s;
+      padding: 0;
+    }
+    .today-btn:hover { color: var(--black); }
+    .today-btn:disabled { opacity: 0.25; cursor: default; text-decoration: none; }
+
+    .footer-nav {
+      margin-top: var(--space-xl);
+    }
+
+    @media (max-width: 640px) {
+      .card-text { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card-wrap">
+
+    <div class="card-header">
+      <a href="../index.html" class="nav-back">← Unlabeled</a>
+      <span class="label">Oblique Card</span>
+    </div>
+
+    <div class="card" id="card">
+      <p class="card-text" id="cardText"></p>
+      <span class="card-index" id="cardIndex"></span>
+    </div>
+
+    <span class="mode-label" id="modeLabel"></span>
+
+    <div class="controls">
+      <button class="btn-primary" onclick="drawRandom()">Draw another</button>
+      <button class="today-btn" id="todayBtn" onclick="showToday()" disabled>
+        Back to today's card
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    const CARDS = [
+      "The work is already the answer",
+      "What would the version of you who already did this have done first?",
+      "Remove the approval step",
+      "What is the smallest honest version?",
+      "Your background is not a liability. Name one thing it gives you that others don't have.",
+      "Publish the draft. The comments will write the next version.",
+      "Use an old idea",
+      "What would you remove?",
+      "The most important thing is the thing you are not doing",
+      "Who said you need permission?",
+      "State the problem in words of one syllable",
+      "Honor thy error as a hidden intention",
+      "Ask your body",
+      "What would your 10-year-ago self think of this?",
+      "Destroy nothing — build anyway",
+      "Speak to the person, not the audience",
+      "Do the thing you think is too simple",
+      "Finish something. Anything.",
+      "What label are you protecting yourself from?",
+      "Share one true thing",
+      "Remove a limitation and see what happens",
+      "What would you do if you weren't afraid of looking like a beginner?",
+      "The audience you're afraid of is imaginary. The audience that needs you is real.",
+      "What are you building toward — not building?",
+      "Change the input, not the output",
+      "Work at a different speed",
+      "What does this want to be?",
+      "Will it work?",
+      "What would the person on the other side actually feel?",
+      "You already know what to do",
+      "Do something you've never done before, with something you know very well",
+      "Make a list of everything that's stopping you. Cross out the ones you control.",
+      "Give the work a deadline it doesn't deserve",
+      "What would you make if your previous career had never existed?",
+      "The version you're embarrassed to show is the version someone is waiting for",
+      "Stop improving. Start sending.",
+      "What question are you not asking because you're afraid of the answer?",
+      "You're not starting over. You're translating.",
+      "The goal is not to be ready. The goal is to ship while not ready.",
+      "One true sentence",
+    ]
+
+    function getTodayIndex() {
+      return Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % CARDS.length
+    }
+
+    let currentIndex = getTodayIndex()
+    let todayMode = true
+
+    function transition(fn) {
+      const card = document.getElementById('card')
+      card.classList.add('fading')
+      setTimeout(() => {
+        fn()
+        card.classList.remove('fading')
+      }, 220)
+    }
+
+    function render() {
+      document.getElementById('cardText').textContent = CARDS[currentIndex]
+      document.getElementById('cardIndex').textContent = `R${currentIndex + 1} of ${CARDS.length}`
+      document.getElementById('modeLabel').textContent = todayMode ? "Today's card" : `Card drawn at random`
+      document.getElementById('todayBtn').disabled = todayMode
+    }
+
+    function showToday() {
+      transition(() => {
+        currentIndex = getTodayIndex()
+        todayMode = true
+        render()
+      })
+    }
+
+    function drawRandom() {
+      transition(() => {
+        let next
+        do { next = Math.floor(Math.random() * CARDS.length) } while (next === currentIndex)
+        currentIndex = next
+        todayMode = false
+        render()
+      })
+    }
+
+    // Init with today's card
+    render()
+  </script>
+
+</body>
+</html>
