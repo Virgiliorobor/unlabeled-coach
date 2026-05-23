@@ -2,7 +2,7 @@
   "user_id": "e88cb9a6-7386-454e-bb4b-acd20a9a2e87",
   "slug": "jason",
   "created_at": "2026-05-23T18:51:25.672Z",
-  "last_updated": "2026-05-23T18:51:25.672Z",
+  "last_updated": "2026-05-23T20:36:48.947Z",
   "re_interview_due": "2026-05-30T18:51:25.672Z",
   "background": {
     "domain": "",
@@ -46,8 +46,8 @@
   "program": {
     "current_phase": "interview",
     "phase_history": [],
-    "sessions_completed": 0,
-    "last_session_date": ""
+    "sessions_completed": 1,
+    "last_session_date": "2026-05-23T20:36:47.895Z"
   },
   "active_commitment": null,
   "commitment_history": [],
