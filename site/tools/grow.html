@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Grow — Unlabeled</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=EB+Garamond:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../design.css">
+  <style>
+    * { touch-action: none; }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #F4F4F0;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-bottom: 2px solid #111;
+      background: #F4F4F0;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      z-index: 10;
+    }
+
+    .tool-wordmark {
+      font-family: 'EB Garamond', serif;
+      font-style: italic;
+      font-size: 0.9rem;
+      color: #888880;
+      text-decoration: none;
+      margin-right: 6px;
+    }
+
+    .sep {
+      width: 1px;
+      height: 20px;
+      background: #D8D8D4;
+      flex-shrink: 0;
+    }
+
+    .toolbar-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #888880;
+    }
+
+    .tool-btn {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border: 2px solid #111;
+      background: #F4F4F0;
+      color: #111;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 #111;
+      transition: box-shadow 0.08s, transform 0.08s;
+      flex-shrink: 0;
+    }
+    .tool-btn:hover  { box-shadow: none; transform: translate(2px,2px); }
+    .tool-btn.active { background: #111; color: #F4F4F0; box-shadow: none; }
+
+    .tool-btn.primary {
+      background: #111;
+      color: #F4F4F0;
+      box-shadow: 2px 2px 0 #888880;
+    }
+    .tool-btn.primary:hover { box-shadow: none; transform: translate(2px,2px); }
+
+    .spacer { flex: 1; }
+
+    /* Mode hint */
+    .mode-hint {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #888880;
+      transition: opacity 0.3s;
+    }
+
+    /* Canvas container */
+    .canvas-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* The character input — invisible, absolute-positioned where user clicks */
+    #charInput {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 1px;
+      height: 1px;
+    }
+
+    /* Character markers rendered on canvas overlay */
+    .char-marker {
+      position: absolute;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: #888880;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      user-select: none;
+    }
+
+    /* Instructions overlay — shows on empty canvas */
+    .instructions {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+    .instructions.hidden { opacity: 0; }
+
+    .instr-line {
+      font-family: 'EB Garamond', serif;
+      font-style: italic;
+      font-size: 1.2rem;
+      color: #C8C8C4;
+      line-height: 2;
+      display: block;
+    }
+
+    /* Color swatch preview strip */
+    .swatch-strip {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .swatch {
+      width: 10px;
+      height: 10px;
+      border: 1px solid rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 640px) {
+      .toolbar { gap: 7px; padding: 8px 10px; }
+      .sep, .toolbar-label, .swatch-strip { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <a href="../index.html" class="tool-wordmark">Unlabeled</a>
+    <div class="sep"></div>
+
+    <span class="toolbar-label">Draw</span>
+    <button class="tool-btn active" id="btnDraw" onclick="setMode('draw')">Lines</button>
+    <button class="tool-btn" id="btnChar" onclick="setMode('char')">Letters</button>
+    <button class="tool-btn" id="btnErase" onclick="setMode('erase')">Erase</button>
+
+    <div class="sep"></div>
+
+    <div class="swatch-strip" id="swatchStrip"></div>
+
+    <div class="spacer"></div>
+
+    <span class="mode-hint" id="modeHint">draw lines</span>
+
+    <button class="tool-btn" onclick="clearCanvas()">Clear</button>
+    <button class="tool-btn primary" id="btnTransform" onclick="runTransform()">Transform</button>
+    <button class="tool-btn" id="btnSave" onclick="saveImage()" style="display:none">Save</button>
+  </div>
+
+  <!-- Canvas -->
+  <div class="canvas-wrap" id="canvasWrap">
+    <canvas id="bg"></canvas>      <!-- persistent: original strokes fade here -->
+    <canvas id="fx"></canvas>      <!-- fractal animation draws here -->
+    <canvas id="ui"></canvas>      <!-- cursor / active stroke -->
+    <input id="charInput" type="text" inputmode="text" autocomplete="off">
+
+    <!-- Character marker divs injected here -->
+
+    <div class="instructions" id="instructions">
+      <span class="instr-line">Draw lines with your mouse or finger.</span>
+      <span class="instr-line">Switch to Letters and click to plant a color.</span>
+      <span class="instr-line">Then press Transform.</span>
+    </div>
+  </div>
+
+  <script>
+  // ── Canvas setup ─────────────────────────────────────────────
+  const wrap    = document.getElementById('canvasWrap')
+  const bgC     = document.getElementById('bg')
+  const fxC     = document.getElementById('fx')
+  const uiC     = document.getElementById('ui')
+  const bgX     = bgC.getContext('2d')
+  const fxX     = fxC.getContext('2d')
+  const uiX     = uiC.getContext('2d')
+
+  let W = 0, H = 0
+
+  function resize() {
+    W = wrap.clientWidth
+    H = wrap.clientHeight
+    ;[bgC, fxC, uiC].forEach(c => {
+      c.width  = W * devicePixelRatio
+      c.height = H * devicePixelRatio
+      c.style.width  = W + 'px'
+      c.style.height = H + 'px'
+    })
+    bgX.scale(devicePixelRatio, devicePixelRatio)
+    fxX.scale(devicePixelRatio, devicePixelRatio)
+    uiX.scale(devicePixelRatio, devicePixelRatio)
+    bgX.lineCap = bgX.lineJoin = 'round'
+    uiX.lineCap = uiX.lineJoin = 'round'
+  }
+  resize()
+  window.addEventListener('resize', () => { resize(); redrawBg() })
+
+  // ── State ────────────────────────────────────────────────────
+  let mode        = 'draw'       // draw | char | erase
+  let strokes     = []           // [{points:[{x,y}], width}]
+  let colorSeeds  = []           // [{x, y, char, hue}]
+  let painting    = false
+  let currentStroke = null
+  let transformed = false
+  let animFrame   = null
+
+  // ── Mode switching ───────────────────────────────────────────
+  const HINTS = { draw: 'draw lines', char: 'click to plant a color', erase: 'erase strokes' }
+
+  function setMode(m) {
+    mode = m
+    document.querySelectorAll('.tool-btn[id^="btn"]').forEach(b => b.classList.remove('active'))
+    document.getElementById('btn' + m.charAt(0).toUpperCase() + m.slice(1)).classList.add('active')
+    uiC.style.cursor = m === 'erase' ? 'cell' : m === 'char' ? 'crosshair' : 'crosshair'
+    document.getElementById('modeHint').textContent = HINTS[m]
+  }
+
+  // ── Pointer events (unified mouse + touch) ───────────────────
+  function getPos(e) {
+    const rect = uiC.getBoundingClientRect()
+    const src  = e.touches ? e.touches[0] : e
+    return { x: src.clientX - rect.left, y: src.clientY - rect.top }
+  }
+
+  uiC.addEventListener('pointerdown', e => {
+    if (transformed) return
+    e.preventDefault()
+    const pos = getPos(e)
+
+    if (mode === 'char') {
+      placeChar(pos)
+      return
+    }
+    if (mode === 'erase') {
+      eraseAt(pos)
+      return
+    }
+
+    painting = true
+    currentStroke = { points: [pos], width: 1.5 + Math.random() * 0.5 }
+    hideInstructions()
+  })
+
+  uiC.addEventListener('pointermove', e => {
+    if (!painting || mode !== 'draw' || transformed) return
+    e.preventDefault()
+    const pos = getPos(e)
+    const last = currentStroke.points[currentStroke.points.length - 1]
+    const dist = Math.hypot(pos.x - last.x, pos.y - last.y)
+    if (dist < 3) return
+    currentStroke.points.push(pos)
+    drawStrokePreview()
+  })
+
+  uiC.addEventListener('pointerup', e => {
+    if (!painting) return
+    painting = false
+    if (currentStroke && currentStroke.points.length > 1) {
+      strokes.push(currentStroke)
+      commitStroke(currentStroke)
+    }
+    currentStroke = null
+    uiX.clearRect(0, 0, W, H)
+  })
+
+  uiC.addEventListener('pointerleave', e => {
+    if (painting && currentStroke && currentStroke.points.length > 1) {
+      strokes.push(currentStroke)
+      commitStroke(currentStroke)
+    }
+    painting = false
+    currentStroke = null
+    uiX.clearRect(0, 0, W, H)
+  })
+
+  // ── Draw stroke preview on ui canvas ────────────────────────
+  function drawStrokePreview() {
+    uiX.clearRect(0, 0, W, H)
+    const pts = currentStroke.points
+    if (pts.length < 2) return
+    uiX.beginPath()
+    uiX.strokeStyle = 'rgba(17,17,17,0.5)'
+    uiX.lineWidth = currentStroke.width
+    uiX.moveTo(pts[0].x, pts[0].y)
+    for (let i = 1; i < pts.length; i++) uiX.lineTo(pts[i].x, pts[i].y)
+    uiX.stroke()
+  }
+
+  // ── Commit stroke to bg canvas ───────────────────────────────
+  function commitStroke(stroke) {
+    const pts = stroke.points
+    if (pts.length < 2) return
+    bgX.beginPath()
+    bgX.strokeStyle = 'rgba(17,17,17,0.55)'
+    bgX.lineWidth = stroke.width
+    bgX.moveTo(pts[0].x, pts[0].y)
+    for (let i = 1; i < pts.length; i++) bgX.lineTo(pts[i].x, pts[i].y)
+    bgX.stroke()
+  }
+
+  function redrawBg() {
+    bgX.clearRect(0, 0, W, H)
+    strokes.forEach(commitStroke)
+  }
+
+  // ── Erase nearest stroke ─────────────────────────────────────
+  function eraseAt(pos) {
+    let best = Infinity, idx = -1
+    strokes.forEach((s, i) => {
+      s.points.forEach(p => {
+        const d = Math.hypot(p.x - pos.x, p.y - pos.y)
+        if (d < best) { best = d; idx = i }
+      })
+    })
+    if (idx !== -1 && best < 30) {
+      strokes.splice(idx, 1)
+      redrawBg()
+    }
+  }
+
+  // ── Character / color seeds ──────────────────────────────────
+  function charToHue(c) {
+    return (c.charCodeAt(0) * 47 + 130) % 360
+  }
+
+  function placeChar(pos) {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%&*?'
+    const char  = chars[Math.floor(Math.random() * chars.length)]
+    const hue   = charToHue(char)
+    colorSeeds.push({ x: pos.x, y: pos.y, char, hue })
+    renderCharMarker({ x: pos.x, y: pos.y, char, hue })
+    updateSwatches()
+    hideInstructions()
+  }
+
+  function renderCharMarker(seed) {
+    const div = document.createElement('div')
+    div.className = 'char-marker'
+    div.style.left = seed.x + 'px'
+    div.style.top  = seed.y + 'px'
+    div.style.color = `hsl(${seed.hue}, 55%, 45%)`
+    div.textContent = seed.char
+    div.dataset.seed = colorSeeds.length - 1
+    wrap.appendChild(div)
+  }
+
+  function updateSwatches() {
+    const strip = document.getElementById('swatchStrip')
+    strip.innerHTML = ''
+    const unique = [...new Set(colorSeeds.map(s => Math.round(s.hue / 30) * 30))]
+    unique.slice(0, 8).forEach(h => {
+      const div = document.createElement('div')
+      div.className = 'swatch'
+      div.style.background = `hsl(${h}, 60%, 55%)`
+      strip.appendChild(div)
+    })
+  }
+
+  function clearCharMarkers() {
+    wrap.querySelectorAll('.char-marker').forEach(el => el.remove())
+  }
+
+  // ── Instructions ─────────────────────────────────────────────
+  function hideInstructions() {
+    document.getElementById('instructions').classList.add('hidden')
+  }
+
+  // ── Clear ────────────────────────────────────────────────────
+  function clearCanvas() {
+    if (animFrame) cancelAnimationFrame(animFrame)
+    strokes = []
+    colorSeeds = []
+    transformed = false
+    bgX.clearRect(0, 0, W, H)
+    fxX.clearRect(0, 0, W, H)
+    uiX.clearRect(0, 0, W, H)
+    clearCharMarkers()
+    updateSwatches()
+    document.getElementById('instructions').classList.remove('hidden')
+    document.getElementById('btnSave').style.display = 'none'
+    setMode('draw')
+  }
+
+  // ── Chaikin smoothing ────────────────────────────────────────
+  function chaikin(pts, iterations) {
+    let cur = pts
+    for (let it = 0; it < iterations; it++) {
+      const next = []
+      for (let i = 0; i < cur.length - 1; i++) {
+        const a = cur[i], b = cur[i + 1]
+        next.push({ x: a.x * 0.75 + b.x * 0.25, y: a.y * 0.75 + b.y * 0.25 })
+        next.push({ x: a.x * 0.25 + b.x * 0.75, y: a.y * 0.25 + b.y * 0.75 })
+      }
+      next.unshift(cur[0])
+      next.push(cur[cur.length - 1])
+      cur = next
+    }
+    return cur
+  }
+
+  // ── Midpoint displacement (fractal subdivision) ──────────────
+  function displace(pts, roughness, depth) {
+    if (depth === 0 || pts.length < 2) return pts
+    const result = []
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1]
+      const mx = (a.x + b.x) * 0.5
+      const my = (a.y + b.y) * 0.5
+      const dx = b.x - a.x
+      const dy = b.y - a.y
+      const len = Math.hypot(dx, dy)
+      const nx = -dy / len, ny = dx / len
+      const offset = (Math.random() - 0.5) * roughness * len
+      result.push(a)
+      result.push({ x: mx + nx * offset, y: my + ny * offset })
+    }
+    result.push(pts[pts.length - 1])
+    return displace(result, roughness * 0.52, depth - 1)
+  }
+
+  // ── Branch growth from endpoints ─────────────────────────────
+  function growBranches(pts, depth, angle, lengthFactor, roughness) {
+    if (depth === 0 || pts.length < 2) return []
+    const branches = []
+    const step = Math.max(1, Math.floor(pts.length / (3 + depth)))
+    for (let i = step; i < pts.length - 1; i += step) {
+      if (Math.random() > 0.45) continue
+      const a = pts[i], b = pts[i + 1]
+      const dx = b.x - a.x, dy = b.y - a.y
+      const len = Math.hypot(dx, dy) * lengthFactor
+      const baseAngle = Math.atan2(dy, dx)
+      const side = Math.random() < 0.5 ? 1 : -1
+      const branchAngle = baseAngle + side * (angle + (Math.random() - 0.5) * 0.4)
+      const end = {
+        x: a.x + Math.cos(branchAngle) * len,
+        y: a.y + Math.sin(branchAngle) * len
+      }
+      let branch = [a, end]
+      branch = displace(branch, roughness, 3)
+      branches.push(branch)
+      const children = growBranches(branch, depth - 1, angle, lengthFactor * 0.65, roughness * 0.7)
+      branches.push(...children)
+    }
+    return branches
+  }
+
+  // ── Color along a polyline from color seeds ──────────────────
+  function colorAtPoint(x, y, fallbackHue) {
+    if (colorSeeds.length === 0) return `hsla(${fallbackHue}, 55%, 45%, 0.7)`
+    let totalWeight = 0, h = 0, s = 0, l = 0
+    colorSeeds.forEach(seed => {
+      const d = Math.hypot(x - seed.x, y - seed.y)
+      const w = 1 / (1 + d * 0.008)
+      totalWeight += w
+      h += seed.hue * w
+      s += 55 * w
+      l += 45 * w
+    })
+    const hue = h / totalWeight
+    return `hsla(${hue}, ${s/totalWeight}%, ${l/totalWeight}%, 0.72)`
+  }
+
+  // ── Draw a polyline with color gradient ──────────────────────
+  function drawColoredLine(ctx, pts, width, fallbackHue) {
+    if (pts.length < 2) return
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1]
+      const mx = (a.x + b.x) * 0.5
+      const my = (a.y + b.y) * 0.5
+      ctx.beginPath()
+      ctx.strokeStyle = colorAtPoint(mx, my, fallbackHue)
+      ctx.lineWidth = width
+      ctx.moveTo(a.x, a.y)
+      ctx.lineTo(b.x, b.y)
+      ctx.stroke()
+    }
+  }
+
+  // ── Transform ────────────────────────────────────────────────
+  function runTransform() {
+    if (strokes.length === 0) return
+    if (animFrame) cancelAnimationFrame(animFrame)
+    transformed = true
+    document.getElementById('btnTransform').textContent = 'Regenerate'
+
+    // Random parameters — different every time
+    const roughness    = 0.18 + Math.random() * 0.22
+    const branchAngle  = 0.3  + Math.random() * 0.7
+    const branchDepth  = 2    + Math.floor(Math.random() * 2)
+    const lengthFactor = 0.3  + Math.random() * 0.4
+    const smoothPasses = 3    + Math.floor(Math.random() * 2)
+
+    // Build all polylines
+    const allLines = []
+    strokes.forEach((stroke, si) => {
+      const fallbackHue = (si * 67 + 180) % 360
+      const smoothed = chaikin(stroke.points, smoothPasses)
+      const fractalized = displace(smoothed, roughness, 5)
+      allLines.push({ pts: fractalized, width: stroke.width * 0.9, hue: fallbackHue })
+
+      const branches = growBranches(fractalized, branchDepth, branchAngle, lengthFactor, roughness)
+      branches.forEach(b => {
+        allLines.push({ pts: b, width: stroke.width * 0.45, hue: fallbackHue })
+      })
+    })
+
+    // Fade original strokes to ghost
+    bgX.clearRect(0, 0, W, H)
+    bgX.globalAlpha = 0.13
+    strokes.forEach(commitStroke)
+    bgX.globalAlpha = 1.0
+
+    // Hide char markers during animation
+    wrap.querySelectorAll('.char-marker').forEach(el => { el.style.opacity = '0.3' })
+
+    // Animate: draw lines progressively
+    fxX.clearRect(0, 0, W, H)
+    fxX.lineCap = fxX.lineJoin = 'round'
+
+    const total = allLines.length
+    let drawn = 0
+    const batchSize = Math.max(1, Math.ceil(total / 60))
+
+    function step() {
+      const end = Math.min(drawn + batchSize, total)
+      for (let i = drawn; i < end; i++) {
+        const line = allLines[i]
+        drawColoredLine(fxX, line.pts, line.width, line.hue)
+      }
+      drawn = end
+      if (drawn < total) {
+        animFrame = requestAnimationFrame(step)
+      } else {
+        document.getElementById('btnSave').style.display = ''
+      }
+    }
+    animFrame = requestAnimationFrame(step)
+  }
+
+  // ── Save ────────────────────────────────────────────────────
+  function saveImage() {
+    const out = document.createElement('canvas')
+    out.width  = W * devicePixelRatio
+    out.height = H * devicePixelRatio
+    const ctx = out.getContext('2d')
+    ctx.fillStyle = '#F4F4F0'
+    ctx.fillRect(0, 0, out.width, out.height)
+    ctx.drawImage(bgC, 0, 0)
+    ctx.drawImage(fxC, 0, 0)
+    const a = document.createElement('a')
+    a.download = 'unlabeled-' + Date.now() + '.png'
+    a.href = out.toDataURL('image/png')
+    a.click()
+  }
+
+  // ── Keyboard shortcut: T = transform, C = clear ──────────────
+  document.addEventListener('keydown', e => {
+    if (e.target === document.getElementById('charInput')) return
+    if (e.key === 't' || e.key === 'T') runTransform()
+    if (e.key === 'c' || e.key === 'C') clearCanvas()
+    if (e.key === 'l' || e.key === 'L') setMode('draw')
+    if (e.key === 'e' || e.key === 'E') setMode('erase')
+    if (e.key === 'p' || e.key === 'P') setMode('char')
+  })
+  </script>
+
+</body>
+</html>
