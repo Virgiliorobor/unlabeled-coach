@@ -95,6 +95,17 @@ router.post('/auth/register', async (req: Request, res: Response) => {
       flagged_sessions: []
     },
 
+    portfolio: {
+      url: '',
+      platform: '',
+      status: 'none',
+      entries_count: 0,
+      last_updated: ''
+    },
+
+    first_move: null,
+    today_prompt: '',
+
     coach_notes: ''
   }
 
