@@ -6,11 +6,11 @@
 /* ── GLOBAL TOKENS ──────────────────────────────────────────── */
 :root {
   /* Canvas — never pure white */
-  --canvas:        #F3F1EB;
+  --canvas:        #F4F4F0;
   --canvas-dark:   #E8E6E0;
   --black:         #111111;
-  --white:         #F3F1EB;
-  --bg:            #F3F1EB;   /* alias used in components */
+  --white:         #F4F4F0;
+  --bg:            #F4F4F0;   /* alias used in components */
 
   /* Functional color — strictly utilitarian */
   --red:           #E03C31;   /* NASA red: deadlines, commitments, destructive */

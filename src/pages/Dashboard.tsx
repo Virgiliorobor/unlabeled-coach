@@ -2,6 +2,18 @@ import { useState, useEffect } from 'react'
 import ProgressMap from '../components/ProgressMap'
 import { AGENTS, AgentId } from './AgentChat'
 
+// ── Tactile OS palette (mirrors Stitch DESIGN.md) ──────────────
+const T = {
+  ivory:      '#F4F4F0',   // main surface
+  white:      '#FFFFFF',   // card face (elevated)
+  black:      '#111111',   // structure, borders, type
+  red:        '#E03C31',   // NASA red — deadlines, overdue
+  yellow:     '#FFF000',   // highlighter — active, selected
+  grey:       '#888880',   // secondary text
+  greyLight:  '#D8D8D4',   // subtle dividers
+  greyBg:     '#F1EDEC',   // surface-container (inputs, recessed areas)
+}
+
 interface ActionStep {
   step_id: string
   text: string
@@ -128,20 +140,41 @@ function horizonLabel(h: string): string {
   return labels[h] || h
 }
 
+// ── Layout constants ───────────────────────────────────────────
 const dash: React.CSSProperties = {
   maxWidth: 1200,
   margin: '0 auto',
   padding: '0 32px',
 }
 
-const sectionLabel: React.CSSProperties = {
-  fontFamily: 'var(--font-mono)',
-  fontSize: '0.48rem',
+// Space Mono uppercase section label — System quadrant style
+const secLabel: React.CSSProperties = {
+  fontFamily: "'Space Mono', monospace",
+  fontSize: '0.6rem',
   letterSpacing: '0.2em',
   textTransform: 'uppercase' as const,
-  color: 'var(--grey-mid)',
+  color: T.grey,
   display: 'block',
   marginBottom: 12,
+}
+
+// Phase/status pill — black tag from Clarity screen
+function PhaseTag({ children, dim = false }: { children: React.ReactNode; dim?: boolean }) {
+  return (
+    <span style={{
+      fontFamily: "'Space Mono', monospace",
+      fontSize: '0.48rem',
+      letterSpacing: '0.1em',
+      textTransform: 'uppercase',
+      padding: '2px 7px',
+      background: dim ? 'transparent' : T.black,
+      color: dim ? T.grey : T.ivory,
+      border: `1px solid ${dim ? T.greyLight : T.black}`,
+      display: 'inline-block',
+    }}>
+      {children}
+    </span>
+  )
 }
 
 export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnterAgent, onEnterClearness, onEnterSimplify }: Props) {
@@ -240,7 +273,9 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
   if (loading) {
     return (
       <div style={{ ...dash, paddingTop: 64, textAlign: 'center' }}>
-        <span className="label">Loading…</span>
+        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: T.grey }}>
+          Loading…
+        </span>
       </div>
     )
   }
@@ -279,28 +314,51 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
   ]
 
   return (
-    <div style={{ paddingBottom: 80 }}>
+    <div style={{ background: T.ivory, minHeight: '100vh', paddingBottom: 80 }}>
 
       {/* ── TOP BAR ──────────────────────────────────────────── */}
       <div style={{
-        borderBottom: '2px solid var(--black)',
-        background: 'var(--canvas)',
+        borderBottom: `2px solid ${T.black}`,
+        background: T.ivory,
         position: 'sticky',
         top: 0,
         zIndex: 100,
       }}>
-        <div style={{ ...dash, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 32px' }}>
-          <span className="label-machine" style={{ fontSize: '0.72rem' }}>Unlabeled</span>
+        <div style={{ ...dash, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 32px' }}>
+          {/* NASA-red DYMO brand label — from Transition State screen */}
+          <div style={{
+            background: T.red,
+            color: '#FFFFFF',
+            fontFamily: "'Space Mono', monospace",
+            fontWeight: 700,
+            fontSize: '0.6rem',
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            padding: '6px 14px',
+            boxShadow: `3px 3px 0px ${T.black}`,
+          }}>
+            Unlabeled
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
             {profile.resistance_pattern && (
-              <span className="mono" style={{ fontSize: '0.5rem', letterSpacing: '0.1em', color: 'var(--grey-mid)', textTransform: 'uppercase' }}>
+              <span style={{
+                fontFamily: "'Space Mono', monospace",
+                fontSize: '0.48rem',
+                letterSpacing: '0.1em',
+                color: T.grey,
+                textTransform: 'uppercase',
+              }}>
                 {profile.resistance_pattern.replace(/_/g, ' ')}
               </span>
             )}
-            <span className="label" style={{ fontSize: '0.6rem', color: 'var(--grey-mid)' }}>{slug}</span>
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', color: T.grey }}>{slug}</span>
             <button
               onClick={handleLogout}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--grey-mid)' }}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontFamily: "'Space Mono', monospace", fontSize: '0.48rem',
+                letterSpacing: '0.1em', textTransform: 'uppercase', color: T.grey,
+              }}
             >
               Sign out
             </button>
@@ -308,7 +366,7 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
         </div>
       </div>
 
-      {/* ── PORTFOLIO BOARD (full width) ──────────────────────── */}
+      {/* ── PORTFOLIO BOARD ──────────────────────────────────── */}
       <div style={{ ...dash, paddingTop: 32, paddingBottom: 0 }}>
         {profile.re_interview_overdue && (
           <div className="deadline-tape" style={{ marginBottom: 16 }}>
@@ -336,10 +394,10 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
 
         {/* ── LEFT: GOALS ─────────────────────────────────────── */}
         <div>
-          <span style={sectionLabel}>Goals</span>
+          <span style={secLabel}>Goals</span>
 
           {activeGoals.length === 0 ? (
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--grey-mid)', lineHeight: 1.6 }}>
+            <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: T.grey, lineHeight: 1.6 }}>
               {profile.initial_interview_done
                 ? 'No active goals — start a session to add your first goal.'
                 : 'Start a session to begin your intake interview.'}
@@ -352,7 +410,21 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
                 const hasPending = goal.action_steps.pending.length > 0
 
                 return (
-                  <div key={goal.goal_id} className="tape-border" style={{ background: 'var(--bg)' }}>
+                  <div key={goal.goal_id} style={{
+                    background: T.white,
+                    border: `2px solid ${T.black}`,
+                    boxShadow: `4px 4px 0px ${T.black}`,
+                    position: 'relative',
+                  }}>
+                    {/* NASA red corner flag for overdue goals — from Workbench screen */}
+                    {isOverdue && (
+                      <div style={{
+                        position: 'absolute', top: 0, right: 0,
+                        width: 0, height: 0,
+                        borderTop: `28px solid ${T.red}`,
+                        borderLeft: '28px solid transparent',
+                      }} />
+                    )}
 
                     {/* Goal header */}
                     <button
@@ -364,48 +436,59 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
                       }}
                     >
                       <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
-                          <span className="mono" style={{
-                            fontSize: '0.48rem', letterSpacing: '0.08em', padding: '2px 6px',
-                            background: goal.horizon === 'thirty_days' ? 'var(--black)' : 'transparent',
-                            color: goal.horizon === 'thirty_days' ? 'var(--bg)' : 'var(--grey-mid)',
-                            border: '1px solid currentColor',
-                          }}>
-                            {horizonLabel(goal.horizon).toUpperCase()}
-                          </span>
-                          <span className="mono" style={{ fontSize: '0.5rem', color: 'var(--grey-mid)', letterSpacing: '0.08em' }}>
-                            {phaseLabel(goal.phase).toUpperCase()}
-                            {!goal.phase_progress.time_gate_clear && ` · day ${goal.phase_progress.days_elapsed}/${goal.phase_progress.minimum_days}`}
-                          </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+                          <PhaseTag>{horizonLabel(goal.horizon)}</PhaseTag>
+                          <PhaseTag dim>{phaseLabel(goal.phase)}
+                            {!goal.phase_progress.time_gate_clear && ` · d${goal.phase_progress.days_elapsed}`}
+                          </PhaseTag>
                           {goal.active_commitment && (
-                            <span style={{ fontSize: '0.58rem', color: isOverdue ? 'var(--accent)' : 'var(--black)', fontFamily: 'var(--font-mono)' }}>
+                            <span style={{
+                              fontFamily: "'Space Mono', monospace",
+                              fontSize: '0.45rem', letterSpacing: '0.08em',
+                              color: isOverdue ? T.red : T.black,
+                              textTransform: 'uppercase',
+                            }}>
                               {isOverdue ? '⚠ overdue' : '⚡ committed'}
                             </span>
                           )}
                           {hasPending && !goal.active_commitment && (
-                            <span className="mono" style={{ fontSize: '0.48rem', color: 'var(--grey-mid)' }}>■ step pending</span>
+                            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.45rem', color: T.grey, textTransform: 'uppercase' }}>
+                              ■ step pending
+                            </span>
                           )}
                         </div>
-                        <p style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', lineHeight: 1.35, marginBottom: goal.description && !isExpanded ? 4 : 0 }}>
+                        <p style={{
+                          fontSize: '1rem', fontFamily: "'EB Garamond', Georgia, serif",
+                          lineHeight: 1.35, marginBottom: goal.description && !isExpanded ? 4 : 0,
+                        }}>
                           {goal.title}
                         </p>
                         {goal.description && !isExpanded && (
-                          <p style={{ fontSize: '0.82rem', color: 'var(--grey-mid)', lineHeight: 1.4, fontFamily: 'var(--font-serif)', marginTop: 4 }}>
+                          <p style={{
+                            fontSize: '0.85rem', color: T.grey, lineHeight: 1.4,
+                            fontFamily: "'EB Garamond', Georgia, serif", marginTop: 4,
+                          }}>
                             {goal.description.length > 120 ? goal.description.slice(0, 120) + '…' : goal.description}
                           </p>
                         )}
                       </div>
-                      <span style={{ marginLeft: 12, fontSize: '0.65rem', color: 'var(--grey-mid)', flexShrink: 0, paddingTop: 2 }}>
+                      <span style={{
+                        marginLeft: 12, fontFamily: "'Space Mono', monospace",
+                        fontSize: '0.55rem', color: T.grey, flexShrink: 0, paddingTop: 2,
+                      }}>
                         {isExpanded ? '▲' : '▼'}
                       </span>
                     </button>
 
                     {/* Expanded detail */}
                     {isExpanded && (
-                      <div style={{ borderTop: '1px solid var(--grey-light)', padding: '20px 20px' }}>
+                      <div style={{ borderTop: `1px solid ${T.greyLight}`, padding: '20px 20px' }}>
 
                         {goal.description && (
-                          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: 20, color: 'var(--grey-mid)' }}>
+                          <p style={{
+                            fontFamily: "'EB Garamond', Georgia, serif",
+                            fontSize: '0.95rem', lineHeight: 1.6, marginBottom: 20, color: T.grey,
+                          }}>
                             {goal.description}
                           </p>
                         )}
@@ -413,18 +496,36 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
                         {/* Pending action steps */}
                         {hasPending && (
                           <div style={{ marginBottom: 20 }}>
-                            <span style={{ ...sectionLabel, marginBottom: 8 }}>Current exercise</span>
+                            <span style={{ ...secLabel, marginBottom: 8 }}>Current exercise</span>
                             {goal.action_steps.pending.map(step => (
-                              <div key={step.step_id} style={{ padding: 14, background: 'rgba(0,0,0,0.025)', border: '1px solid var(--grey-light)', marginBottom: 8 }}>
+                              <div key={step.step_id} style={{
+                                padding: 14,
+                                background: T.greyBg,
+                                border: `1px solid ${T.greyLight}`,
+                                marginBottom: 8,
+                              }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                                  <span className="mono" style={{ fontSize: '0.5rem', color: 'var(--grey-mid)' }}>Level {step.exercise_level}</span>
-                                  <span className="mono" style={{ fontSize: '0.5rem', color: daysUntil(step.due_date) <= 0 ? 'var(--accent)' : 'var(--grey-mid)' }}>
+                                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                                    Level {step.exercise_level}
+                                  </span>
+                                  <span style={{
+                                    fontFamily: "'Space Mono', monospace", fontSize: '0.48rem',
+                                    color: daysUntil(step.due_date) <= 0 ? T.red : T.grey,
+                                    textTransform: 'uppercase', letterSpacing: '0.08em',
+                                  }}>
                                     due {formatDate(step.due_date)}{daysUntil(step.due_date) <= 0 && ' · overdue'}
                                   </span>
                                 </div>
-                                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.95rem', lineHeight: 1.55, marginBottom: 6 }}>{step.text}</p>
+                                <p style={{
+                                  fontFamily: "'EB Garamond', Georgia, serif",
+                                  fontSize: '0.95rem', lineHeight: 1.55, marginBottom: 6,
+                                }}>
+                                  {step.text}
+                                </p>
                                 {step.coach_reason && (
-                                  <p style={{ fontSize: '0.8rem', color: 'var(--grey-mid)', fontStyle: 'italic', marginBottom: 8 }}>{step.coach_reason}</p>
+                                  <p style={{ fontSize: '0.8rem', color: T.grey, fontStyle: 'italic', marginBottom: 8 }}>
+                                    {step.coach_reason}
+                                  </p>
                                 )}
                                 {completingStep === step.step_id ? (
                                   <div>
@@ -433,13 +534,17 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
                                       onChange={e => setCompletionNote(e.target.value)}
                                       placeholder="What did you do? What came up? (optional)"
                                       rows={3}
-                                      style={{ width: '100%', marginBottom: 8, fontFamily: 'var(--font-serif)', fontSize: '0.9rem', padding: 10, border: '1px solid var(--black)', resize: 'vertical', background: 'var(--bg)' }}
+                                      style={{
+                                        width: '100%', marginBottom: 8,
+                                        fontFamily: "'EB Garamond', Georgia, serif",
+                                        fontSize: '0.9rem', padding: 10,
+                                        border: `1px solid ${T.black}`, resize: 'vertical',
+                                        background: T.white,
+                                      }}
                                     />
                                     <div style={{ display: 'flex', gap: 8 }}>
-                                      <button className="btn-primary" style={{ fontSize: '0.75rem' }} onClick={() => completeStep(step.step_id)}>
-                                        Done — save note
-                                      </button>
-                                      <button className="btn-ghost" onClick={() => setCompletingStep(null)}>Cancel</button>
+                                      <SystemBtn onClick={() => completeStep(step.step_id)}>Done — save note</SystemBtn>
+                                      <SystemBtn ghost onClick={() => setCompletingStep(null)}>Cancel</SystemBtn>
                                     </div>
                                   </div>
                                 ) : skippingStep === step.step_id ? (
@@ -449,17 +554,23 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
                                       onChange={e => setSkipReason(e.target.value)}
                                       placeholder="What got in the way? (the coach will see this)"
                                       rows={2}
-                                      style={{ width: '100%', marginBottom: 8, fontFamily: 'var(--font-serif)', fontSize: '0.9rem', padding: 10, border: '1px solid var(--black)', resize: 'vertical', background: 'var(--bg)' }}
+                                      style={{
+                                        width: '100%', marginBottom: 8,
+                                        fontFamily: "'EB Garamond', Georgia, serif",
+                                        fontSize: '0.9rem', padding: 10,
+                                        border: `1px solid ${T.black}`, resize: 'vertical',
+                                        background: T.white,
+                                      }}
                                     />
                                     <div style={{ display: 'flex', gap: 8 }}>
-                                      <button className="btn-ghost" onClick={() => skipStep(step.step_id)}>Skip with reason</button>
-                                      <button className="btn-ghost" onClick={() => setSkippingStep(null)}>Cancel</button>
+                                      <SystemBtn ghost onClick={() => skipStep(step.step_id)}>Skip with reason</SystemBtn>
+                                      <SystemBtn ghost onClick={() => setSkippingStep(null)}>Cancel</SystemBtn>
                                     </div>
                                   </div>
                                 ) : (
                                   <div style={{ display: 'flex', gap: 8 }}>
-                                    <button className="btn-ghost" onClick={() => { setCompletingStep(step.step_id); setSkippingStep(null) }}>Mark done</button>
-                                    <button className="btn-ghost" style={{ color: 'var(--grey-mid)' }} onClick={() => { setSkippingStep(step.step_id); setCompletingStep(null) }}>Skip</button>
+                                    <SystemBtn ghost onClick={() => { setCompletingStep(step.step_id); setSkippingStep(null) }}>Mark done</SystemBtn>
+                                    <SystemBtn ghost onClick={() => { setSkippingStep(step.step_id); setCompletingStep(null) }} dim>Skip</SystemBtn>
                                   </div>
                                 )}
                               </div>
@@ -470,29 +581,65 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
                         {/* Active commitment */}
                         {goal.active_commitment && (
                           <div style={{ marginBottom: 20 }}>
-                            <span style={{ ...sectionLabel, marginBottom: 8 }}>Active commitment</span>
-                            <div className={`commitment-block tape-border${isOverdue ? ' overdue' : ''}`} style={{ padding: 14 }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                                <span className="label" style={{ fontSize: '0.55rem' }}>Rung {goal.active_commitment.ladder_rung}</span>
-                                <span className="label" style={{ color: isOverdue ? 'var(--accent)' : 'inherit', fontSize: '0.55rem' }}>
+                            <span style={{ ...secLabel, marginBottom: 8 }}>Active commitment</span>
+                            <div style={{
+                              padding: 16,
+                              background: T.white,
+                              border: `2px solid ${isOverdue ? T.red : T.black}`,
+                              boxShadow: `3px 3px 0px ${isOverdue ? T.red : T.black}`,
+                              position: 'relative',
+                            }}>
+                              {/* Top status strip */}
+                              <div style={{
+                                display: 'flex', justifyContent: 'space-between',
+                                marginBottom: 8, paddingBottom: 8,
+                                borderBottom: `1px solid ${T.greyLight}`,
+                              }}>
+                                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: T.grey }}>
+                                  Rung {goal.active_commitment.ladder_rung}
+                                </span>
+                                <span style={{
+                                  fontFamily: "'Space Mono', monospace", fontSize: '0.48rem',
+                                  color: isOverdue ? T.red : T.grey,
+                                  textTransform: 'uppercase', letterSpacing: '0.08em',
+                                }}>
                                   due {formatDate(goal.active_commitment.due_date)}{isOverdue && ' · overdue'}
                                 </span>
                               </div>
-                              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: 10 }}>{goal.active_commitment.text}</p>
+                              <p style={{
+                                fontFamily: "'EB Garamond', Georgia, serif",
+                                fontSize: '0.95rem', lineHeight: 1.5, marginBottom: 12,
+                              }}>
+                                {goal.active_commitment.text}
+                              </p>
                               {goal.active_commitment.share_post && (
-                                <div style={{ marginBottom: 10, padding: '8px 12px', background: 'var(--grey-light)', borderLeft: '3px solid var(--black)' }}>
-                                  <span className="label" style={{ display: 'block', marginBottom: 3, fontSize: '0.55rem' }}>Ready to post</span>
-                                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.88rem', fontStyle: 'italic' }}>{goal.active_commitment.share_post}</p>
+                                <div style={{
+                                  marginBottom: 12, padding: '10px 14px',
+                                  background: T.greyBg,
+                                  borderLeft: `3px solid ${T.black}`,
+                                }}>
+                                  <span style={{ ...secLabel, marginBottom: 4, fontSize: '0.48rem' }}>Ready to post</span>
+                                  <p style={{
+                                    fontFamily: "'EB Garamond', Georgia, serif",
+                                    fontSize: '0.88rem', fontStyle: 'italic',
+                                  }}>
+                                    {goal.active_commitment.share_post}
+                                  </p>
                                 </div>
                               )}
                               <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-                                <button className="btn-ghost" onClick={() => resolveCommitment(goal.active_commitment!.commitment_id, 'done')}>Mark done</button>
-                                <button className="btn-ghost" onClick={() => resolveCommitment(goal.active_commitment!.commitment_id, 'partial')}>Partial</button>
-                                <button className="btn-ghost" onClick={() => resolveCommitment(goal.active_commitment!.commitment_id, 'missed')}>Missed</button>
+                                <SystemBtn onClick={() => resolveCommitment(goal.active_commitment!.commitment_id, 'done')}>Mark done</SystemBtn>
+                                <SystemBtn ghost onClick={() => resolveCommitment(goal.active_commitment!.commitment_id, 'partial')}>Partial</SystemBtn>
+                                <SystemBtn ghost onClick={() => resolveCommitment(goal.active_commitment!.commitment_id, 'missed')} dim>Missed</SystemBtn>
                               </div>
                               {showProofForm !== goal.goal_id ? (
                                 <button
-                                  style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.08em', color: 'var(--grey-mid)', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+                                  style={{
+                                    fontFamily: "'Space Mono', monospace", fontSize: '0.48rem',
+                                    letterSpacing: '0.08em', color: T.grey,
+                                    cursor: 'pointer', background: 'none', border: 'none', padding: 0,
+                                    textTransform: 'uppercase',
+                                  }}
                                   onClick={() => setShowProofForm(goal.goal_id)}
                                 >
                                   + Add proof of publication
@@ -515,18 +662,34 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
                         {/* Completed exercises */}
                         {goal.action_steps.recent_done.length > 0 && (
                           <div style={{ marginBottom: 16 }}>
-                            <span style={{ ...sectionLabel, marginBottom: 8 }}>
+                            <span style={{ ...secLabel, marginBottom: 8 }}>
                               Completed exercises ({goal.phase_progress.completed_action_steps})
                             </span>
                             {goal.action_steps.recent_done.map(step => (
-                              <div key={step.step_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '6px 0', borderBottom: '1px solid var(--grey-light)' }}>
+                              <div key={step.step_id} style={{
+                                display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+                                padding: '6px 0', borderBottom: `1px solid ${T.greyLight}`,
+                              }}>
                                 <div style={{ flex: 1 }}>
-                                  <p className="text-small commitment-done">{step.text}</p>
+                                  <p style={{
+                                    fontFamily: "'EB Garamond', Georgia, serif",
+                                    fontSize: '0.85rem', textDecoration: 'line-through', color: T.grey,
+                                  }}>
+                                    {step.text}
+                                  </p>
                                   {step.completion_note && (
-                                    <p style={{ fontSize: '0.72rem', color: 'var(--grey-mid)', marginTop: 1, fontStyle: 'italic' }}>"{step.completion_note}"</p>
+                                    <p style={{
+                                      fontSize: '0.75rem', color: T.grey, marginTop: 1, fontStyle: 'italic',
+                                      fontFamily: "'EB Garamond', Georgia, serif",
+                                    }}>
+                                      "{step.completion_note}"
+                                    </p>
                                   )}
                                 </div>
-                                <span className="mono" style={{ marginLeft: 8, fontSize: '0.52rem', color: 'var(--grey-mid)', whiteSpace: 'nowrap' }}>
+                                <span style={{
+                                  marginLeft: 8, fontFamily: "'Space Mono', monospace",
+                                  fontSize: '0.48rem', color: T.grey, whiteSpace: 'nowrap',
+                                }}>
                                   Lv {step.exercise_level}
                                 </span>
                               </div>
@@ -537,13 +700,25 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
                         {/* Commitment history */}
                         {goal.commitment_history.length > 0 && (
                           <div>
-                            <span style={{ ...sectionLabel, marginBottom: 8 }}>Commitment log</span>
+                            <span style={{ ...secLabel, marginBottom: 8 }}>Commitment log</span>
                             {[...goal.commitment_history].reverse().map((c, i) => (
-                              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 0', borderBottom: '1px solid var(--grey-light)' }}>
-                                <p className={`text-small flex-1${c.status === 'done' ? ' commitment-done' : ''}`}>{c.text}</p>
-                                <span className="mono" style={{
-                                  marginLeft: 8, fontSize: '0.52rem',
-                                  color: c.status === 'done' ? '#2d6a2d' : c.status === 'missed' ? 'var(--accent)' : 'var(--grey-mid)'
+                              <div key={i} style={{
+                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                padding: '5px 0', borderBottom: `1px solid ${T.greyLight}`,
+                              }}>
+                                <p style={{
+                                  flex: 1,
+                                  fontFamily: "'EB Garamond', Georgia, serif",
+                                  fontSize: '0.85rem',
+                                  color: c.status === 'done' ? T.grey : T.black,
+                                  textDecoration: c.status === 'done' ? 'line-through' : 'none',
+                                }}>
+                                  {c.text}
+                                </p>
+                                <span style={{
+                                  marginLeft: 8, fontFamily: "'Space Mono', monospace", fontSize: '0.48rem',
+                                  color: c.status === 'done' ? '#2d6a2d' : c.status === 'missed' ? T.red : T.grey,
+                                  textTransform: 'uppercase', letterSpacing: '0.06em',
                                 }}>
                                   {c.status}
                                 </span>
@@ -563,16 +738,15 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
         {/* ── RIGHT SIDEBAR ──────────────────────────────────────── */}
         <div style={{ position: 'sticky', top: 72, display: 'flex', flexDirection: 'column', gap: 24 }}>
 
-          {/* Start session */}
+          {/* Start session — DYMO black button from Workbench screen */}
           <div>
-            <button
-              className="btn-primary"
-              onClick={onStartSession}
-              style={{ width: '100%', padding: '14px 20px', fontSize: '0.7rem', letterSpacing: '0.12em' }}
-            >
+            <DymoBtn onClick={onStartSession} fullWidth>
               Start session
-            </button>
-            <p className="mono" style={{ fontSize: '0.48rem', color: 'var(--grey-mid)', textAlign: 'center', marginTop: 8, letterSpacing: '0.08em' }}>
+            </DymoBtn>
+            <p style={{
+              fontFamily: "'Space Mono', monospace", fontSize: '0.45rem', color: T.grey,
+              textAlign: 'center', marginTop: 8, letterSpacing: '0.08em', textTransform: 'uppercase',
+            }}>
               {profile.sessions_completed} sessions completed
               {profile.resistance_pattern && ` · ${reInterviewDays > 0 ? reInterviewDays + 'd until check-in' : 'check-in due'}`}
             </p>
@@ -580,7 +754,7 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
 
           {/* Tools */}
           <div>
-            <span style={sectionLabel}>Tools</span>
+            <span style={secLabel}>Tools</span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {tools.map(tool => (
                 <SideCard
@@ -597,7 +771,7 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
 
           {/* Thinking Tools (Agents) */}
           <div>
-            <span style={sectionLabel}>Thinking tools</span>
+            <span style={secLabel}>Thinking tools</span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {AGENTS.map(agent => (
                 <SideCard
@@ -612,13 +786,17 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
             </div>
           </div>
 
-          {/* Publishing log */}
+          {/* Publishing log — System style with left-border entries */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
-              <span style={sectionLabel}>Published {publishing_log.length > 0 && `(${publishing_log.length})`}</span>
+              <span style={secLabel}>Published {publishing_log.length > 0 && `(${publishing_log.length})`}</span>
               {!showProofForm && (
                 <button
-                  style={{ fontFamily: 'var(--font-mono)', fontSize: '0.48rem', letterSpacing: '0.1em', color: 'var(--grey-mid)', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+                  style={{
+                    fontFamily: "'Space Mono', monospace", fontSize: '0.45rem',
+                    letterSpacing: '0.1em', color: T.grey, cursor: 'pointer',
+                    background: 'none', border: 'none', padding: 0, textTransform: 'uppercase',
+                  }}
                   onClick={() => setShowProofForm('global')}
                 >
                   + Add
@@ -639,28 +817,39 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
             )}
 
             {publishing_log.length === 0 ? (
-              <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.52rem', color: 'var(--grey-mid)', lineHeight: 1.6 }}>
+              <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', color: T.grey, lineHeight: 1.6 }}>
                 Nothing published yet.
               </p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                 {publishing_log.slice(0, 5).map(entry => (
-                  <div key={entry.log_id} style={{ padding: '8px 0', borderBottom: '1px solid var(--grey-light)' }}>
+                  <div key={entry.log_id} style={{
+                    padding: '8px 0 8px 10px',
+                    borderBottom: `1px solid ${T.greyLight}`,
+                    borderLeft: `2px solid ${T.black}`,
+                    marginBottom: 4,
+                  }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-                      <span className="mono" style={{ fontSize: '0.5rem', color: 'var(--grey-mid)' }}>{platformLabel(entry.platform)}</span>
-                      <span className="mono" style={{ fontSize: '0.5rem', color: 'var(--grey-mid)' }}>{formatDate(entry.published_at)}</span>
+                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.45rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        {platformLabel(entry.platform)}
+                      </span>
+                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.45rem', color: T.grey }}>
+                        {formatDate(entry.published_at)}
+                      </span>
                     </div>
-                    <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.82rem', lineHeight: 1.4 }}>{entry.description}</p>
+                    <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: '0.85rem', lineHeight: 1.4 }}>
+                      {entry.description}
+                    </p>
                     {entry.url && entry.url !== 'direct message — no url' && (
                       <a href={entry.url} target="_blank" rel="noopener noreferrer"
-                        className="mono" style={{ fontSize: '0.5rem', color: 'var(--grey-mid)', wordBreak: 'break-all' }}>
+                        style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.45rem', color: T.grey, wordBreak: 'break-all' }}>
                         {entry.url}
                       </a>
                     )}
                   </div>
                 ))}
                 {publishing_log.length > 5 && (
-                  <p className="mono" style={{ fontSize: '0.5rem', color: 'var(--grey-mid)', paddingTop: 6 }}>
+                  <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', color: T.grey, paddingTop: 6 }}>
                     +{publishing_log.length - 5} more
                   </p>
                 )}
@@ -676,6 +865,74 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
 
 // ── SHARED SUBCOMPONENTS ────────────────────────────────────────
 
+// DymoBtn — black DYMO label button, 4px hard shadow (Workbench)
+function DymoBtn({ children, onClick, fullWidth }: {
+  children: React.ReactNode
+  onClick?: () => void
+  fullWidth?: boolean
+}) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: T.black,
+        color: '#FFFFFF',
+        fontFamily: "'Space Mono', monospace",
+        fontSize: '0.6rem',
+        fontWeight: 700,
+        letterSpacing: '0.18em',
+        textTransform: 'uppercase',
+        border: `2px solid ${T.black}`,
+        padding: '12px 20px',
+        cursor: 'pointer',
+        width: fullWidth ? '100%' : 'auto',
+        boxShadow: hovered ? `1px 1px 0px ${T.black}` : `4px 4px 0px ${T.black}`,
+        transform: hovered ? 'translate(3px,3px)' : 'none',
+        transition: 'box-shadow 0.1s, transform 0.1s',
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
+// SystemBtn — rectangular bordered button (System/Clarity quadrant)
+function SystemBtn({ children, onClick, ghost, dim }: {
+  children: React.ReactNode
+  onClick?: () => void
+  ghost?: boolean
+  dim?: boolean
+}) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        fontFamily: "'Space Mono', monospace",
+        fontSize: '0.48rem',
+        letterSpacing: '0.1em',
+        textTransform: 'uppercase',
+        padding: '6px 12px',
+        border: `1px solid ${dim ? T.greyLight : T.black}`,
+        background: ghost ? 'transparent' : T.black,
+        color: ghost ? (dim ? T.grey : T.black) : '#FFFFFF',
+        cursor: 'pointer',
+        boxShadow: hovered ? 'none' : (ghost ? 'none' : `2px 2px 0px ${T.black}`),
+        transform: hovered ? 'translate(1px,1px)' : 'none',
+        transition: 'box-shadow 0.08s, transform 0.08s',
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
+// SideCard — white card with 4px hard shadow (Workbench tool card)
 function SideCard({ label, sub, desc, onClick, cta }: {
   label: string
   sub: string
@@ -690,25 +947,41 @@ function SideCard({ label, sub, desc, onClick, cta }: {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        border: '2px solid var(--black)',
+        border: `2px solid ${T.black}`,
         padding: '12px 14px',
         cursor: 'pointer',
-        background: 'var(--bg)',
-        boxShadow: hovered ? '1px 1px 0px var(--black)' : '3px 3px 0px var(--black)',
+        background: T.white,
+        boxShadow: hovered ? `1px 1px 0px ${T.black}` : `3px 3px 0px ${T.black}`,
         transform: hovered ? 'translate(2px,2px)' : 'none',
         transition: 'box-shadow 0.1s, transform 0.1s',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
         <div>
-          <span className="mono" style={{ fontSize: '0.45rem', color: 'var(--grey-mid)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: 2 }}>
+          <span style={{
+            fontFamily: "'Space Mono', monospace", fontSize: '0.42rem',
+            color: T.grey, letterSpacing: '0.1em', textTransform: 'uppercase',
+            display: 'block', marginBottom: 2,
+          }}>
             {sub}
           </span>
-          <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: '0.88rem', lineHeight: 1.2 }}>{label}</span>
+          <span style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '0.9rem', lineHeight: 1.2 }}>
+            {label}
+          </span>
         </div>
-        <span className="mono" style={{ fontSize: '0.5rem', letterSpacing: '0.08em', color: 'var(--grey-mid)', flexShrink: 0, paddingTop: 2 }}>{cta}</span>
+        <span style={{
+          fontFamily: "'Space Mono', monospace", fontSize: '0.45rem',
+          letterSpacing: '0.08em', color: T.grey, flexShrink: 0, paddingTop: 2,
+        }}>
+          {cta}
+        </span>
       </div>
-      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', color: 'var(--grey-mid)', lineHeight: 1.5, letterSpacing: '0.04em' }}>{desc}</p>
+      <p style={{
+        fontFamily: "'Space Mono', monospace", fontSize: '0.48rem',
+        color: T.grey, lineHeight: 1.5, letterSpacing: '0.03em',
+      }}>
+        {desc}
+      </p>
     </div>
   )
 }
@@ -722,9 +995,15 @@ function ProofFields({ url, setUrl, platform, setPlatform, description, setDescr
   return (
     <div style={{ display: 'grid', gap: 8 }}>
       <input type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="URL to what you published" required
-        style={{ fontFamily: 'var(--font-serif)', fontSize: '0.9rem', padding: 9, border: '1px solid var(--black)', width: '100%', background: 'var(--bg)' }} />
+        style={{
+          fontFamily: "'EB Garamond', Georgia, serif", fontSize: '0.9rem', padding: 9,
+          border: `1px solid ${T.black}`, width: '100%', background: T.white,
+        }} />
       <select value={platform} onChange={e => setPlatform(e.target.value)}
-        style={{ fontFamily: 'var(--font-serif)', fontSize: '0.9rem', padding: 9, border: '1px solid var(--black)', background: 'var(--bg)' }}>
+        style={{
+          fontFamily: "'EB Garamond', Georgia, serif", fontSize: '0.9rem', padding: 9,
+          border: `1px solid ${T.black}`, background: T.white,
+        }}>
         <option value="community">Unlabeled Community</option>
         <option value="linkedin">LinkedIn</option>
         <option value="twitter">X / Twitter</option>
@@ -734,12 +1013,20 @@ function ProofFields({ url, setUrl, platform, setPlatform, description, setDescr
         <option value="other">Other</option>
       </select>
       <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="What did you publish? One or two sentences." rows={2} required
-        style={{ fontFamily: 'var(--font-serif)', fontSize: '0.9rem', padding: 9, border: '1px solid var(--black)', resize: 'vertical', background: 'var(--bg)' }} />
+        style={{
+          fontFamily: "'EB Garamond', Georgia, serif", fontSize: '0.9rem', padding: 9,
+          border: `1px solid ${T.black}`, resize: 'vertical', background: T.white,
+        }} />
       <div style={{ display: 'flex', gap: 8 }}>
-        <button type="submit" className="btn-primary" disabled={submitting} style={{ fontSize: '0.75rem' }}>
+        <button type="submit" disabled={submitting} style={{
+          fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', letterSpacing: '0.1em',
+          textTransform: 'uppercase', padding: '6px 12px',
+          border: `1px solid ${T.black}`, background: T.black, color: '#FFFFFF', cursor: 'pointer',
+          boxShadow: `2px 2px 0px ${T.black}`, opacity: submitting ? 0.5 : 1,
+        }}>
           {submitting ? 'Saving…' : 'Save proof'}
         </button>
-        <button type="button" className="btn-ghost" onClick={onCancel}>Cancel</button>
+        <SystemBtn ghost dim onClick={onCancel}>Cancel</SystemBtn>
       </div>
     </div>
   )
