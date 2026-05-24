@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simplify — Unlabeled</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400;1,500&family=Space+Mono:wght@400;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../design.css">
+  <style>
+    /* system quadrant: Space Mono structure, thick borders, 4px shadows */
+    body { font-family: var(--font-mono); }
+
+    .page {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: var(--space-lg) var(--space-lg);
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: var(--space-sm);
+      border-bottom: var(--border-thick);
+      margin-bottom: var(--space-lg);
+    }
+
+    /* system: mono directive, not a gentle invite */
+    .intro {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--grey);
+      line-height: 1.9;
+      margin-bottom: var(--space-md);
+      border-left: 3px solid var(--grey-light);
+      padding-left: var(--space-sm);
+    }
+
+    .input-area {
+      position: relative;
+      margin-bottom: var(--space-md);
+    }
+
+    /* system: typewriter in a bordered box */
+    .task-input {
+      width: 100%;
+      font-family: 'Courier Prime', 'Courier New', monospace;
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: var(--black);
+      background: var(--canvas-dark);
+      border: var(--border-thick);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-sm) var(--space-sm);
+      resize: vertical;
+      outline: none;
+      min-height: 88px;
+    }
+    .task-input:focus { box-shadow: var(--shadow); }
+
+    .task-input::placeholder {
+      color: var(--grey-light);
+    }
+
+    .char-count {
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--grey-light);
+      text-align: right;
+      margin-top: 4px;
+    }
+    .char-count.warn { color: var(--red); }
+
+    .action-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-lg);
+    }
+
+    .spinner {
+      display: none;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+    .spinner.active { display: block; }
+
+    /* ── Result panel ── */
+    #result { display: none; }
+    #result.visible { display: block; }
+
+    .task-cleaned {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: var(--space-sm);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .task-cleaned::before {
+      content: 'Task';
+      display: inline-block;
+      background: var(--black);
+      color: var(--canvas);
+      font-size: 0.52rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      padding: 2px 8px;
+      flex-shrink: 0;
+    }
+
+    /* system: yellow highlight = active/priority state */
+    .first-move-banner {
+      background: var(--yellow);
+      border: var(--border-thick);
+      padding: var(--space-sm) var(--space-md);
+      margin-bottom: var(--space-md);
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    .first-move-banner::before {
+      content: 'First Move';
+      position: absolute;
+      top: -11px;
+      left: 10px;
+      background: var(--black);
+      color: var(--canvas);
+      padding: 2px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .first-move-text {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.7;
+      letter-spacing: 0.02em;
+      color: var(--black);
+    }
+
+    /* system: strict bordered list */
+    .steps-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border: var(--border-thick);
+      box-shadow: var(--shadow);
+    }
+
+    .step-item {
+      padding: var(--space-sm);
+      border-bottom: var(--border);
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      gap: 12px;
+      align-items: start;
+      background: var(--canvas);
+    }
+    .step-item:last-child { border-bottom: none; }
+    .step-item:nth-child(even) { background: var(--canvas-dark); }
+
+    .step-num {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--grey-light);
+      line-height: 1;
+      padding-top: 2px;
+    }
+
+    .step-body { }
+
+    .step-text {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      line-height: 1.65;
+      letter-spacing: 0.02em;
+      color: var(--black);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .step-why {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.04em;
+      color: var(--grey);
+      display: block;
+    }
+
+    /* dymo chip for duration */
+    .step-duration {
+      display: inline-block;
+      background: var(--black);
+      color: var(--canvas);
+      font-family: var(--font-mono);
+      font-size: 0.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 3px 7px;
+      white-space: nowrap;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .reset-row {
+      margin-top: var(--space-md);
+      display: flex;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+
+    .error-msg {
+      display: none;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-top: var(--space-sm);
+      padding: var(--space-xs) var(--space-sm);
+      border-left: 3px solid var(--red);
+    }
+    .error-msg.visible { display: block; }
+
+    @media (max-width: 640px) {
+      .page { padding: var(--space-md) var(--space-sm); }
+      .step-item { grid-template-columns: 36px 1fr; }
+      .step-duration { display: none; }
+      .step-num { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+
+    <div class="page-header">
+      <a href="../index.html" class="nav-back">← Unlabeled</a>
+      <span class="label">Simplify</span>
+    </div>
+
+    <p class="intro">
+      Paste any task — a project, a decision, a thing you've been avoiding.
+      Get back the smallest possible first step.
+    </p>
+
+    <div class="input-area">
+      <textarea
+        class="task-input"
+        id="taskInput"
+        placeholder="Write a launch post for my new tool…"
+        maxlength="1000"
+        rows="3"
+      ></textarea>
+      <div class="char-count" id="charCount">0 / 1000</div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-primary" id="simplifyBtn" onclick="simplify()">Break it down</button>
+      <span class="spinner" id="spinner">Thinking…</span>
+    </div>
+
+    <p class="error-msg" id="errorMsg"></p>
+
+    <div id="result">
+      <div class="first-move-banner">
+        <p class="first-move-text" id="firstMove"></p>
+      </div>
+      <p class="task-cleaned" id="taskCleaned"></p>
+      <ul class="steps-list" id="stepsList"></ul>
+      <div class="reset-row">
+        <button class="btn-ghost" onclick="reset()">Try another</button>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const API = 'https://unlabeled-coach.up.railway.app/api/tools/simplify'
+
+    const input = document.getElementById('taskInput')
+    const charCount = document.getElementById('charCount')
+    const btn = document.getElementById('simplifyBtn')
+    const spinner = document.getElementById('spinner')
+    const result = document.getElementById('result')
+    const errorMsg = document.getElementById('errorMsg')
+
+    input.addEventListener('input', () => {
+      const n = input.value.length
+      charCount.textContent = `${n} / 1000`
+      charCount.classList.toggle('warn', n > 900)
+    })
+
+    input.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') simplify()
+    })
+
+    async function simplify() {
+      const task = input.value.trim()
+      if (!task) {
+        showError('Write something first.')
+        return
+      }
+
+      setLoading(true)
+      hideError()
+      hideResult()
+
+      try {
+        const res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ task }),
+        })
+
+        const data = await res.json()
+
+        if (!res.ok) {
+          showError(data.error || 'Something went wrong. Try again.')
+          return
+        }
+
+        renderResult(data)
+      } catch (err) {
+        showError('Could not reach the server. Check your connection.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    function renderResult(data) {
+      document.getElementById('taskCleaned').textContent = data.task || ''
+      document.getElementById('firstMove').textContent = data.first_move || ''
+
+      const list = document.getElementById('stepsList')
+      list.innerHTML = ''
+
+      const steps = Array.isArray(data.steps) ? data.steps : []
+      steps.forEach((step, i) => {
+        const li = document.createElement('li')
+        li.className = 'step-item'
+        li.innerHTML = `
+          <span class="step-num">${String(i + 1).padStart(2, '0')}</span>
+          <span class="step-body">
+            <span class="step-text">${esc(step.text)}</span>
+            ${step.why ? `<span class="step-why">${esc(step.why)}</span>` : ''}
+          </span>
+          <span class="step-duration">${esc(step.duration || '')}</span>
+        `
+        list.appendChild(li)
+      })
+
+      result.classList.add('visible')
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+
+    function reset() {
+      input.value = ''
+      charCount.textContent = '0 / 1000'
+      charCount.classList.remove('warn')
+      hideResult()
+      hideError()
+      input.focus()
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
+    function setLoading(on) {
+      btn.disabled = on
+      spinner.classList.toggle('active', on)
+      if (on) btn.textContent = '…'
+      else btn.textContent = 'Break it down'
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg
+      errorMsg.classList.add('visible')
+    }
+    function hideError() { errorMsg.classList.remove('visible') }
+    function hideResult() { result.classList.remove('visible') }
+
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+    }
+  </script>
+</body>
+</html>

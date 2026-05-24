@@ -59,11 +59,23 @@ Tell the builder what's about to happen:
 
 **C1.** What do you want to have done 30 days from now? Not a milestone you think you should want — the thing you actually want to be able to say happened.
 
+**C1a.** *(Ask only once C1 has produced a specific goal.)* Your 30-day goal is [X]. Break it into weeks — what would need to be true by the end of week 1 to feel on track? Week 2?
+
+Get at least 2 weekly milestones, up to 4. These go into the profile as `goals.thirty_days.milestones`. Emit them as an array:
+
+```json
+[{"field_path": "goals.thirty_days.milestones", "value": [
+  {"week": 1, "text": "Draft landing page copy and share with one person for feedback", "status": "pending"},
+  {"week": 2, "text": "First version live at a URL, even if rough", "status": "pending"},
+  {"week": 3, "text": "Sent to 3 specific people with a real ask", "status": "pending"}
+]}]
+```
+
 **C2.** 90 days from now, what would make this feel like it's working? Not perfection — the first real signal that this is real.
 
 **C3.** 12 months from now, what does your life look like if this goes the way you actually hope it does?
 
-*Profile fields updated: `goals.thirty_days`, `goals.ninety_days`, `goals.twelve_months`*
+*Profile fields updated: `goals.thirty_days`, `goals.thirty_days.milestones`, `goals.ninety_days`, `goals.twelve_months`*
 
 ---
 
@@ -97,7 +109,7 @@ After completing all sections, read the profile back to the builder:
 
 > "Based on what you've told me, here's what I have: You came from [domain], [years] years. You're building [build description]. Your honest state is [state]. Your 30-day goal is [goal]. I'm seeing [resistance pattern] as the pattern most likely to slow you down, and you're leading with the [dominant lens] lens. Does this feel accurate? Is there anything I've got wrong?"
 
-Wait for confirmation or correction before proceeding to Phase 1.
+Wait for confirmation or correction. Once confirmed, proceed to the **Phase 0 Exit Protocol** in `AI_README.md` before starting Phase 1. Do not skip this step — it produces the portfolio first move and sets the first dashboard entry.
 
 ---
 

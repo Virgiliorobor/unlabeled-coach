@@ -2,11 +2,35 @@
 // These mirror the YAML profile template exactly.
 // Field names are DB column contracts — do not rename.
 
+export interface GoalMilestone {
+  week: number
+  text: string
+  status: 'pending' | 'done' | 'missed'
+}
+
 export interface UserGoal {
   text: string
   status: 'active' | 'completed' | 'revised'
   set_at: string
   last_referenced: string
+  milestones?: GoalMilestone[]
+}
+
+export interface Portfolio {
+  url: string
+  platform: string
+  status: 'none' | 'in_progress' | 'active'
+  entries_count: number
+  last_updated: string
+}
+
+export interface FirstMove {
+  text: string
+  due_date: string
+  platform: string
+  pattern_note: string
+  status: 'pending' | 'done' | 'missed'
+  created_at: string
 }
 
 export interface DailyReminders {
@@ -120,6 +144,11 @@ export interface UserProfile {
     last_state_change: string
     flagged_sessions: string[]
   }
+
+  // portfolio + first move
+  portfolio: Portfolio
+  first_move: FirstMove | null
+  today_prompt: string
 
   // notes
   coach_notes: string

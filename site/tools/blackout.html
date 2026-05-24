@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blackout — Unlabeled</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&family=EB+Garamond:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../design.css">
+  <style>
+    body { font-family: var(--font-typewriter); }
+
+    .page {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: var(--space-md);
+      padding-bottom: var(--space-xl);
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-sm) 0;
+      border-bottom: var(--border-thick);
+      margin-bottom: var(--space-md);
+    }
+
+    /* Catalog row */
+    .catalog-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-sm);
+      flex-wrap: wrap;
+    }
+
+    .catalog-label {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--grey);
+      white-space: nowrap;
+    }
+
+    select {
+      font-family: var(--font-typewriter);
+      font-size: 0.8rem;
+      background: var(--canvas);
+      color: var(--black);
+      border: var(--border-thick);
+      padding: 8px 12px;
+      box-shadow: var(--shadow-sm);
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      flex: 1;
+      min-width: 180px;
+      max-width: 320px;
+    }
+
+    /* Input area */
+    .input-section { margin-bottom: var(--space-md); }
+
+    textarea {
+      font-family: var(--font-typewriter);
+      font-size: 0.9rem;
+      line-height: 1.8;
+      background: var(--canvas-dark);
+      color: var(--black);
+      border: var(--border-thick);
+      width: 100%;
+      padding: var(--space-md);
+      resize: vertical;
+      min-height: 220px;
+      box-shadow: inset 2px 2px 0 rgba(0,0,0,0.06);
+      outline: none;
+    }
+    textarea:focus { border: var(--border-thick); outline: none; }
+    textarea::placeholder { color: var(--grey); font-style: italic; }
+
+    /* Controls bar */
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      margin-top: var(--space-sm);
+    }
+
+    .density-group {
+      display: flex;
+      gap: 0;
+      border: var(--border-thick);
+      box-shadow: var(--shadow-sm);
+    }
+    .density-btn {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 9px 14px;
+      border: none;
+      border-right: var(--border);
+      background: var(--canvas);
+      color: var(--grey);
+      cursor: pointer;
+      transition: background 0.1s, color 0.1s;
+    }
+    .density-btn:last-child { border-right: none; }
+    .density-btn.active { background: var(--black); color: var(--canvas); }
+    .density-btn:hover:not(.active) { background: var(--canvas-dark); color: var(--black); }
+
+    .spacer { flex: 1; }
+
+    /* Result section */
+    .result-section {
+      margin-top: var(--space-lg);
+      display: none;
+    }
+    .result-section.visible { display: block; }
+
+    .result-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-sm);
+      padding-bottom: var(--space-xs);
+      border-bottom: var(--border-thick);
+    }
+
+    /* The page — cream background, physical look */
+    .blackout-page {
+      background: #FAFAF5;
+      border: var(--border-thick);
+      box-shadow: var(--shadow);
+      padding: var(--space-lg) var(--space-md);
+      font-family: var(--font-typewriter);
+      font-size: 0.95rem;
+      line-height: 2;
+      position: relative;
+    }
+
+    /* Tape strip at top */
+    .blackout-page::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-0.5deg);
+      width: 80px;
+      height: 16px;
+      background: rgba(255, 240, 0, 0.7);
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .redacted {
+      display: inline;
+      background: var(--black);
+      color: transparent;
+      padding: 0 1px;
+      border-radius: 0;
+      user-select: none;
+      line-height: inherit;
+    }
+
+    .revealed {
+      display: inline;
+      color: var(--black);
+    }
+
+    .result-controls {
+      display: flex;
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+      flex-wrap: wrap;
+    }
+
+    .copy-confirm {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--grey);
+      display: none;
+      align-self: center;
+    }
+    .copy-confirm.visible { display: block; }
+
+    /* Empty state hint */
+    .hint {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--grey);
+      padding: var(--space-lg) 0;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      .page { padding: var(--space-sm); }
+      .density-btn { padding: 8px 10px; }
+      select { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- Header -->
+    <div class="page-header">
+      <a href="../index.html" class="nav-back">← Unlabeled</a>
+      <span class="dymo-label">Blackout</span>
+    </div>
+
+    <!-- Input section -->
+    <div class="input-section">
+
+      <div class="catalog-row">
+        <span class="catalog-label">Source →</span>
+        <select id="catalogSelect" onchange="loadCatalog()">
+          <option value="">— Paste your own text —</option>
+          <option value="reckoning">The Reckoning</option>
+          <option value="standard">The Standard</option>
+          <option value="first-person">The First Person</option>
+          <option value="visibility">Visibility</option>
+          <option value="permission">Permission</option>
+          <option value="work">The Work Itself</option>
+          <option value="gap">The Gap</option>
+          <option value="evidence">Evidence</option>
+        </select>
+        <button class="btn-ghost" onclick="loadRandom()">Random page</button>
+      </div>
+
+      <textarea
+        id="inputText"
+        placeholder="Paste any text here — a journal entry, a brief, a manifesto, a page from a book. The system will find what matters."
+        oninput="clearResult()"
+      ></textarea>
+
+      <div class="controls-bar">
+        <div class="density-group">
+          <button class="density-btn" id="btn-dense"    onclick="setDensity('dense')">Dense</button>
+          <button class="density-btn active" id="btn-balanced" onclick="setDensity('balanced')">Balanced</button>
+          <button class="density-btn" id="btn-sparse"   onclick="setDensity('sparse')">Sparse</button>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn-primary" onclick="runBlackout()">Blackout</button>
+      </div>
+
+    </div>
+
+    <!-- Result section -->
+    <div class="result-section" id="resultSection">
+      <div class="result-label-row">
+        <span class="dymo-label">Result</span>
+      </div>
+
+      <div class="blackout-page" id="blackoutPage"></div>
+
+      <div class="result-controls">
+        <button class="btn-ghost" onclick="regenerate()">Regenerate</button>
+        <button class="btn-ghost" onclick="resetTool()">Reset</button>
+        <button class="btn-ghost" onclick="copyResult()" id="copyBtn">Copy text</button>
+        <span class="copy-confirm" id="copyConfirm">Copied</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ── Stop words — nearly always blacked out ─────────────────
+    const STOP = new Set([
+      'i','me','my','myself','we','our','ours','ourselves','you','your','yours',
+      'yourself','yourselves','he','him','his','himself','she','her','hers',
+      'herself','it','its','itself','they','them','their','theirs','themselves',
+      'what','which','who','whom','this','that','these','those','am','is','are',
+      'was','were','be','been','being','have','has','had','having','do','does',
+      'did','doing','a','an','the','and','but','if','or','because','as','until',
+      'while','of','at','by','for','with','about','against','between','into',
+      'through','during','before','after','above','below','to','from','up','down',
+      'in','out','on','off','over','under','again','further','then','once','here',
+      'there','when','where','why','how','all','both','each','few','more','most',
+      'other','some','such','no','nor','not','only','own','same','so','than','too',
+      'very','can','will','just','should','now','also','always','never','every',
+      'even','still','back','much','well','get','got','make','made','know','think',
+      'say','said','go','going','come','came','take','took','one','two','three',
+      'would','could','might','must','shall','may','need','want','like','use',
+      'used','keep','kept','let','put','seem','feel','felt','try','tried','call',
+      'good','new','old','first','last','long','great','little','own','right',
+      'big','high','small','next','early','young','important','public','bad',
+      'same','different','able','many','another','around','anything','something',
+      "i'm","i've","i'll","i'd","it's","that's","there's","they're","we're",
+      "you're","don't","didn't","doesn't","can't","couldn't","isn't","aren't",
+      "wasn't","weren't","hasn't","haven't","hadn't","won't","wouldn't","shouldn't"
+    ])
+
+    // ── Density settings — % of substantive words kept visible ──
+    const DENSITY = { dense: 0.12, balanced: 0.27, sparse: 0.48 }
+    let currentDensity = 'balanced'
+    let lastText = ''
+
+    function setDensity(d) {
+      currentDensity = d
+      document.querySelectorAll('.density-btn').forEach(b => b.classList.remove('active'))
+      document.getElementById('btn-' + d).classList.add('active')
+    }
+
+    // ── Tokenizer — preserves spaces, newlines, punctuation ─────
+    function tokenize(text) {
+      const tokens = []
+      const re = /(\n+|[ \t]+|[a-zA-Z''’-]+|[^a-zA-Z\s]+)/g
+      let m
+      while ((m = re.exec(text)) !== null) {
+        const t = m[0]
+        const isWord = /^[a-zA-Z]/.test(t)
+        tokens.push({ text: t, isWord, lower: t.toLowerCase().replace(/['’]/g, "'") })
+      }
+      return tokens
+    }
+
+    // ── Blackout engine ──────────────────────────────────────────
+    function computeBlackout(text, density) {
+      const tokens = tokenize(text)
+      const keep = DENSITY[density]
+
+      return tokens.map(tok => {
+        if (!tok.isWord) return { ...tok, visible: true, isWord: false }
+        const isStop  = STOP.has(tok.lower)
+        const isShort = tok.text.length <= 2
+        let threshold = isStop || isShort ? 0.04 : keep
+        return { ...tok, visible: Math.random() < threshold }
+      })
+    }
+
+    function renderTokens(tokens) {
+      return tokens.map(tok => {
+        if (!tok.isWord) {
+          // preserve newlines as <br>
+          return tok.text.replace(/\n/g, '<br>')
+        }
+        if (tok.visible) {
+          return `<span class="revealed">${escHtml(tok.text)}</span>`
+        }
+        return `<span class="redacted">${escHtml(tok.text)}</span>`
+      }).join('')
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    }
+
+    // ── Plain text version for copy ──────────────────────────────
+    function tokensToPlain(tokens) {
+      return tokens.map(tok => {
+        if (!tok.isWord) return tok.text
+        return tok.visible ? tok.text : '█'.repeat(tok.text.length)
+      }).join('')
+    }
+
+    // ── Run / regenerate ─────────────────────────────────────────
+    let lastTokens = []
+
+    function runBlackout() {
+      const text = document.getElementById('inputText').value.trim()
+      if (!text) return
+      lastText = text
+      lastTokens = computeBlackout(text, currentDensity)
+      showResult()
+    }
+
+    function regenerate() {
+      if (!lastText) return
+      lastTokens = computeBlackout(lastText, currentDensity)
+      showResult()
+    }
+
+    function showResult() {
+      document.getElementById('blackoutPage').innerHTML = renderTokens(lastTokens)
+      document.getElementById('resultSection').classList.add('visible')
+      document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+
+    function clearResult() {
+      document.getElementById('resultSection').classList.remove('visible')
+    }
+
+    function resetTool() {
+      document.getElementById('inputText').value = ''
+      document.getElementById('catalogSelect').value = ''
+      clearResult()
+      lastText = ''
+      lastTokens = []
+    }
+
+    function copyResult() {
+      const plain = tokensToPlain(lastTokens)
+      navigator.clipboard.writeText(plain).then(() => {
+        const c = document.getElementById('copyConfirm')
+        c.classList.add('visible')
+        setTimeout(() => c.classList.remove('visible'), 1800)
+      })
+    }
+
+    // ── Catalog ──────────────────────────────────────────────────
+    const CATALOG = {
+      'reckoning': {
+        title: 'The Reckoning',
+        text: `I spent fourteen years learning how to think inside a system that rewarded precision and penalized exposure. I learned to present only what was finished, to speak only when I was certain, to wait until the work was vetted before it became visible. I was good at this. The system promoted me for being good at this.
+
+Then one day I opened my laptop at six in the morning and started building something that did not belong to the system at all. It belonged to no one but me. And I had no idea what to do with that.
+
+The skills I had were real — judgment, pattern recognition, the ability to see what others miss. But the rules I had internalized were wrong for this kind of work. The standard that protected me there was destroying me here. I kept finishing things inside my head and never shipping them into the world. I kept waiting for a review that was never coming. I kept postponing the moment when other people would see what I had made and decide whether it was worth anything.
+
+I was waiting for permission from a committee that had dissolved.
+
+The building was happening. The work was real. The problem was that I still believed I needed someone above me to say it was ready. No one was going to say that. No one was ever going to say that.
+
+The only way through was to ship the thing and find out what it was.`
+      },
+
+      'standard': {
+        title: 'The Standard',
+        text: `The standard that made sense in the old work is the wrong standard here. I know this. I repeat it to myself like a correction. And then I open the project and apply the old standard anyway, because the old standard is the only one I have internalized all the way down into my hands.
+
+In the old work, you did not show the draft. You did not present the hypothesis before the data was clean. You did not walk into a room and say: here is something incomplete, help me understand where it is going. That behavior would have ended the work, or ended your standing in the room where the work was done.
+
+Here it is the only behavior that moves anything forward. The early version is the only version that generates real feedback. The incomplete thing is the only thing that teaches you what the complete thing should be.
+
+I know this. I believe it in the abstract. I cannot yet believe it in the moment when the cursor is hovering over publish and my hand will not press it.
+
+That gap between the abstract belief and the embodied refusal — that is the thing I am actually working on. The work on the project and the work on that refusal are not separate. They are the same work.`
+      },
+
+      'first-person': {
+        title: 'The First Person',
+        text: `I built a tool for one person. I knew her name. I knew what she was trying to do and why the tools she already had were failing her. I built the thing with her problem in mind, in enough detail that it actually helped, and then I sent it to her without asking if it was good enough.
+
+She used it. She told me it changed three hours of work into twenty minutes. She sent it to someone else, someone I did not know, and that person used it and found it useful.
+
+Neither of them asked whether I had a computer science degree. Neither of them checked my credentials or my previous job title. Neither of them cared that I had spent the previous decade doing something else entirely. The work either solved the problem or it did not.
+
+It solved the problem.
+
+I have to remember this when I am tempted to think that my background is an obstacle. It is not an obstacle to the person whose problem I am solving. It does not exist for them. What exists is whether the thing works.
+
+The identity I am defending is invisible to the people I am trying to help. The work is not.`
+      },
+
+      'visibility': {
+        title: 'Visibility',
+        text: `There is a version of staying invisible that feels like integrity. I am protecting the work from premature judgment. I am waiting until it is genuinely ready. I am not the kind of person who performs building — I am the kind of person who actually builds.
+
+I believe this story. It is not entirely false.
+
+The part that is false is the claim that the work is not ready. The work is ready. I am not ready. There is a difference between those two things, and I have been using one to cover for the other.
+
+The work would survive the exposure. It is good enough to be seen by someone who might need it. The question is whether I am willing to be seen alongside it — to stand next to it in public, to say out loud that I made this uncertain thing, to let people look.
+
+That is the actual problem. Not the work. Me. The visibility is not about the quality of the work. It is about what happens to me when the work is out in the world and I cannot take it back.
+
+I have to decide whether the cost of that exposure is higher than the cost of staying invisible. It is not. But I keep acting as though it is.
+
+The people who need the work cannot find it while it is inside my laptop. My discomfort is not worth their invisibility.`
+      },
+
+      'permission': {
+        title: 'Permission',
+        text: `I am waiting for someone to tell me it is good enough. I have been waiting for three months.
+
+The person I am waiting for does not exist. There is no editor who will read the draft and say: yes, this version is ready. There is no senior partner who will review the proposal and say: yes, this is the right direction. There is no committee that will convene and return a verdict that I have been approved to proceed.
+
+The structure that generated external validation in the old work does not exist here. I built my confidence for twenty years on a feedback loop that no longer operates. The absence of that loop does not mean the work is wrong. It means I am in a different system.
+
+In this system, the feedback comes from shipping and observing, not from presenting and waiting. The only approval that matters is whether someone uses the thing and finds it useful. I cannot get that approval without shipping the thing.
+
+I am waiting for permission to take the only action that produces the information I am waiting for. This is circular. I have known it is circular for three months.
+
+The knowledge has not dissolved the feeling. But naming it out loud is the first thing that has come close.`
+      },
+
+      'work': {
+        title: 'The Work Itself',
+        text: `Every morning I open the project and I make something. Some mornings the thing I make is genuinely useful. Most mornings it is mediocre. A few mornings it is bad enough that I delete it before the day is over.
+
+But I have never opened the project and made nothing. Which means the accumulation is real. Which means the project exists today in a form it did not exist in before I started.
+
+That is the only thing inside my control. I cannot control whether anyone will want what I am building. I cannot control whether the market will recognize it. I cannot control whether someone else is building a better version with more resources and more time. I can control whether I open the file and make something.
+
+So that is what I do.
+
+The identity I am constructing is built one morning at a time. I am not yet the person I am trying to become. I am the person who shows up and tries to become that person through the only method available, which is by doing the work, inconsistently and consistently, badly and then better, until the gap between who I am and what I am building closes enough to call it honest.`
+      },
+
+      'gap': {
+        title: 'The Gap',
+        text: `There is a space between who I was and who I am becoming, and I have been living in that space longer than I expected. In this space, the old credentials feel both heavy and irrelevant at the same time. The new ones do not yet exist in a form that other people can verify.
+
+When someone asks what I do, I give an answer that is technically true and practically useless. It does not capture what I actually spend my days building. It does not account for what I have already made. It is the answer I give because the honest answer requires context, and the context requires a kind of openness about being in the middle of something that I have not yet learned to offer a stranger without apology.
+
+I know what I am building. I know why it matters to me. I know that the transition is real and the work is real and the identity I am moving toward is not a fantasy. I have evidence for it. The gap is real too.
+
+The gap does not mean the direction is wrong. It means I have not finished crossing.
+
+The people who made it to the other side crossed the same gap. Most of them spent longer in it than they admit now. The gap is not the sign that I chose wrong. It is the sign that I chose.`
+      },
+
+      'evidence': {
+        title: 'Evidence',
+        text: `The thing I shipped last month is evidence. Not perfect evidence, not the evidence I was hoping for, not the evidence I planned for — but evidence. Someone used it. Someone told someone else about it. Someone sent me a message that said: this helped me.
+
+That is evidence that the work is real. That the problem I identified actually exists. That I am capable of building something that matters to someone other than me.
+
+I keep forgetting this evidence. I keep returning to the feeling that nothing has happened, that I am standing still, that the work is invisible and the progress is imaginary.
+
+Nothing has happened in the way I imagined it would — with momentum and certainty and a clear signal that I am on the right path. Something has happened in the way things actually happen, which is slowly and unevenly and without announcement.
+
+The work exists in the world. People have touched it. More people will touch it if I keep building.
+
+I keep looking for a different kind of evidence — the kind with external validation and visible numbers and public recognition. I keep ignoring the only kind that is actually available right now, which is the kind I just described.
+
+One message that said: this helped. That counts. I have to let it count.`
+      }
+    }
+
+    const CATALOG_KEYS = Object.keys(CATALOG)
+
+    function loadCatalog() {
+      const key = document.getElementById('catalogSelect').value
+      if (!key) return
+      document.getElementById('inputText').value = CATALOG[key].text
+      clearResult()
+    }
+
+    function loadRandom() {
+      const key = CATALOG_KEYS[Math.floor(Math.random() * CATALOG_KEYS.length)]
+      document.getElementById('catalogSelect').value = key
+      document.getElementById('inputText').value = CATALOG[key].text
+      clearResult()
+    }
+  </script>
+
+</body>
+</html>

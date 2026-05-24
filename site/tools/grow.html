@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Grow — Unlabeled</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=EB+Garamond:ital@1&family=Permanent+Marker&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../design.css">
+  <style>
+    *, *::before, *::after { touch-action: none; }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #F4F4F0;
+      user-select: none;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-bottom: 2px solid #111;
+      background: #F4F4F0;
+      flex-shrink: 0;
+      z-index: 10;
+      flex-wrap: wrap;
+    }
+
+    .tool-wordmark {
+      font-family: 'EB Garamond', serif;
+      font-style: italic;
+      font-size: 0.9rem;
+      color: #888880;
+      text-decoration: none;
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
+
+    .sep {
+      width: 1px; height: 20px;
+      background: #D8D8D4;
+      flex-shrink: 0;
+    }
+
+    .tbtn {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 7px 13px;
+      border: 2px solid #111;
+      background: #F4F4F0;
+      color: #888;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 #111;
+      transition: box-shadow .08s, transform .08s, background .1s, color .1s;
+      flex-shrink: 0;
+    }
+    .tbtn:hover  { box-shadow: none; transform: translate(2px,2px); }
+    .tbtn.on     { background: #111; color: #F4F4F0; box-shadow: none; }
+    .tbtn.prime  {
+      background: #111; color: #F4F4F0;
+      box-shadow: 2px 2px 0 #666;
+    }
+    .tbtn.prime:hover { box-shadow: none; transform: translate(2px,2px); }
+    /* sandbox: yellow highlight during active transform */
+    .tbtn.prime.animating { background: #FFF000; color: #111; box-shadow: 2px 2px 0 #111; }
+
+    .spacer { flex: 1; min-width: 8px; }
+
+    .status {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #C0C0BC;
+      flex-shrink: 0;
+      transition: color .4s;
+    }
+    .status.active { color: #888880; }
+
+    .canvas-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+
+    /* char seed markers */
+    .seed-dot {
+      position: absolute;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+
+    /* sandbox: intro floats at a slight angle */
+    .intro {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) rotate(-0.6deg);
+      text-align: center;
+      pointer-events: none;
+      transition: opacity .6s;
+    }
+    .intro.gone { opacity: 0; }
+    .intro p {
+      font-family: 'EB Garamond', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: #C8C8C4;
+      line-height: 2.2;
+      margin: 0;
+    }
+
+    /* sandbox: reveal prompt is handwritten, slightly tilted */
+    .reveal-prompt {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-1.2deg);
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.4s ease;
+      white-space: nowrap;
+    }
+    .reveal-prompt.visible { opacity: 1; }
+    .reveal-prompt p {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 1.1rem;
+      color: rgba(17,17,17,0.3);
+      margin: 0;
+      letter-spacing: 0.01em;
+    }
+
+    @media (max-width: 600px) {
+      .sep { display: none; }
+      .status { display: none; }
+      .reveal-prompt { bottom: 16px; }
+      .reveal-prompt p { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <a href="../index.html" class="tool-wordmark">Unlabeled</a>
+  <div class="sep"></div>
+  <button class="tbtn on"  id="bLines"  onclick="mode('draw')">Lines</button>
+  <button class="tbtn"     id="bColor"  onclick="mode('color')">Color</button>
+  <button class="tbtn"     id="bErase"  onclick="mode('erase')">Erase</button>
+  <div class="sep"></div>
+  <span class="status" id="status">draw something</span>
+  <div class="spacer"></div>
+  <button class="tbtn"       onclick="doClear()">Clear</button>
+  <button class="tbtn prime" id="bXform" onclick="doTransform()">Transform</button>
+  <button class="tbtn"       id="bSave"  onclick="doSave()" style="display:none">Save</button>
+</div>
+
+<div class="canvas-wrap" id="wrap">
+  <canvas id="cBg"></canvas>   <!-- ghost of original -->
+  <canvas id="cFx"></canvas>   <!-- mandala / animation -->
+  <canvas id="cUi"></canvas>   <!-- live stroke preview -->
+</div>
+
+<div class="intro" id="intro">
+  <p>Draw lines with your mouse or finger.</p>
+  <p>Add color seeds with Color mode.</p>
+  <p>Then Transform.</p>
+</div>
+
+<div class="reveal-prompt" id="revealPrompt">
+  <p id="revealText"></p>
+</div>
+
+<script>
+// ── Setup ───────────────────────────────────────────────────────
+const wrap = document.getElementById('wrap')
+const cBg  = document.getElementById('cBg')
+const cFx  = document.getElementById('cFx')
+const cUi  = document.getElementById('cUi')
+const xBg  = cBg.getContext('2d')
+const xFx  = cFx.getContext('2d')
+const xUi  = cUi.getContext('2d')
+const DPR  = Math.min(devicePixelRatio, 2)
+
+let W = 0, H = 0
+
+function resize() {
+  W = wrap.clientWidth
+  H = wrap.clientHeight
+  ;[cBg, cFx, cUi].forEach(c => {
+    c.width  = W * DPR
+    c.height = H * DPR
+    c.style.width  = W + 'px'
+    c.style.height = H + 'px'
+  })
+  ;[xBg, xFx, xUi].forEach(x => {
+    x.setTransform(1,0,0,1,0,0)
+    x.scale(DPR, DPR)
+    x.lineCap = x.lineJoin = 'round'
+  })
+}
+resize()
+window.addEventListener('resize', () => { resize(); redrawBg() })
+
+// ── State ────────────────────────────────────────────────────────
+let currentMode  = 'draw'
+let strokes      = []          // [{pts:[{x,y}], w:number}]
+let seeds        = []          // [{x,y,hue}]
+let drawing      = false
+let live         = null        // current stroke being drawn
+let didAnything  = false
+let animId       = null
+let transformed  = false
+
+// ── Mode ─────────────────────────────────────────────────────────
+function mode(m) {
+  currentMode = m
+  document.querySelectorAll('.tbtn[id^="b"]').forEach(b => b.classList.remove('on'))
+  const map = {draw:'bLines', color:'bColor', erase:'bErase'}
+  document.getElementById(map[m])?.classList.add('on')
+  cUi.style.cursor = 'crosshair'
+  setStatus({ draw:'draw lines', color:'click to plant a color seed', erase:'click near a line to erase' }[m])
+}
+
+function setStatus(t) {
+  const el = document.getElementById('status')
+  el.textContent = t
+  el.classList.toggle('active', !!t)
+}
+
+// ── Pointer ──────────────────────────────────────────────────────
+function pt(e) {
+  const r = cUi.getBoundingClientRect()
+  const s = e.touches ? e.touches[0] : e
+  return { x: s.clientX - r.left, y: s.clientY - r.top }
+}
+
+cUi.addEventListener('pointerdown', e => {
+  e.preventDefault()
+  if (transformed) return
+  const p = pt(e)
+  hideIntro()
+
+  if (currentMode === 'color') { plantSeed(p); return }
+  if (currentMode === 'erase') { erase(p); return }
+
+  drawing = true
+  live = { pts: [p], w: 1.4 + Math.random() * 0.6 }
+})
+
+cUi.addEventListener('pointermove', e => {
+  if (!drawing || currentMode !== 'draw' || transformed) return
+  e.preventDefault()
+  const p = pt(e)
+  const last = live.pts[live.pts.length - 1]
+  if (Math.hypot(p.x - last.x, p.y - last.y) < 3) return
+  live.pts.push(p)
+  previewLive()
+})
+
+cUi.addEventListener('pointerup',    commitLive)
+cUi.addEventListener('pointerleave', commitLive)
+
+function previewLive() {
+  xUi.clearRect(0, 0, W, H)
+  if (!live || live.pts.length < 2) return
+  xUi.beginPath()
+  xUi.strokeStyle = 'rgba(17,17,17,0.45)'
+  xUi.lineWidth = live.w
+  live.pts.forEach((p, i) => i ? xUi.lineTo(p.x, p.y) : xUi.moveTo(p.x, p.y))
+  xUi.stroke()
+}
+
+function commitLive() {
+  if (!drawing) return
+  drawing = false
+  if (live && live.pts.length > 2) {
+    strokes.push(live)
+    bakeStroke(live, xBg, 'rgba(17,17,17,0.5)')
+    didAnything = true
+    setStatus(strokes.length >= 2 ? 'press Transform when ready' : 'keep drawing')
+  }
+  live = null
+  xUi.clearRect(0, 0, W, H)
+}
+
+function bakeStroke(s, ctx, color) {
+  if (s.pts.length < 2) return
+  ctx.beginPath()
+  ctx.strokeStyle = color
+  ctx.lineWidth = s.w
+  s.pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y))
+  ctx.stroke()
+}
+
+function redrawBg() {
+  xBg.clearRect(0, 0, W, H)
+  strokes.forEach(s => bakeStroke(s, xBg, 'rgba(17,17,17,0.5)'))
+}
+
+// ── Color seeds ───────────────────────────────────────────────────
+const HUE_CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%&'
+function plantSeed(p) {
+  const ch  = HUE_CHARS[Math.floor(Math.random() * HUE_CHARS.length)]
+  const hue = (ch.charCodeAt(0) * 53 + 150) % 360
+  seeds.push({ x: p.x, y: p.y, hue })
+  const dot = document.createElement('div')
+  dot.className = 'seed-dot'
+  dot.style.left = p.x + 'px'
+  dot.style.top  = p.y + 'px'
+  dot.style.background = `hsl(${hue},75%,52%)`
+  dot.style.boxShadow = `0 0 6px hsl(${hue},85%,55%)`
+  wrap.appendChild(dot)
+  didAnything = true
+  setStatus('plant more or Transform')
+}
+
+function clearSeedDots() {
+  wrap.querySelectorAll('.seed-dot').forEach(d => d.remove())
+}
+
+// ── Erase ─────────────────────────────────────────────────────────
+function erase(p) {
+  let best = Infinity, idx = -1
+  strokes.forEach((s, i) => {
+    s.pts.forEach(q => {
+      const d = Math.hypot(q.x - p.x, q.y - p.y)
+      if (d < best) { best = d; idx = i }
+    })
+  })
+  if (idx >= 0 && best < 40) {
+    strokes.splice(idx, 1)
+    redrawBg()
+  }
+}
+
+// ── Clear ─────────────────────────────────────────────────────────
+const REVEAL_PROMPTS = [
+  'What do you see now?',
+  'Your pattern was already in there.',
+  'Look longer. Something is emerging.',
+  'The form chose itself.',
+  'What did it want to become?',
+  'It was always this.',
+  'What shape does your work want to take?',
+  'The chaos had a plan.',
+]
+
+function showReveal() {
+  const el = document.getElementById('revealPrompt')
+  const txt = document.getElementById('revealText')
+  txt.textContent = REVEAL_PROMPTS[Math.floor(Math.random() * REVEAL_PROMPTS.length)]
+  el.classList.add('visible')
+}
+
+function hideReveal() {
+  document.getElementById('revealPrompt').classList.remove('visible')
+}
+
+function doClear() {
+  if (animId) cancelAnimationFrame(animId)
+  strokes = []; seeds = []; didAnything = false; transformed = false
+  xBg.clearRect(0,0,W,H)
+  xFx.clearRect(0,0,W,H)
+  xUi.clearRect(0,0,W,H)
+  clearSeedDots()
+  document.getElementById('intro').classList.remove('gone')
+  document.getElementById('bSave').style.display = 'none'
+  document.getElementById('bXform').textContent = 'Transform'
+  hideReveal()
+  mode('draw')
+  setStatus('draw something')
+}
+
+function hideIntro() {
+  document.getElementById('intro').classList.add('gone')
+}
+
+// ── Algorithms ───────────────────────────────────────────────────
+
+function rand(n) { return Math.random() * n }
+
+// Chaikin corner-cutting smoothing
+function chaikin(pts, n) {
+  let cur = pts
+  for (let i = 0; i < n; i++) {
+    const next = [cur[0]]
+    for (let j = 0; j < cur.length - 1; j++) {
+      const a = cur[j], b = cur[j+1]
+      next.push({ x: a.x*.75 + b.x*.25, y: a.y*.75 + b.y*.25 })
+      next.push({ x: a.x*.25 + b.x*.75, y: a.y*.25 + b.y*.75 })
+    }
+    next.push(cur[cur.length-1])
+    cur = next
+  }
+  return cur
+}
+
+// Midpoint displacement — fractal subdivision
+function fracture(pts, roughness, depth) {
+  if (depth === 0) return pts
+  const out = []
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i+1]
+    const mx = (a.x+b.x)*.5, my = (a.y+b.y)*.5
+    const dx = b.x-a.x,     dy = b.y-a.y
+    const len = Math.hypot(dx, dy)
+    const nx = -dy/len,  ny = dx/len
+    const off = (Math.random()-.5) * roughness * len
+    out.push(a, { x: mx + nx*off, y: my + ny*off })
+  }
+  out.push(pts[pts.length-1])
+  return fracture(out, roughness * .55, depth - 1)
+}
+
+// Grow radial ribs from polyline — creates mandala arms
+function growRibs(pts, ribLen, spacing) {
+  const ribs = []
+  let dist = 0
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i+1]
+    const dx = b.x-a.x, dy = b.y-a.y
+    const len = Math.hypot(dx, dy)
+    dist += len
+    if (dist < spacing) continue
+    dist = 0
+    const nx = -dy/len, ny = dx/len
+    const subLen = ribLen * (.5 + Math.random() * .8)
+    // Two ribs, both sides
+    ;[1, -1].forEach(side => {
+      const tip = { x: a.x + nx*side*subLen, y: a.y + ny*side*subLen }
+      let rib = [a, tip]
+      rib = fracture(rib, .12, 3)
+      ribs.push(rib)
+      // One child rib off the tip
+      if (Math.random() > .45) {
+        const angle = Math.atan2(ny*side, nx*side) + (.3 + rand(.5)) * (Math.random() < .5 ? 1 : -1)
+        const childLen = subLen * (.35 + rand(.25))
+        const childTip = { x: tip.x + Math.cos(angle)*childLen, y: tip.y + Math.sin(angle)*childLen }
+        let child = [tip, childTip]
+        child = fracture(child, .1, 2)
+        ribs.push(child)
+      }
+    })
+  }
+  return ribs
+}
+
+// Find centroid of all stroke points
+function centroid() {
+  let sx = 0, sy = 0, n = 0
+  strokes.forEach(s => s.pts.forEach(p => { sx += p.x; sy += p.y; n++ }))
+  if (n === 0) return { x: W/2, y: H/2 }
+  return { x: sx/n, y: sy/n }
+}
+
+// Dominant hue from seeds, or random
+function baseHue() {
+  if (seeds.length > 0) {
+    const hues = seeds.map(s => s.hue)
+    return hues[Math.floor(Math.random() * hues.length)]
+  }
+  return Math.random() * 360
+}
+
+// Draw a polyline — simple
+function polyline(ctx, pts, sw, color) {
+  if (pts.length < 2) return
+  ctx.beginPath()
+  ctx.strokeStyle = color
+  ctx.lineWidth = sw
+  pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y))
+  ctx.stroke()
+}
+
+// Draw with mandala transform (rotation + optional mirror)
+// fn receives ctx with transform already applied
+function withFold(ctx, cx, cy, foldAngle, mirror, fn) {
+  ctx.save()
+  ctx.translate(cx, cy)
+  ctx.rotate(foldAngle)
+  if (mirror) ctx.scale(1, -1)
+  ctx.translate(-cx, -cy)
+  fn(ctx)
+  ctx.restore()
+}
+
+// Ease functions
+function easeOut(t) { return 1 - Math.pow(1 - t, 3) }
+function easeInOut(t) { return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2 }
+
+// ── Transform ────────────────────────────────────────────────────
+function doTransform() {
+  if (strokes.length === 0) return
+  if (animId) cancelAnimationFrame(animId)
+  transformed = true
+  document.getElementById('bXform').textContent = 'Regenerate'
+  document.getElementById('bXform').classList.add('animating')
+  document.getElementById('bSave').style.display = 'none'
+  hideReveal()
+  clearSeedDots()
+
+  // Geometry
+  const c      = centroid()
+  const cx     = c.x, cy = c.y
+  const FOLDS  = [5,6,7,8,10,12][Math.floor(Math.random() * 6)]
+  const STEP   = Math.PI * 2 / FOLDS
+  const HUE0   = baseHue()
+  const rough  = .07 + rand(.09)
+  const smooth = 2 + Math.floor(rand(3))
+
+  // Estimate a "radius" for rib length
+  let maxD = 0
+  strokes.forEach(s => s.pts.forEach(p => {
+    maxD = Math.max(maxD, Math.hypot(p.x - cx, p.y - cy))
+  }))
+  const ribLen = maxD * (.18 + rand(.14))
+
+  // Process strokes: smooth → fracture
+  const mainPaths = strokes.map(s => ({
+    pts: fracture(chaikin(s.pts, smooth), rough, 3),
+    w: s.w
+  }))
+
+  // Grow ribs from each main path
+  const ribPaths = mainPaths.flatMap(s =>
+    growRibs(s.pts, ribLen, ribLen * .4)
+  )
+
+  // ── Animation phases ──────────────────────────────────────────
+  // t0–t1: ghost fade + shake
+  // t1–t2: color connectors from seeds + zoom settle
+  // t2–t3: mandala arms fan in fold-by-fold (with reflections)
+  // t3–t4: ribs grow
+  // t4+  : done
+  const T0 = 0, T1 = 400, T2 = 900, T3 = 2600, T4 = 4200
+  const start = performance.now()
+
+  // Pre-compute color per fold
+  function foldColor(fold, alpha, lightOffset = 0) {
+    const hue = (HUE0 + fold * (360 / FOLDS) + 10) % 360
+    const sat = 78 + Math.sin(fold) * 8
+    const lit = 50 + lightOffset
+    return `hsla(${hue},${sat}%,${lit}%,${alpha})`
+  }
+
+  function renderMandala(ctx, foldProgress, alpha) {
+    mainPaths.forEach(path => {
+      for (let f = 0; f < FOLDS; f++) {
+        const fa = Math.max(0, Math.min(1, foldProgress * FOLDS - f))
+        if (fa === 0) continue
+        const a = fa * alpha
+        // rotation copy
+        withFold(ctx, cx, cy, f * STEP, false, c2 =>
+          polyline(c2, path.pts, path.w * .9, foldColor(f, a))
+        )
+        // mirror copy (true mandala)
+        withFold(ctx, cx, cy, f * STEP, true, c2 =>
+          polyline(c2, path.pts, path.w * .75, foldColor(f, a * .75))
+        )
+      }
+    })
+  }
+
+  function renderRibs(ctx, ribProgress, alpha) {
+    const count = Math.floor(ribProgress * ribPaths.length)
+    ribPaths.slice(0, count).forEach((rib, ri) => {
+      const fold = ri % FOLDS
+      withFold(ctx, cx, cy, fold * STEP, false, c2 =>
+        polyline(c2, rib, .7, foldColor(fold, alpha * .85, 8))
+      )
+      withFold(ctx, cx, cy, fold * STEP, true, c2 =>
+        polyline(c2, rib, .55, foldColor(fold, alpha * .6, 12))
+      )
+    })
+  }
+
+  function renderConnectors(ctx, t) {
+    if (seeds.length === 0) return
+    seeds.forEach(seed => {
+      // find nearest stroke point
+      let best = Infinity, nearest = null
+      strokes.forEach(s => s.pts.forEach(p => {
+        const d = Math.hypot(p.x - seed.x, p.y - seed.y)
+        if (d < best) { best = d; nearest = p }
+      }))
+      if (!nearest) return
+      const len = t * 1
+      const x = seed.x + (nearest.x - seed.x) * easeOut(len)
+      const y = seed.y + (nearest.y - seed.y) * easeOut(len)
+      ctx.beginPath()
+      ctx.strokeStyle = `hsla(${seed.hue},80%,55%,${t * .9})`
+      ctx.lineWidth = 1.5
+      ctx.moveTo(seed.x, seed.y)
+      ctx.lineTo(x, y)
+      ctx.stroke()
+      // glow dot at seed
+      ctx.beginPath()
+      ctx.fillStyle = `hsla(${seed.hue},90%,60%,${t})`
+      ctx.arc(seed.x, seed.y, 3 * t, 0, Math.PI * 2)
+      ctx.fill()
+    })
+  }
+
+  function frame(now) {
+    const elapsed = now - start
+    xFx.clearRect(0,0,W,H)
+    xBg.clearRect(0,0,W,H)
+
+    if (elapsed < T1) {
+      // Phase 0: shake + fade ghost
+      const t = elapsed / T1
+      const shake = (1 - t) * 5
+      xBg.globalAlpha = 1 - t * .92
+      strokes.forEach(s => {
+        const shaken = s.pts.map(p => ({
+          x: p.x + (Math.random()-.5)*shake,
+          y: p.y + (Math.random()-.5)*shake
+        }))
+        bakeStroke({ pts: shaken, w: s.w }, xBg, 'rgba(17,17,17,0.55)')
+      })
+      xBg.globalAlpha = 1
+
+    } else if (elapsed < T2) {
+      // Phase 1: connectors flash in
+      const t = (elapsed - T1) / (T2 - T1)
+      // Ghost at minimal opacity
+      xBg.globalAlpha = .06
+      strokes.forEach(s => bakeStroke(s, xBg, 'rgba(17,17,17,0.6)'))
+      xBg.globalAlpha = 1
+      renderConnectors(xFx, easeOut(t))
+
+    } else if (elapsed < T3) {
+      // Phase 2: mandala arms fan in
+      const t = (elapsed - T2) / (T3 - T2)
+      xBg.globalAlpha = .06
+      strokes.forEach(s => bakeStroke(s, xBg, 'rgba(17,17,17,0.6)'))
+      xBg.globalAlpha = 1
+      renderConnectors(xFx, 1)
+      renderMandala(xFx, easeInOut(t), .85)
+
+    } else if (elapsed < T4) {
+      // Phase 3: ribs grow
+      const t = (elapsed - T3) / (T4 - T3)
+      xBg.globalAlpha = .05
+      strokes.forEach(s => bakeStroke(s, xBg, 'rgba(17,17,17,0.6)'))
+      xBg.globalAlpha = 1
+      renderConnectors(xFx, 1)
+      renderMandala(xFx, 1, .85)
+      renderRibs(xFx, easeInOut(t), .88)
+
+    } else {
+      // Done — draw final state clean
+      xBg.globalAlpha = .05
+      strokes.forEach(s => bakeStroke(s, xBg, 'rgba(17,17,17,0.6)'))
+      xBg.globalAlpha = 1
+      renderConnectors(xFx, 1)
+      renderMandala(xFx, 1, .85)
+      renderRibs(xFx, 1, .88)
+      document.getElementById('bSave').style.display = ''
+      document.getElementById('bXform').classList.remove('animating')
+      setTimeout(showReveal, 600)
+      return
+    }
+
+    animId = requestAnimationFrame(frame)
+  }
+
+  animId = requestAnimationFrame(frame)
+}
+
+// ── Save ──────────────────────────────────────────────────────────
+function doSave() {
+  const out = document.createElement('canvas')
+  out.width  = W * DPR
+  out.height = H * DPR
+  const ctx = out.getContext('2d')
+  ctx.fillStyle = '#F4F4F0'
+  ctx.fillRect(0, 0, out.width, out.height)
+  ctx.drawImage(cBg, 0, 0)
+  ctx.drawImage(cFx, 0, 0)
+  const a = document.createElement('a')
+  a.download = 'grow-' + Date.now() + '.png'
+  a.href = out.toDataURL('image/png')
+  a.click()
+}
+
+// ── Keyboard ──────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 't' || e.key === 'T') doTransform()
+  if (e.key === 'c' || e.key === 'C') doClear()
+  if (e.key === 'l' || e.key === 'L') mode('draw')
+  if (e.key === 'p' || e.key === 'P') mode('color')
+  if (e.key === 'e' || e.key === 'E') mode('erase')
+})
+</script>
+</body>
+</html>

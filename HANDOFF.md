@@ -347,37 +347,76 @@ The `/icm/` folder is the coach's brain. These files are loaded into the Claude 
 
 ---
 
-## 13. What the Next Agent Should Focus On
+## 13. Netlify Static Tools — Site Directory
+
+A companion static site lives in `/site/` and is deployed to Netlify from the `claude/handoff-md-review-2DikD` branch (Netlify configured to deploy from this branch).
+
+### Landing page
+`site/index.html` — Sanctuary aesthetic. EB Garamond wordmark + headline, CTA link to Railway app, tool list below.
+
+### Tools catalog
+
+| Tool | File | Quadrant | Description |
+|---|---|---|---|
+| Oblique Card | `site/tools/card.html` | Sanctuary | 40 curated cards for stuck builders. Date-keyed daily card (same card for all users that day). Fade transition between cards. Text-link controls, no buttons. |
+| Blackout | `site/tools/blackout.html` | Workbench | Paste any text (or choose from 8 catalog texts). Algorithm redacts stop words + probabilistic substantive words, leaving a found-poem. Three density modes: Dense / Balanced / Sparse. Dymo labels for section headers. |
+| Grow | `site/tools/grow.html` | Sandbox | Full-screen canvas drawing tool. Draw lines + plant color seeds → Transform fires 4-phase mandala animation: shake/fade → seed connectors → N-fold rotational folds fan in → ribs grow. Handwritten reveal prompt after transform. |
+| Simplify | `site/tools/simplify.html` | System | Calls `POST /api/tools/simplify` on Railway. Claude returns 3–7 steps with duration + why, plus a first_move sentence. System UI: mono throughout, yellow first-move banner, Dymo chip durations, bordered step list. |
+
+### Design quadrant rules (applied to tools)
+Derived from the Tactile OS used in the main app (`src/index.css`):
+
+| Quadrant | Fonts | Key markers |
+|---|---|---|
+| Sanctuary | EB Garamond | No borders on interactive elements, text links not buttons, vast spacing, italic everything |
+| Workbench | Space Mono + Courier Prime | Dymo label chips (black bg), yellow tape borders, inset box-shadow on inputs |
+| Sandbox | Courier Prime + Permanent Marker | 0.5–1.5deg rotations, yellow (#FFF000) as active highlight, handwritten scrawl feel |
+| System | Space Mono | Strict grid, thick 2px borders, 4px unblurred box-shadows, uppercase mono labels, zebra rows |
+
+### API endpoint for Simplify
+`POST /api/tools/simplify` (no auth required)  
+Body: `{ "task": "string, max 1000 chars" }`  
+Returns: `{ "task": "cleaned", "steps": [...], "first_move": "one sentence" }`  
+File: `server/routes/tools.ts`
+
+---
+
+## 14. What the Next Agent Should Focus On
 
 Priority order based on user feedback and system state:
 
-**P0 — Verify fixes are stable**
-- Start a new session as `test-gmao-com` and answer a question
-- Confirm `_database/users/test-gmao-com.json` is updated on GitHub with the answer
-- Confirm the coach opened with Phase 2 (Clarity) context, not the interview
+**P0 — Verify fixes are stable** ✓ (confirmed in Session 3)
+- Profile patches write correctly post-fix
+- Coach opens in correct phase based on profile state
 
-**P1 — Fix dashboard for early-phase users (Issue B)**
-- Dashboard should not look empty for users in `interview` or `reflection` phase
-- Add phase progress indicator
-- Add conditional rendering: if no goals set, show "Phase X in progress" state instead of empty grid cells
+**P1 — Dashboard for early-phase users** ✓ (implemented in Session 3)
+- Phase progress indicator (6 pips) added to Dashboard.tsx
+- First Move block shown when user has no active commitment
+- Portfolio block visible from Phase 0
+- Today's prompt + Oblique Card signal row added
 
-**P2 — Session length / stopping points (Issue A)**
-This is the most impactful UX change. Start with the simplest version:
-- Add a "section complete" concept to the interview in `icm/AI_README.md`
-- Coach ends Part A with: "Your background is saved. We can stop here and pick up with your build details next time, or continue now. What do you want to do?"
-- No code changes needed — only ICM file changes
+**P2 — Netlify static tools** ✓ (implemented in Session 3)
+See Section 13 for full catalog. Four tools live, quadrant-styled.
 
-**P3 — Magic link login (Issue C)**
+**P3 — Magic link login (Issue C)** — not yet done
 `POST /api/auth/login` in `server/routes/dashboard.ts` returns 501. Need to:
 - Generate a 1-time token, store it (in `_database/auth/{token}.json`)
 - Send login link via Resend
 - `GET /api/auth/verify?token=X` validates and issues session cookie
 
-**P4 — User registry seeding on startup (Issue D)**
+**P4 — User registry seeding on startup (Issue D)** — not yet done
 In `server/index.ts`, replace `loadUserRegistry([])` with a function that scans `_database/users/` and loads all slugs into the scheduler.
+
+**P5 — Define remaining product areas** — next design session
+User wants to map out other parts of the build beyond the coach + tools:
+- What other pages/sections does the site need?
+- Community features beyond Quaker Board
+- Monetization / program structure (what does "entering the program" mean?)
+- Any missing ICM work
 
 ---
 
 *Document written: May 22 2026 · Session 2 with Claude Sonnet 4.6*  
+*Updated: May 23 2026 · Session 3 — dashboard overhaul, Netlify tools, style pass*  
 *Repo: https://github.com/Virgiliorobor/unlabeled-coach.git*  
 *Local: C:\Users\jaime\OneDrive\dev\unlabeled\*
