@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>How It Works — Unlabeled</title>
-  <meta name="description" content="A self-reflection coach for solo builders in identity transition. Not productivity. Not therapy." />
+  <meta name="description" content="A self-reflection practice for solo builders in identity transition. Not productivity. Not therapy." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -28,17 +28,11 @@
       --border-thick: 2px solid #111111;
       --shadow:       4px 4px 0px #111111;
       --shadow-sm:    2px 2px 0px #111111;
-
-      --max-width: 660px;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html {
-      font-size: 20px;
-      -webkit-font-smoothing: antialiased;
-      scroll-behavior: smooth;
-    }
+    html { font-size: 18px; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
 
     body {
       background-color: var(--canvas);
@@ -48,12 +42,10 @@
       );
       color: var(--black);
       font-family: var(--font-serif);
-      font-size: 1rem;
-      line-height: 1.85;
+      line-height: 1.8;
       min-height: 100vh;
     }
 
-    /* grain */
     body::after {
       content: '';
       position: fixed; inset: 0;
@@ -62,47 +54,49 @@
       opacity: 0.035;
     }
 
-    /* crop marks */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      pointer-events: none; z-index: 9998;
-      background:
-        linear-gradient(var(--grey-light),var(--grey-light)) 16px 16px/12px 1px no-repeat,
-        linear-gradient(var(--grey-light),var(--grey-light)) 16px 16px/1px 12px no-repeat,
-        linear-gradient(var(--grey-light),var(--grey-light)) calc(100% - 16px) 16px/12px 1px no-repeat,
-        linear-gradient(var(--grey-light),var(--grey-light)) calc(100% - 16px) 16px/1px 12px no-repeat,
-        linear-gradient(var(--grey-light),var(--grey-light)) 16px calc(100% - 16px)/12px 1px no-repeat,
-        linear-gradient(var(--grey-light),var(--grey-light)) 16px calc(100% - 28px)/1px 12px no-repeat,
-        linear-gradient(var(--grey-light),var(--grey-light)) calc(100% - 16px) calc(100% - 16px)/12px 1px no-repeat,
-        linear-gradient(var(--grey-light),var(--grey-light)) calc(100% - 16px) calc(100% - 28px)/1px 12px no-repeat;
+    /* ── LAYOUT ────────────────────────────────────────────────── */
+    .wrap {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 48px;
     }
 
-    .container {
-      max-width: var(--max-width);
-      margin: 0 auto;
-      padding: 0 36px;
+    .section {
+      padding: 72px 0;
+      border-bottom: var(--border-thick);
+    }
+    .section:last-of-type { border-bottom: none; }
+
+    /* Two-column layout for desktop */
+    .split {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .split-wide {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .split-left {
+      position: sticky;
+      top: 48px;
     }
 
     /* ── SCROLL REVEAL ─────────────────────────────────────────── */
     .reveal {
       opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.65s ease, transform 0.65s ease;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .reveal-fast {
-      opacity: 0;
-      transform: translateY(14px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-    }
-    .reveal-fast.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .reveal.in { opacity: 1; transform: none; }
+
+    .stagger { opacity: 0; transform: translateY(14px); transition: opacity 0.4s ease, transform 0.4s ease; }
+    .stagger.in { opacity: 1; transform: none; }
 
     /* ── LABEL MACHINE ─────────────────────────────────────────── */
     .label-machine {
@@ -116,23 +110,19 @@
       text-transform: uppercase;
       padding: 5px 14px 4px;
       transform: rotate(-0.6deg);
-      box-shadow: 3px 3px 0px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
-      text-shadow: 1px 1px 0px rgba(0,0,0,0.5);
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
       border-radius: 1px;
       position: relative;
     }
     .label-machine::before {
       content: '';
-      position: absolute; inset: 0;
+      position: absolute; inset: 0; border-radius: 1px;
       background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 3px);
-      border-radius: 1px;
     }
 
     /* ── TAPE BORDER ───────────────────────────────────────────── */
-    .tape-border {
-      border: var(--border-thick);
-      position: relative;
-    }
+    .tape-border { border: var(--border-thick); position: relative; }
     .tape-border::before, .tape-border::after {
       content: '';
       position: absolute;
@@ -143,13 +133,7 @@
     .tape-border::before { top: -8px; left: 20px; transform: rotate(-1.2deg); }
     .tape-border::after  { bottom: -8px; right: 20px; transform: rotate(0.8deg); }
 
-    /* ── SECTION ───────────────────────────────────────────────── */
-    .section {
-      padding: 80px 0;
-      border-bottom: var(--border-thick);
-    }
-    .section:last-of-type { border-bottom: none; }
-
+    /* ── TYPE SCALE ────────────────────────────────────────────── */
     .section-label {
       font-family: var(--font-mono);
       font-size: 0.48rem;
@@ -157,13 +141,12 @@
       text-transform: uppercase;
       color: var(--grey-light);
       display: block;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
     }
 
-    /* ── HEADLINE SIZES ────────────────────────────────────────── */
     .h-xl {
       font-family: var(--font-serif);
-      font-size: 3.4rem;
+      font-size: clamp(2.4rem, 5vw, 4rem);
       font-weight: normal;
       line-height: 1.1;
       letter-spacing: -0.015em;
@@ -172,10 +155,11 @@
 
     .h-lg {
       font-family: var(--font-serif);
-      font-size: 2rem;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
       font-weight: normal;
       line-height: 1.2;
     }
+    .h-lg em { font-style: italic; color: var(--grey); }
 
     .h-md {
       font-family: var(--font-serif);
@@ -184,106 +168,95 @@
       line-height: 1.35;
     }
 
-    /* ── BODY TEXT ─────────────────────────────────────────────── */
     .body-text {
       font-family: var(--font-serif);
       font-size: 1.05rem;
       line-height: 1.85;
-      color: rgba(17,17,17,0.85);
+      color: rgba(17,17,17,0.82);
     }
 
     .body-mono {
       font-family: var(--font-type);
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       line-height: 1.75;
       color: var(--grey);
     }
 
-    /* ── NEGATION LIST ─────────────────────────────────────────── */
-    .not-list {
-      list-style: none;
-      padding: 0;
-      margin: 40px 0;
-    }
-    .not-item {
+    /* ── PRINCIPLES ────────────────────────────────────────────── */
+    .principle-grid {
       display: flex;
-      gap: 18px;
-      align-items: baseline;
-      padding: 16px 0;
-      border-bottom: var(--border);
-      font-family: var(--font-serif);
-      font-size: 1.1rem;
-      line-height: 1.5;
-    }
-    .not-item:last-child { border-bottom: none; }
-    .not-x {
-      font-family: var(--font-mono);
-      font-size: 0.6rem;
-      color: var(--grey-light);
-      flex-shrink: 0;
-      padding-top: 4px;
+      flex-direction: column;
+      gap: 0;
     }
 
-    /* ── PRINCIPLE ROWS ────────────────────────────────────────── */
     .principle {
+      display: grid;
+      grid-template-columns: 1fr 1.8fr;
+      gap: 40px;
       padding: 32px 0;
       border-bottom: var(--border);
+      align-items: start;
     }
     .principle:last-child { border-bottom: none; }
+
     .principle-title {
       font-family: var(--font-serif);
-      font-size: 1.5rem;
+      font-size: 1.15rem;
       font-weight: 500;
-      line-height: 1.25;
-      margin-bottom: 12px;
-    }
-    .principle-body {
-      font-family: var(--font-serif);
-      font-size: 1.05rem;
-      line-height: 1.85;
-      color: rgba(17,17,17,0.7);
+      line-height: 1.3;
+      padding-top: 3px;
     }
 
-    /* ── PATTERN LIST ──────────────────────────────────────────── */
-    .pattern-item {
-      padding: 22px 0;
-      border-bottom: var(--border);
-      display: grid;
-      grid-template-columns: 170px 1fr;
-      gap: 24px;
-      align-items: baseline;
+    .principle-body {
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      line-height: 1.85;
+      color: rgba(17,17,17,0.72);
     }
-    .pattern-item:last-child { border-bottom: none; }
+
+    /* ── PATTERNS ──────────────────────────────────────────────── */
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 40px;
+    }
+
+    .pattern-item {
+      padding: 20px 0;
+      border-bottom: var(--border);
+    }
+    .pattern-item:nth-last-child(-n+2) { border-bottom: none; }
+
     .pattern-name {
       font-family: var(--font-mono);
-      font-size: 0.55rem;
+      font-size: 0.52rem;
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      line-height: 1.6;
+      margin-bottom: 6px;
     }
+
     .pattern-feel {
       font-family: var(--font-serif);
       font-style: italic;
-      font-size: 1.1rem;
-      line-height: 1.6;
-      color: rgba(17,17,17,0.72);
+      font-size: 1.05rem;
+      line-height: 1.55;
+      color: rgba(17,17,17,0.7);
     }
 
     /* ── PHASE RAIL ────────────────────────────────────────────── */
     .phase-rail {
       display: flex;
       align-items: center;
-      margin: 32px 0 44px;
+      margin: 28px 0 40px;
       overflow-x: auto;
-      padding-bottom: 2px;
     }
     .phase-node {
       font-family: var(--font-mono);
       font-size: 0.48rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      padding: 7px 11px;
+      padding: 7px 12px;
       border: var(--border-thick);
       white-space: nowrap;
       background: var(--canvas);
@@ -296,28 +269,30 @@
       flex-shrink: 0;
     }
 
-    /* ── PHASE ROWS ────────────────────────────────────────────── */
+    .phase-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 40px;
+    }
+
     .phase-row {
-      display: flex;
-      gap: 24px;
-      align-items: baseline;
       padding: 16px 0;
       border-bottom: var(--border);
     }
-    .phase-row:last-child { border-bottom: none; }
+    .phase-row:nth-last-child(-n+2) { border-bottom: none; }
+
     .phase-row-name {
       font-family: var(--font-mono);
-      font-size: 0.55rem;
+      font-size: 0.52rem;
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      flex-shrink: 0;
-      width: 110px;
-      padding-top: 4px;
+      margin-bottom: 6px;
     }
+
     .phase-row-desc {
       font-family: var(--font-serif);
-      font-size: 1.05rem;
+      font-size: 1rem;
       line-height: 1.6;
       color: rgba(17,17,17,0.72);
     }
@@ -326,9 +301,9 @@
     .chat-demo {
       border: var(--border-thick);
       box-shadow: var(--shadow);
-      margin: 36px 0;
       background: var(--canvas);
       overflow: hidden;
+      max-width: 680px;
     }
     .chat-demo-header {
       border-bottom: var(--border-thick);
@@ -347,10 +322,10 @@
     }
     .chat-messages {
       padding: 24px 18px;
-      min-height: 300px;
+      min-height: 280px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 18px;
     }
     .chat-msg {
       display: flex;
@@ -361,10 +336,11 @@
       transition: opacity 0.45s ease, transform 0.45s ease;
       max-width: 90%;
     }
-    .chat-msg.visible { opacity: 1; transform: translateY(0); }
+    .chat-msg.visible { opacity: 1; transform: none; }
     .chat-msg.coach   { align-self: flex-start; }
     .chat-msg.user    { align-self: flex-end; transform: translateY(8px) rotate(0.3deg); }
-    .chat-msg.user.visible { transform: translateY(0) rotate(0.3deg); }
+    .chat-msg.user.visible { transform: rotate(0.3deg); }
+
     .msg-speaker {
       font-family: var(--font-mono);
       font-size: 0.48rem;
@@ -379,19 +355,12 @@
       padding: 10px 14px;
       white-space: pre-line;
     }
-    .chat-msg.coach .msg-bubble {
-      border-left: 2px solid var(--grey-light);
-      padding-left: 14px;
-      background: transparent;
-    }
-    .chat-msg.user .msg-bubble {
-      background: rgba(0,0,0,0.04);
-      border: var(--border);
-      box-shadow: var(--shadow-sm);
-    }
+    .chat-msg.coach .msg-bubble { border-left: 2px solid var(--grey-light); padding-left: 14px; }
+    .chat-msg.user .msg-bubble  { background: rgba(0,0,0,0.04); border: var(--border); box-shadow: var(--shadow-sm); }
+
     .chat-replay-row {
       border-top: var(--border);
-      padding: 11px 18px;
+      padding: 10px 18px;
       display: flex;
       justify-content: flex-end;
     }
@@ -409,20 +378,22 @@
       transition: box-shadow 0.1s, transform 0.1s;
     }
     .btn-replay:hover { box-shadow: none; transform: translate(2px,2px); }
-    .btn-replay:disabled { opacity: 0.4; cursor: default; }
+    .btn-replay:disabled { opacity: 0.35; cursor: default; }
 
-    /* ── AGENT GRID ────────────────────────────────────────────── */
-    .agent-grid {
+    /* ── AGENT + TOOL GRIDS ────────────────────────────────────── */
+    .card-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
-      margin: 32px 0;
+      margin-top: 32px;
     }
-    .agent-card {
+
+    .agent-card, .tool-card {
       border: var(--border-thick);
-      padding: 20px 18px;
+      padding: 22px 20px;
       box-shadow: var(--shadow-sm);
     }
+
     .agent-book {
       font-family: var(--font-serif);
       font-style: italic;
@@ -446,27 +417,15 @@
     }
     .agent-action {
       font-family: var(--font-mono);
-      font-size: 0.55rem;
+      font-size: 0.52rem;
       letter-spacing: 0.06em;
       border-top: var(--border);
       padding-top: 10px;
     }
 
-    /* ── TOOLS ─────────────────────────────────────────────────── */
-    .tools-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin: 32px 0;
-    }
-    .tool-card {
-      border: var(--border-thick);
-      box-shadow: var(--shadow);
-      padding: 24px 20px;
-    }
     .tool-name {
       font-family: var(--font-mono);
-      font-size: 0.6rem;
+      font-size: 0.58rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       font-weight: 700;
@@ -482,34 +441,41 @@
     /* ── CLOSE ─────────────────────────────────────────────────── */
     .close-section {
       padding: 100px 0 88px;
-      text-align: center;
       border-top: var(--border-thick);
     }
+
+    .close-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 48px;
+      align-items: center;
+    }
+
     .close-hl {
       font-family: var(--font-serif);
-      font-size: 3rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
       font-weight: normal;
       line-height: 1.15;
-      margin-bottom: 18px;
+      margin-bottom: 12px;
     }
     .close-sub {
       font-family: var(--font-serif);
       font-style: italic;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       color: var(--grey);
-      margin-bottom: 48px;
     }
     .cta-link {
       display: inline-block;
       font-family: var(--font-mono);
-      font-size: 0.62rem;
+      font-size: 0.6rem;
       letter-spacing: 0.18em;
       text-transform: uppercase;
       border: var(--border-thick);
-      padding: 16px 36px;
+      padding: 18px 32px;
       text-decoration: none;
       color: var(--black);
       box-shadow: var(--shadow);
+      white-space: nowrap;
       position: relative;
       transition: box-shadow 0.1s, transform 0.1s;
     }
@@ -519,7 +485,7 @@
       font-size: 0.82rem;
       color: var(--grey);
       position: absolute;
-      top: -30px; left: -10px;
+      top: -28px; left: -8px;
       transform: rotate(-4deg);
       white-space: nowrap;
       pointer-events: none;
@@ -537,159 +503,200 @@
     }
     .footer-id {
       font-family: var(--font-mono);
-      font-size: 0.48rem;
+      font-size: 0.45rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--grey-light);
     }
 
     /* ── RESPONSIVE ────────────────────────────────────────────── */
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       html { font-size: 17px; }
-      .container { padding: 0 22px; }
-      .h-xl { font-size: 2.4rem; }
+      .wrap { padding: 0 24px; }
+
+      .split, .split-wide { grid-template-columns: 1fr; gap: 24px; }
+      .split-left { position: static; }
+
+      .principle { grid-template-columns: 1fr; gap: 8px; }
+
+      .pattern-grid { grid-template-columns: 1fr; }
+      .pattern-item:nth-last-child(-n+2) { border-bottom: var(--border); }
+      .pattern-item:last-child { border-bottom: none; }
+
+      .phase-list { grid-template-columns: 1fr; }
+      .phase-row:nth-last-child(-n+2) { border-bottom: var(--border); }
+      .phase-row:last-child { border-bottom: none; }
+
+      .card-grid { grid-template-columns: 1fr; }
+
+      .close-inner { grid-template-columns: 1fr; gap: 32px; }
+      .h-xl { font-size: 2.2rem; }
       .h-lg { font-size: 1.6rem; }
-      .close-hl { font-size: 2.2rem; }
-      .agent-grid, .tools-grid { grid-template-columns: 1fr; }
-      .pattern-item { grid-template-columns: 1fr; gap: 4px; }
     }
 
     @media print {
-      body::after, body::before { display: none; }
+      body::after { display: none; }
       .chat-replay-row { display: none; }
-      .reveal, .reveal-fast { opacity: 1; transform: none; }
+      .reveal, .stagger { opacity: 1; transform: none; }
     }
   </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- ── HEADER ──────────────────────────────────────────────────── -->
 <header style="padding: 52px 0 48px; border-bottom: var(--border-thick);">
-  <div class="container">
-    <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:36px;">
+  <div class="wrap">
+
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:40px;">
       <span class="label-machine">Unlabeled</span>
-      <span style="font-family:var(--font-mono);font-size:0.48rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--grey);padding-top:7px;">intake · vol. I</span>
+      <span style="font-family:var(--font-mono);font-size:0.46rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--grey);padding-top:8px;">intake · vol. I</span>
     </div>
-    <hr style="border:none;border-top:1px solid rgba(0,0,0,0.12);margin-bottom:32px;">
-    <div class="reveal">
-      <div class="h-xl" style="margin-bottom:20px;">
-        You're already<br>doing the work.<br>
-        <em>You just haven't<br>claimed it yet.</em>
+
+    <div class="split reveal">
+      <div>
+        <div class="h-xl">
+          You're already<br>doing the work.<br>
+          <em>You just haven't<br>claimed it yet.</em>
+        </div>
+      </div>
+      <div style="padding-top:8px;">
+        <p class="body-text" style="margin-bottom:20px;">
+          A structured practice of self-reflection that ends in action — for solo builders doing work that requires becoming someone slightly different in the process.
+        </p>
+        <p class="body-mono" style="border-left:3px solid var(--grey-light); padding-left:16px;">
+          Not a productivity tool. Not therapy. The thing you use when you already know what you should be doing and you're still not doing it.
+        </p>
       </div>
     </div>
-    <div class="reveal" style="transition-delay:0.15s;">
-      <p class="body-mono" style="border-left:3px solid var(--grey-light);padding-left:18px;margin-top:8px;">
-        A structured practice of self-reflection that ends in action — for solo builders doing work that requires becoming someone slightly different in the process.
-      </p>
-    </div>
+
   </div>
 </header>
 
-<!-- THE PRACTICE -->
+<!-- ── THE PRACTICE ────────────────────────────────────────────── -->
 <section class="section">
-  <div class="container">
-    <span class="section-label reveal">the practice</span>
+  <div class="wrap">
+    <div class="split">
 
-    <div class="reveal" style="margin-bottom:36px;">
-      <div class="h-lg">
-        Reflection only counts<br>if it changes what you do next.
+      <div class="split-left reveal">
+        <span class="section-label">the practice</span>
+        <div class="h-lg">Reflection only counts if it changes what you do next.</div>
       </div>
-    </div>
 
-    <div class="principle reveal" style="border-bottom:none;padding-bottom:0;">
-      <div class="principle-body">
-        There's a difference between processing and moving. Most reflection stops at processing — you surface an insight, feel temporarily clearer, and return to the same patterns by Thursday.
+      <div>
+        <div class="principle-grid">
+          <div class="principle reveal" style="padding-top:0;">
+            <div style="display:none"></div>
+            <p class="body-text">There's a difference between processing and moving. Most reflection stops at processing — you surface an insight, feel temporarily clearer, and return to the same patterns by Thursday.</p>
+          </div>
+          <div class="principle reveal">
+            <div style="display:none"></div>
+            <p class="body-text">The practice here ends differently. Every session closes with a commitment: something specific, something observable, something you can be held to. The insight only counts if it changes what you do in the next 48 hours.</p>
+          </div>
+          <div class="principle reveal" style="border-bottom:none;">
+            <div style="display:none"></div>
+            <p class="body-text">The block between knowing and doing is not an obstacle to the work. It <em>is</em> the work. This is a structured way of examining it — and building the habit of moving through it anyway.</p>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="principle reveal">
-      <div class="principle-body">
-        The practice here ends differently. Every session closes with a commitment: something specific, something observable, something you can be held to. The insight only counts if it changes what you do in the next 48 hours.
-      </div>
-    </div>
-
-    <div class="principle reveal" style="border-bottom:none;padding-bottom:0;">
-      <div class="principle-body">
-        The block between knowing and doing is not an obstacle to the work. It <em>is</em> the work. This is a structured way of examining it — and building the habit of moving through it anyway.
-      </div>
     </div>
   </div>
 </section>
 
-<!-- PRINCIPLES -->
+<!-- ── PRINCIPLES ───────────────────────────────────────────────── -->
 <section class="section">
-  <div class="container">
-    <span class="section-label reveal">the principles</span>
+  <div class="wrap">
 
-    <div class="principle reveal">
-      <div class="principle-title">The resistance is the work.</div>
-      <div class="principle-body">Your avoidance isn't a character flaw. It's a pattern with a name. Once it's named, you can work with it instead of around it.</div>
+    <div class="split" style="margin-bottom:40px;">
+      <div class="split-left reveal">
+        <span class="section-label">the principles</span>
+        <div class="h-lg">Four things that don't change regardless of where you are.</div>
+      </div>
+      <div></div>
     </div>
-    <div class="principle reveal">
-      <div class="principle-title">Reflection without action is just processing.</div>
-      <div class="principle-body">Every session ends with a commitment. Not a plan. Not a goal. A specific thing you will do before we talk again.</div>
+
+    <div class="principle-grid">
+      <div class="principle reveal">
+        <div class="principle-title">The resistance is the work.</div>
+        <div class="principle-body">Your avoidance isn't a character flaw. It's a pattern with a name. Once it's named, you can work with it instead of around it.</div>
+      </div>
+      <div class="principle reveal">
+        <div class="principle-title">Reflection without action is just processing.</div>
+        <div class="principle-body">Every session ends with a commitment. Not a plan. Not a goal. A specific, actionable thing you will do before we talk again.</div>
+      </div>
+      <div class="principle reveal">
+        <div class="principle-title">The coach adapts. The action doesn't.</div>
+        <div class="principle-body">It reads your context — your background, your goals, your resistance pattern, what you said last time. The tone and framing adapt. But the ending is always the same: a specific, actionable commitment. No exceptions.</div>
+      </div>
+      <div class="principle reveal">
+        <div class="principle-title">Completion is worth claiming.</div>
+        <div class="principle-body">When you do the thing — when you actually do it — that moment deserves more than moving on. The practice includes stopping to say <em>I completed this</em> and letting it count. Celebration here isn't a party. It's recognition that closes the circle.</div>
+      </div>
+      <div class="principle reveal" style="border-bottom:none;">
+        <div class="principle-title">One pattern. Named, not treated.</div>
+        <div class="principle-body">You're not broken. You have a specific way of staying stuck. Knowing the name doesn't fix it — but it stops you from hiding behind it.</div>
+      </div>
     </div>
-    <div class="principle reveal">
-      <div class="principle-title">The coach adapts. The action doesn't change.</div>
-      <div class="principle-body">It reads your context — your background, your goals, your resistance pattern, what you said last session. The tone, the framing, the angle of the question all adapt to where you are. But the ending is always the same: a specific, actionable commitment before you leave. No exceptions.</div>
-    </div>
-    <div class="principle reveal">
-      <div class="principle-title">Completion is worth claiming.</div>
-      <div class="principle-body">When you do the thing — when you actually do it — that moment deserves more than moving on. The practice includes stopping to name what happened: what it cost, what it means, that you did it. Celebration here isn't a party. It's the act of saying <em>I completed this</em> out loud and letting it count.</div>
-    </div>
-    <div class="principle reveal">
-      <div class="principle-title">One pattern. Named, not treated.</div>
-      <div class="principle-body">You're not broken. You have a specific way of staying stuck. Knowing the name doesn't fix it — but it stops you from hiding behind it.</div>
-    </div>
+
   </div>
 </section>
 
-<!-- PATTERNS -->
+<!-- ── PATTERNS ─────────────────────────────────────────────────── -->
 <section class="section">
-  <div class="container">
-    <span class="section-label reveal">the pattern</span>
+  <div class="wrap">
 
-    <div class="reveal" style="margin-bottom:8px;">
-      <div class="h-md">Something is keeping you here.<br>It has a name.</div>
-    </div>
-    <p class="body-mono reveal" style="margin-bottom:4px;margin-top:12px;">The intake interview finds it. The coach works from it.</p>
-
-    <div style="margin-top:28px;">
-      <div class="pattern-item reveal-fast" style="transition-delay:0s;">
-        <span class="pattern-name">Identity Anchor</span>
-        <span class="pattern-feel">You're not sure you're the kind of person who does things like this. Yet.</span>
+    <div class="split" style="margin-bottom:36px;">
+      <div class="split-left reveal">
+        <span class="section-label">the pattern</span>
+        <div class="h-lg">Something is keeping you here. It has a name.</div>
       </div>
-      <div class="pattern-item reveal-fast" style="transition-delay:0.07s;">
-        <span class="pattern-name">Perfectionism Threshold</span>
-        <span class="pattern-feel">You won't ship it until it's ready. It's never ready.</span>
-      </div>
-      <div class="pattern-item reveal-fast" style="transition-delay:0.14s;">
-        <span class="pattern-name">Isolation Spiral</span>
-        <span class="pattern-feel">The work keeps getting smaller because the audience feels overwhelming.</span>
-      </div>
-      <div class="pattern-item reveal-fast" style="transition-delay:0.21s;">
-        <span class="pattern-name">Momentum Debt</span>
-        <span class="pattern-feel">Every restart costs more than the last one. So you stop restarting.</span>
-      </div>
-      <div class="pattern-item reveal-fast" style="transition-delay:0.28s;">
-        <span class="pattern-name">Framing Trap</span>
-        <span class="pattern-feel">You keep solving the wrong problem with increasing precision.</span>
-      </div>
-      <div class="pattern-item reveal-fast" style="transition-delay:0.35s;">
-        <span class="pattern-name">Capacity Myth</span>
-        <span class="pattern-feel">Someday, when you have more time. Someday.</span>
+      <div class="reveal" style="padding-top:4px;">
+        <p class="body-mono">The intake interview finds it. Every session that follows works from it. The coach won't let you hide behind a different explanation each time.</p>
       </div>
     </div>
+
+    <div class="pattern-grid">
+      <div class="pattern-item stagger" style="transition-delay:0s;">
+        <div class="pattern-name">Identity Anchor</div>
+        <div class="pattern-feel">You're not sure you're the kind of person who does things like this. Yet.</div>
+      </div>
+      <div class="pattern-item stagger" style="transition-delay:0.06s;">
+        <div class="pattern-name">Perfectionism Threshold</div>
+        <div class="pattern-feel">You won't ship it until it's ready. It's never ready.</div>
+      </div>
+      <div class="pattern-item stagger" style="transition-delay:0.12s;">
+        <div class="pattern-name">Isolation Spiral</div>
+        <div class="pattern-feel">The work keeps getting smaller because the audience feels overwhelming.</div>
+      </div>
+      <div class="pattern-item stagger" style="transition-delay:0.18s;">
+        <div class="pattern-name">Momentum Debt</div>
+        <div class="pattern-feel">Every restart costs more than the last one. So you stop restarting.</div>
+      </div>
+      <div class="pattern-item stagger" style="transition-delay:0.24s;">
+        <div class="pattern-name">Framing Trap</div>
+        <div class="pattern-feel">You keep solving the wrong problem with increasing precision.</div>
+      </div>
+      <div class="pattern-item stagger" style="transition-delay:0.3s;">
+        <div class="pattern-name">Capacity Myth</div>
+        <div class="pattern-feel">Someday, when you have more time. Someday.</div>
+      </div>
+    </div>
+
   </div>
 </section>
 
-<!-- PHASES -->
+<!-- ── PHASES ───────────────────────────────────────────────────── -->
 <section class="section">
-  <div class="container">
-    <span class="section-label reveal">the session</span>
+  <div class="wrap">
 
-    <div class="reveal">
-      <div class="h-md" style="margin-bottom:16px;">Each goal moves through six phases. The coach meets you wherever the goal is.</div>
+    <div class="split" style="margin-bottom:36px;">
+      <div class="split-left reveal">
+        <span class="section-label">the session</span>
+        <div class="h-lg">Six phases. Each goal moves independently.</div>
+      </div>
+      <div class="reveal" style="padding-top:4px;">
+        <p class="body-mono">The coach meets you wherever the goal is. Two goals can be in completely different phases at the same time.</p>
+      </div>
     </div>
 
     <div class="reveal">
@@ -703,169 +710,189 @@
       </div>
     </div>
 
-    <div class="phase-row reveal-fast" style="transition-delay:0s;">
-      <span class="phase-row-name">Intake</span>
-      <span class="phase-row-desc">Named and placed. The goal exists now.</span>
+    <div class="phase-list">
+      <div class="phase-row stagger" style="transition-delay:0s;">
+        <div class="phase-row-name">Intake</div>
+        <div class="phase-row-desc">Named and placed. The goal exists now.</div>
+      </div>
+      <div class="phase-row stagger" style="transition-delay:0.06s;">
+        <div class="phase-row-name">Reflection</div>
+        <div class="phase-row-desc">The contradictions surface. Why you want it and why you haven't moved.</div>
+      </div>
+      <div class="phase-row stagger" style="transition-delay:0.12s;">
+        <div class="phase-row-name">Clarity</div>
+        <div class="phase-row-desc">The goal in one sentence. Precise enough to be wrong.</div>
+      </div>
+      <div class="phase-row stagger" style="transition-delay:0.18s;">
+        <div class="phase-row-name">Resistance</div>
+        <div class="phase-row-desc">Your pattern, in context. Named in this goal, not in general.</div>
+      </div>
+      <div class="phase-row stagger" style="transition-delay:0.24s;">
+        <div class="phase-row-name">Commitment</div>
+        <div class="phase-row-desc">A specific thing. A specific date. No exits.</div>
+      </div>
+      <div class="phase-row stagger" style="transition-delay:0.3s;">
+        <div class="phase-row-name">Accountability</div>
+        <div class="phase-row-desc">You said you'd do it. Did you? What happened in the moment you didn't? And if you did — stop. Name it. Claim it. <em>I completed this.</em></div>
+      </div>
     </div>
-    <div class="phase-row reveal-fast" style="transition-delay:0.07s;">
-      <span class="phase-row-name">Reflection</span>
-      <span class="phase-row-desc">The contradictions surface. Why you want it and why you haven't moved.</span>
-    </div>
-    <div class="phase-row reveal-fast" style="transition-delay:0.14s;">
-      <span class="phase-row-name">Clarity</span>
-      <span class="phase-row-desc">The goal in one sentence. Precise enough to be wrong.</span>
-    </div>
-    <div class="phase-row reveal-fast" style="transition-delay:0.21s;">
-      <span class="phase-row-name">Resistance</span>
-      <span class="phase-row-desc">Your pattern, in context. Named in this goal, not in general.</span>
-    </div>
-    <div class="phase-row reveal-fast" style="transition-delay:0.28s;">
-      <span class="phase-row-name">Commitment</span>
-      <span class="phase-row-desc">A specific thing. A specific date. No exits.</span>
-    </div>
-    <div class="phase-row reveal-fast" style="transition-delay:0.35s;">
-      <span class="phase-row-name">Accountability</span>
-      <span class="phase-row-desc">You said you'd do it. Did you? What happened in the moment you didn't? And if you did — stop. Name it. Claim it. <em>I completed this.</em></span>
+
+  </div>
+</section>
+
+<!-- ── CHAT DEMO ────────────────────────────────────────────────── -->
+<section class="section">
+  <div class="wrap">
+    <div class="split" style="align-items:start;">
+
+      <div class="split-left reveal">
+        <span class="section-label">a session in motion</span>
+        <div class="h-md" style="margin-bottom:12px;">Bruce. Session 6.</div>
+        <p class="body-mono">Commitment phase. He said he'd post the case study. He didn't.</p>
+      </div>
+
+      <div class="reveal">
+        <div class="chat-demo">
+          <div class="chat-demo-header">
+            <span class="chat-meta">unlabeled · session 6</span>
+            <span class="chat-meta">commitment phase</span>
+          </div>
+          <div class="chat-messages" id="chat-demo"></div>
+          <div class="chat-replay-row">
+            <button class="btn-replay" id="replay-btn">↺ replay</button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
 
-<!-- CHAT DEMO -->
+<!-- ── THINKING TOOLS (AGENTS) ─────────────────────────────────── -->
 <section class="section">
-  <div class="container">
-    <span class="section-label reveal">a session in motion</span>
-    <p class="body-mono reveal" style="margin-bottom:4px;">
-      Bruce. Session 6. Commitment phase. He said he'd post the case study. He didn't.
-    </p>
+  <div class="wrap">
 
-    <div class="chat-demo reveal">
-      <div class="chat-demo-header">
-        <span class="chat-meta">unlabeled · session 6</span>
-        <span class="chat-meta">commitment phase</span>
+    <div class="split" style="margin-bottom:36px;">
+      <div class="split-left reveal">
+        <span class="section-label">thinking tools</span>
+        <div class="h-lg">Like asking the author directly about your exact situation.</div>
       </div>
-      <div class="chat-messages" id="chat-demo"></div>
-      <div class="chat-replay-row">
-        <button class="btn-replay" id="replay-btn">↺ replay</button>
+      <div class="reveal" style="padding-top:4px;">
+        <p class="body-mono">Each agent is trained on one book — its ideas, its questions, its way of seeing. You bring the problem. It responds through that lens and ends with something concrete for you to act on.</p>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- AGENTS -->
-<section class="section">
-  <div class="container">
-    <span class="section-label reveal">thinking tools</span>
-    <div class="reveal">
-      <div class="h-md" style="margin-bottom:14px;">Specific advice from the books that changed how builders think — as a conversation.</div>
-    </div>
-    <p class="body-mono reveal" style="margin-top:10px;margin-bottom:4px;">Each agent is trained on one book. You bring the problem. It responds the way that author would — with their lens, their questions, and a concrete action at the end. Like asking your favorite author directly about your exact situation.</p>
-
-    <div class="agent-grid">
-      <div class="agent-card reveal-fast" style="transition-delay:0s;">
+    <div class="card-grid">
+      <div class="agent-card stagger" style="transition-delay:0s;">
         <p class="agent-book">The Creative Act</p>
         <p class="agent-author">Rick Rubin · on creativity</p>
         <p class="agent-when">When you've lost the thread of why you're building this — or you're performing instead of creating.</p>
         <p class="agent-action">Actionable end: something to make before we talk again.</p>
       </div>
-      <div class="agent-card reveal-fast" style="transition-delay:0.08s;">
+      <div class="agent-card stagger" style="transition-delay:0.07s;">
         <p class="agent-book">Making Ideas Happen</p>
         <p class="agent-author">Scott Belsky · on execution</p>
         <p class="agent-when">When planning feels like progress and nothing actually ships.</p>
         <p class="agent-action">Actionable end: one concrete step, today.</p>
       </div>
-      <div class="agent-card reveal-fast" style="transition-delay:0.16s;">
+      <div class="agent-card stagger" style="transition-delay:0.14s;">
         <p class="agent-book">Show Your Work</p>
         <p class="agent-author">Austin Kleon · on visibility</p>
         <p class="agent-when">When you're waiting for it to be ready before anyone sees it.</p>
         <p class="agent-action">Actionable end: something to share, before it's finished.</p>
       </div>
-      <div class="agent-card reveal-fast" style="transition-delay:0.24s;">
+      <div class="agent-card stagger" style="transition-delay:0.21s;">
         <p class="agent-book">Unstuck</p>
         <p class="agent-author">Dr. Emily Musgrove · on movement</p>
         <p class="agent-when">When avoidance has become the pattern and you can't make yourself start.</p>
         <p class="agent-action">Actionable end: one movement, today.</p>
       </div>
     </div>
+
   </div>
 </section>
 
-<!-- TOOLS -->
+<!-- ── PRACTICE TOOLS ────────────────────────────────────────────── -->
 <section class="section">
-  <div class="container">
-    <span class="section-label reveal">practice tools</span>
-    <div class="reveal">
-      <div class="h-md" style="margin-bottom:14px;">Practical tools drawn from proven practices — to move, to complete, to unstick.</div>
-    </div>
-    <p class="body-mono reveal" style="margin-top:10px;margin-bottom:4px;">These aren't sessions. They're instruments. Each one takes a specific kind of stuck and gives it somewhere to go.</p>
+  <div class="wrap">
 
-    <div class="tools-grid" style="margin-top:28px;">
-      <div class="tape-border tool-card reveal-fast" style="transition-delay:0s;">
-        <p class="tool-name">Clearness Committee</p>
-        <p class="tool-desc">From Quaker discernment practice. Nine questions across three depths — surface, medium, deep. Two observations about what you actually said. It doesn't tell you what to do. It surfaces what you already know.</p>
+    <div class="split" style="margin-bottom:36px;">
+      <div class="split-left reveal">
+        <span class="section-label">practice tools</span>
+        <div class="h-lg">Instruments for a specific kind of stuck.</div>
       </div>
-      <div class="tape-border tool-card reveal-fast" style="transition-delay:0.08s;">
-        <p class="tool-name">Task Simplifier</p>
-        <p class="tool-desc">You've been holding the task wrong. It's not one thing — it's several smaller things with a first move buried inside. This finds it and makes it impossible to avoid.</p>
-      </div>
-      <div class="tape-border tool-card reveal-fast" style="transition-delay:0.16s;">
-        <p class="tool-name">Blackout</p>
-        <p class="tool-desc">A creative constraint exercise. You take a piece of text — something you wrote, something you're avoiding — and black out everything except what's true. What's left is the thing you actually meant to say.</p>
-      </div>
-      <div class="tape-border tool-card reveal-fast" style="transition-delay:0.24s;">
-        <p class="tool-name">Drawing</p>
-        <p class="tool-desc">Sometimes the block isn't verbal. This moves you away from language entirely — draw the problem, the goal, the thing you're afraid of. A different channel for the same work.</p>
+      <div class="reveal" style="padding-top:4px;">
+        <p class="body-mono">These aren't sessions. Each one takes a different route to the same place — movement. Available from the dashboard or suggested by the coach when the context calls for it.</p>
       </div>
     </div>
+
+    <div class="card-grid">
+      <div class="tape-border tool-card stagger" style="transition-delay:0s;">
+        <p class="tool-name">Clearness Committee</p>
+        <p class="tool-desc">From Quaker discernment practice. Nine questions across three depths. Two observations about what you actually said. It doesn't tell you what to do — it surfaces what you already know.</p>
+      </div>
+      <div class="tape-border tool-card stagger" style="transition-delay:0.07s;">
+        <p class="tool-name">Task Simplifier</p>
+        <p class="tool-desc">You've been holding the task wrong. It's not one thing — it's several smaller things with a first actionable move buried inside. This finds it and makes it impossible to avoid.</p>
+      </div>
+      <div class="tape-border tool-card stagger" style="transition-delay:0.14s;">
+        <p class="tool-name">Blackout</p>
+        <p class="tool-desc">Take a piece of text — something you wrote, something you've been circling. Black out everything except what's true. What remains is the thing you actually meant to say.</p>
+      </div>
+      <div class="tape-border tool-card stagger" style="transition-delay:0.21s;">
+        <p class="tool-name">Drawing</p>
+        <p class="tool-desc">Just draw. Let the mess happen. Don't try to make it mean something — draw whatever comes. Then look at it in relation to your goal or problem. Something will surface from the noise that words weren't reaching.</p>
+      </div>
+    </div>
+
   </div>
 </section>
 
-<!-- CLOSE -->
+<!-- ── CLOSE ────────────────────────────────────────────────────── -->
 <div class="close-section">
-  <div class="container">
-    <div class="reveal">
-      <div class="close-hl">You've been circling<br>this for a while.</div>
-    </div>
-    <div class="reveal" style="transition-delay:0.12s;">
-      <p class="close-sub">Let's name it.</p>
-    </div>
-    <div class="reveal" style="transition-delay:0.24s;display:inline-block;margin-top:8px;position:relative;">
-      <a href="https://unlabeledbuild.netlify.app" class="cta-link">
-        <span class="cta-annot">start here</span>
-        Begin the intake
-      </a>
+  <div class="wrap">
+    <div class="close-inner reveal">
+      <div>
+        <div class="close-hl">You've been circling<br>this for a while.</div>
+        <p class="close-sub">Let's name it.</p>
+      </div>
+      <div style="position:relative;">
+        <a href="https://unlabeledbuild.netlify.app" class="cta-link">
+          <span class="cta-annot">start here</span>
+          Begin the intake
+        </a>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- ── FOOTER ───────────────────────────────────────────────────── -->
 <footer>
-  <div class="container">
+  <div class="wrap">
     <div class="footer-row">
-      <span class="footer-id">Unlabeled · System Documentation</span>
-      <span class="footer-id">Vol. I · 2025</span>
+      <span class="footer-id">Unlabeled · System Documentation · Vol. I</span>
+      <span class="footer-id">2025</span>
     </div>
   </div>
 </footer>
 
 <script>
-  // ── SCROLL REVEAL ─────────────────────────────────────────────
+  // ── SCROLL REVEAL ──────────────────────────────────────────────
   (function() {
-    var els = document.querySelectorAll('.reveal, .reveal-fast');
+    var all = document.querySelectorAll('.reveal, .stagger');
     if (!('IntersectionObserver' in window)) {
-      els.forEach(function(el) { el.classList.add('visible'); });
+      all.forEach(function(el) { el.classList.add('in'); });
       return;
     }
     var obs = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          obs.unobserve(entry.target);
-        }
+      entries.forEach(function(e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-    els.forEach(function(el) { obs.observe(el); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -32px 0px' });
+    all.forEach(function(el) { obs.observe(el); });
   })();
 
-  // ── CHAT DEMO ─────────────────────────────────────────────────
+  // ── CHAT DEMO ──────────────────────────────────────────────────
   var CHAT = [
     { role: 'coach', text: "You said you'd post the LinkedIn case study by Friday. It's Monday. What happened?" },
     { role: 'user',  text: "I had a busy week. I just didn't get to it." },
@@ -876,8 +903,7 @@
     { role: 'coach', text: "That's the threshold. It's never going to feel ready. That feeling is the pattern, not a signal about the work.\n\nNew commitment: post it today, as-is, before 6pm. Not a revised version. The one you have." },
   ];
 
-  var DELAY = 1900;
-  var timers = [];
+  var DELAY = 1900, timers = [];
 
   function buildMsg(msg) {
     var wrap = document.createElement('div');
@@ -898,7 +924,6 @@
     var btn = document.getElementById('replay-btn');
     container.innerHTML = '';
     btn.disabled = true;
-
     CHAT.forEach(function(msg, i) {
       var el = buildMsg(msg);
       container.appendChild(el);
@@ -911,23 +936,16 @@
   }
 
   document.getElementById('replay-btn').addEventListener('click', function() {
-    timers.forEach(clearTimeout);
-    timers = [];
-    runChat();
+    timers.forEach(clearTimeout); timers = []; runChat();
   });
 
-  // auto-play when demo scrolls into view
   (function() {
     var played = false;
     var demo = document.querySelector('.chat-demo');
     if (!demo || !('IntersectionObserver' in window)) { runChat(); return; }
     var obs = new IntersectionObserver(function(entries) {
-      if (entries[0].isIntersecting && !played) {
-        played = true;
-        runChat();
-        obs.disconnect();
-      }
-    }, { threshold: 0.25 });
+      if (entries[0].isIntersecting && !played) { played = true; runChat(); obs.disconnect(); }
+    }, { threshold: 0.2 });
     obs.observe(demo);
   })();
 </script>
