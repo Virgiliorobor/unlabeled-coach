@@ -1298,13 +1298,13 @@
     </div>
 
     <p style="font-family: var(--font-typewriter); font-size: 0.8rem; color: var(--grey); margin-bottom: 20px;">
-      Bruce, manufacturing operations → AI consultant. Session 6. 30-day goal: commitment phase.
+      Finance professional, 15 years. Building AI tools on the side. Session 1. 30-day goal: become visible to one person outside their existing network.
     </p>
 
     <div class="chat-demo" id="chat-demo">
       <div class="chat-demo-header">
-        <span class="chat-demo-meta">session record · goal: first external conversation</span>
-        <span class="chat-demo-meta">phase: commitment</span>
+        <span class="chat-demo-meta">session record · goal: first public signal</span>
+        <span class="chat-demo-meta">phase: reflection</span>
       </div>
 
       <!-- Messages are injected by JS -->
@@ -1564,31 +1564,39 @@
   const CHAT_MESSAGES = [
     {
       speaker: 'coach',
-      text: "We were working on 'First real external conversation.' You committed to sending your bio to one operations director by Friday. What happened?"
+      text: "You said your 30-day goal is for someone you don't know to notice your work and reach out. What did you actually do this week toward being visible?"
     },
     {
-      speaker: 'bruce',
-      text: "I wrote three versions. None of them felt right. The 23% number sounds like bragging. I kept thinking about how people from my old world would read it."
-    },
-    {
-      speaker: 'coach',
-      text: "Seven versions means you know what you want to say. 'Sounds like bragging' is your phrase for claiming something true. The 23% is a fact. You didn't invent it. What specifically felt wrong about version seven?"
-    },
-    {
-      speaker: 'bruce',
-      text: "Still starting with where I came from. 'Former plant manager.' I can't seem to get away from it."
+      speaker: 'user',
+      text: "Nothing."
     },
     {
       speaker: 'coach',
-      text: "The identity anchor pattern — same thing that showed up when you wrote the Unlabeled bio. You keep leading with the title you're leaving instead of the work you've already shipped. Here's what you wrote in session four that landed: 'I build AI systems that predict machine failures. I've deployed two. They're running live.' That's the bio. Send that. Today. To one person you don't know."
+      text: "You built a real thing. A contractor sends a receipt photo over Telegram, your bot processes it, allocates it to the right project, it shows up on his dashboard. He uses it every day. Why hasn't anyone outside your circle seen that?"
     },
     {
-      speaker: 'bruce',
-      text: "Just those three sentences?"
+      speaker: 'user',
+      text: "I don't post on Instagram because I don't want to look like a tech bro just following the AI trend. And LinkedIn — people from my finance world would challenge the work because it's made with AI."
     },
     {
       speaker: 'coach',
-      text: "Exactly those three sentences. No context, no qualifications, no former. Before we talk again: find one operations director on LinkedIn — someone you don't know — and send it."
+      text: "Two audiences, two different fears. Instagram: you don't want to look like a trend-chaser — that's an identity concern. LinkedIn: you're afraid your finance peers will challenge the work's legitimacy — that's a credibility concern. So you stay invisible. Which means the 30-day goal can't happen. Someone can't notice work they've never seen."
+    },
+    {
+      speaker: 'user',
+      text: "I know. That's the thing."
+    },
+    {
+      speaker: 'coach',
+      text: "If you were certain nobody you respect would ever see it — what would you share tomorrow?"
+    },
+    {
+      speaker: 'user',
+      text: "The process of building the contractor tool. How I actually made it."
+    },
+    {
+      speaker: 'coach',
+      text: "Not the polished announcement — the process. What you started with, what broke, what worked. That's the thing you'd share if you weren't afraid. Before we talk again: write that post. Don't publish it. Just write it. One draft, no editing."
     }
   ];
 
@@ -1604,7 +1612,7 @@
 
     const speaker = document.createElement('span');
     speaker.className = 'msg-speaker';
-    speaker.textContent = msg.speaker === 'coach' ? '— coach' : '— ' + msg.speaker;
+    speaker.textContent = msg.speaker === 'coach' ? '— coach' : '— you';
 
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble';
@@ -1637,8 +1645,8 @@
 
     // Schedule each message
     CHAT_MESSAGES.forEach(function(msg, i) {
-      // Stagger: first message at 400ms, then ~1800ms apart
-      const delay = 400 + i * 1800;
+      // Stagger: first message at 400ms, then ~1600ms apart
+      const delay = 400 + i * 1600;
 
       const t = setTimeout(function() {
         const el = buildMessage(msg);
