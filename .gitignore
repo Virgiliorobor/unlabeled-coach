@@ -12,3 +12,6 @@ _database/community/*.json
 !_database/users/.gitkeep
 !_database/sessions/.gitkeep
 !_database/community/.gitkeep
+
+# Demo profile — committed so Railway has it on deploy
+!_database/users/bruce.json
