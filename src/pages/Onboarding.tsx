@@ -5,7 +5,7 @@ interface Props {
 }
 
 export default function Onboarding({ onComplete }: Props) {
-  const [step, setStep] = useState<'welcome' | 'register'>('welcome')
+  const [step, setStep] = useState<'welcome' | 'register' | 'login'>('welcome')
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [error, setError] = useState('')
@@ -15,7 +15,7 @@ export default function Onboarding({ onComplete }: Props) {
     return str.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').slice(0, 40)
   }
 
-  async function handleRegister(e: React.FormEvent) {
+  async function handleRegister(e: { preventDefault: () => void }) {
     e.preventDefault()
     if (!email || !name) return
     setLoading(true)
@@ -41,17 +41,75 @@ export default function Onboarding({ onComplete }: Props) {
     onComplete(data.slug)
   }
 
+  async function handleLogin(e: { preventDefault: () => void }) {
+    e.preventDefault()
+    if (!email) return
+    setLoading(true)
+    setError('')
+
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim().toLowerCase() })
+    })
+
+    const data = await res.json()
+    setLoading(false)
+
+    if (!res.ok || !data.slug) {
+      setError('No account found for that email address.')
+      return
+    }
+
+    onComplete(data.slug)
+  }
+
   if (step === 'welcome') {
     return (
       <div className="sanctuary-page">
-        <div style={{ marginBottom: 'var(--space-xl)' }}>
-          <span className="sanctuary-wordmark">Unlabeled</span>
+
+        {/* Label machine wordmark + intake marker */}
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 'var(--space-lg)' }}>
+          <span className="label-machine" style={{ fontSize: '1.05rem' }}>Unlabeled</span>
+          <span style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.45rem',
+            letterSpacing: '0.2em',
+            color: 'rgba(0,0,0,0.3)',
+            textTransform: 'uppercase',
+            paddingBottom: 2,
+          }}>
+            intake · vol. I
+          </span>
         </div>
 
-        <h1 className="sanctuary-headline">
-          You're already doing the work.<br />
-          You just haven't claimed it yet.
-        </h1>
+        {/* Thin ruled separator */}
+        <div style={{ borderTop: '1px solid rgba(0,0,0,0.15)', marginBottom: 'var(--space-md)' }} />
+
+        {/* Split headline */}
+        <div style={{ marginBottom: 'var(--space-md)' }}>
+          <div style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '3rem',
+            fontWeight: 'normal',
+            lineHeight: 1.08,
+            letterSpacing: '-0.02em',
+            marginBottom: '0.45em',
+          }}>
+            You're already doing the work.
+          </div>
+          <div style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '1.55rem',
+            fontStyle: 'italic',
+            lineHeight: 1.3,
+            color: 'var(--grey)',
+            paddingLeft: '0.15em',
+          }}>
+            You just haven't claimed it yet.
+          </div>
+        </div>
 
         <p className="sanctuary-body">
           A structured self-reflection coach for solo builders in identity transition.
@@ -59,9 +117,90 @@ export default function Onboarding({ onComplete }: Props) {
           what you should be doing and you're still not doing it.
         </p>
 
-        <button className="sanctuary-cta" onClick={() => setStep('register')}>
-          Begin
-        </button>
+        {/* CTA with handwritten annotation */}
+        <div style={{ position: 'relative', display: 'inline-block', marginTop: 'var(--space-sm)' }}>
+          <span style={{
+            position: 'absolute',
+            top: -26,
+            left: -8,
+            fontFamily: 'var(--font-marker)',
+            fontSize: '0.75rem',
+            color: 'var(--grey)',
+            transform: 'rotate(-4deg)',
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap',
+          }}>
+            start here
+          </span>
+          <button className="sanctuary-cta" onClick={() => setStep('register')}>
+            Begin
+          </button>
+        </div>
+
+        <p style={{ marginTop: 'var(--space-md)', fontSize: '0.85rem' }}>
+          <button
+            onClick={() => { setStep('login'); setError('') }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontFamily: 'inherit', fontSize: 'inherit', color: 'var(--grey)' }}
+          >
+            Already have an account? Sign in
+          </button>
+        </p>
+
+        <p style={{ marginTop: 'var(--space-lg)', fontSize: '0.75rem' }}>
+          <a
+            href="/?demo"
+            style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--grey)', textDecoration: 'none', borderBottom: '1px solid var(--grey-light)' }}
+          >
+            View a populated demo profile →
+          </a>
+        </p>
+      </div>
+    )
+  }
+
+  if (step === 'login') {
+    return (
+      <div className="sanctuary-page">
+        <div style={{ marginBottom: 'var(--space-lg)' }}>
+          <button className="sanctuary-back" onClick={() => { setStep('welcome'); setError('') }}>
+            ← Back
+          </button>
+        </div>
+
+        <h2 className="sanctuary-subhead">Welcome back.</h2>
+        <p className="sanctuary-body" style={{ marginBottom: 'var(--space-lg)' }}>
+          Enter the email you registered with.
+        </p>
+
+        <form onSubmit={handleLogin} className="sanctuary-form">
+          <div style={{ marginBottom: 'var(--space-md)' }}>
+            <label className="label" style={{ display: 'block', marginBottom: 'var(--space-xs)' }}>
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              autoFocus
+            />
+          </div>
+
+          {error && (
+            <p style={{ color: 'var(--accent)', marginBottom: 'var(--space-sm)', fontSize: '0.85rem' }}>
+              {error}
+            </p>
+          )}
+
+          <button
+            className="sanctuary-cta"
+            type="submit"
+            disabled={loading || !email}
+            style={{ opacity: loading || !email ? 0.5 : 1 }}
+          >
+            {loading ? 'Signing in…' : 'Sign in'}
+          </button>
+        </form>
       </div>
     )
   }
@@ -71,7 +210,7 @@ export default function Onboarding({ onComplete }: Props) {
       <div style={{ marginBottom: 'var(--space-lg)' }}>
         <button
           className="sanctuary-back"
-          onClick={() => setStep('welcome')}
+          onClick={() => { setStep('welcome'); setError('') }}
         >
           ← Back
         </button>

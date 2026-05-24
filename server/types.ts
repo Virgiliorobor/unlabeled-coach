@@ -33,6 +33,35 @@ export interface FirstMove {
   created_at: string
 }
 
+export interface ActionStep {
+  step_id: string
+  text: string
+  assigned_at: string
+  due_date: string
+  status: 'pending' | 'done' | 'skipped'
+  coach_reason: string
+  completion_note: string
+  phase_assigned: string
+  exercise_level: number
+  goal_id: string
+}
+
+export interface PublishingLogEntry {
+  log_id: string
+  url: string
+  platform: string
+  published_at: string
+  commitment_id: string
+  goal_id: string
+  description: string
+}
+
+export interface BehavioralSignals {
+  avoidance_language: string[]
+  engagement_triggers: string[]
+  excuse_structure: string
+}
+
 export interface DailyReminders {
   day_1: string
   day_2: string
@@ -75,6 +104,22 @@ export interface PhaseHistoryEntry {
   completed_at: string | null
 }
 
+export interface Goal {
+  goal_id: string
+  title: string
+  description: string
+  horizon: 'thirty_days' | 'ninety_days' | 'twelve_months' | 'ongoing'
+  phase: 'intake' | 'reflection' | 'clarity' | 'resistance' | 'commitment' | 'accountability'
+  phase_started_at: string
+  phase_history: PhaseHistoryEntry[]
+  added_at: string
+  last_touched: string
+  status: 'active' | 'completed' | 'paused'
+  action_steps: ActionStep[]
+  active_commitment: ActiveCommitment | null
+  commitment_history: CommitmentHistory[]
+}
+
 export interface UserProfile {
   // identity
   user_id: string
@@ -100,32 +145,27 @@ export interface UserProfile {
     target_user: string
   }
 
-  // goals
-  goals: {
-    thirty_days: UserGoal
-    ninety_days: UserGoal
-    twelve_months: UserGoal
-  }
+  // goals portfolio — each goal moves through its own phase loop
+  goals: Goal[]
 
-  // calibration
+  // calibration — person-level, constant across goals
   calibration: {
     dominant_lens: 'artist' | 'business' | 'split'
     resistance_pattern: string
     tone: 'direct' | 'structured' | 'balanced'
     oblique_subset: string[]
+    behavioral_signals: BehavioralSignals
   }
 
   // program
   program: {
-    current_phase: 'interview' | 'reflection' | 'clarity' | 'resistance' | 'commitment' | 'accountability'
-    phase_history: PhaseHistoryEntry[]
+    initial_interview_done: boolean
     sessions_completed: number
     last_session_date: string
   }
 
-  // commitment
-  active_commitment: ActiveCommitment | null
-  commitment_history: CommitmentHistory[]
+  // global publishing evidence trail (person-level, with goal_id reference)
+  publishing_log: PublishingLogEntry[]
 
   // notifications
   notifications: {
@@ -170,6 +210,7 @@ export interface SessionRecord {
   started_at: string
   ended_at: string
   duration_minutes: number
+  active_goal_id: string
   phase: string
   re_interview_completed: boolean
   profile_updated: boolean
@@ -207,8 +248,8 @@ export interface SessionRecord {
 export interface QuakerResponse {
   response_id: string
   author_type: 'ai' | 'human'
-  archetype?: string       // if ai: the background archetype
-  user_id?: string         // if human: anonymized
+  archetype?: string
+  user_id?: string
   text: string
   submitted_at: string
 }
@@ -216,12 +257,12 @@ export interface QuakerResponse {
 export interface QuakerPost {
   post_id: string
   prompt: string
-  created_by: string       // user_id of the builder who submitted
+  created_by: string
   created_at: string
-  closes_at: string        // 48 hours after created_at
+  closes_at: string
   status: 'open' | 'closed' | 'synthesized'
   responses: QuakerResponse[]
-  synthesis: string        // coach-generated pattern summary (after close)
+  synthesis: string
 }
 
 // ── REQUEST TYPES ────────────────────────────────────────────

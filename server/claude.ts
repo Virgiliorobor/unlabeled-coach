@@ -17,6 +17,39 @@ const MAX_TOKENS = parseInt(process.env.ANTHROPIC_MAX_TOKENS || '8192')
 // The profile is injected fresh on every turn so the coach always has
 // the current state — phase, active commitment, re-interview due date.
 
+function loadReferenceAuthors(): string {
+  interface Quote { page_number: number; text: string }
+  const parseQuotes = (raw: string): Quote[] => {
+    try { return JSON.parse(raw) as Quote[] } catch { return [] }
+  }
+  const formatQuotes = (quotes: Quote[]): string =>
+    quotes.map(q => `"${q.text}"`).join('\n')
+
+  const creativeAct1 = parseQuotes(readICMFile('reference/Referenceauthors/creative act 1.json'))
+  const creativeAct2 = parseQuotes(readICMFile('reference/Referenceauthors/creative act 2.json'))
+  const makeIdeas    = parseQuotes(readICMFile('reference/Referenceauthors/make ideas happen.json'))
+  const publishWork  = parseQuotes(readICMFile('reference/Referenceauthors/publishyourwork.json'))
+  const unstuck      = parseQuotes(readICMFile('reference/Referenceauthors/unstuck book.json'))
+
+  return `## REFERENCE AUTHORS
+These curated passages inform how you coach. Draw on them when a quote or idea
+is genuinely relevant — as a lens, not a citation. Never name the book or author
+in session unless the builder has mentioned them. Let these ideas shape your
+questions, not your speech.
+
+### The Creative Act — Rick Rubin
+${formatQuotes([...creativeAct1, ...makeIdeas])}
+
+### Making Ideas Happen — Scott Belsky
+${formatQuotes(creativeAct2)}
+
+### Show Your Work — Austin Kleon
+${formatQuotes(publishWork)}
+
+### Unstuck — Dr. Emily Musgrove
+${formatQuotes(unstuck)}`
+}
+
 function buildSystemPrompt(profile: UserProfile | null): string {
   const readme    = readICMFile('AI_README.md')
   const identity  = readICMFile('identity.md')
@@ -31,6 +64,7 @@ function buildSystemPrompt(profile: UserProfile | null): string {
   const building  = readICMFile('reference/building-in-public.md')
   const safety    = readICMFile('reference/safety-protocol.md')
   const interview = readICMFile('reference/interview-protocol.md')
+  const authors   = loadReferenceAuthors()
 
   const profileSection = profile
     ? `\n\n---\n## ACTIVE USER PROFILE\n\`\`\`json\n${JSON.stringify(profile, null, 2)}\n\`\`\`\n---\n`
@@ -50,7 +84,8 @@ function buildSystemPrompt(profile: UserProfile | null): string {
     horizons,
     lens,
     building,
-    safety
+    safety,
+    authors
   ].join('\n\n')
 }
 
@@ -64,6 +99,7 @@ export interface ProfilePatch {
 }
 
 export interface CommitmentOutput {
+  goal_id: string
   text: string
   due_date: string
   ladder_rung: number
@@ -73,10 +109,44 @@ export interface CommitmentOutput {
   daily_reminders: Record<string, string>
 }
 
+export interface ActionStepOutput {
+  goal_id: string
+  text: string
+  due_date: string
+  coach_reason: string
+  phase_assigned: string
+  exercise_level: number
+}
+
+export interface PublishingLogEntryOutput {
+  goal_id: string
+  url: string
+  platform: string
+  description: string
+  commitment_id: string
+}
+
+export interface GoalOutput {
+  title: string
+  description: string
+  horizon: 'thirty_days' | 'ninety_days' | 'twelve_months' | 'ongoing'
+  phase: string
+}
+
+export interface GoalPatch {
+  goal_id: string
+  field: string
+  value: unknown
+}
+
 export interface ClaudeResponse {
   message: string
   profile_patches: ProfilePatch[]
+  goal_output: GoalOutput | null
+  goal_patches: GoalPatch[]
   commitment_output: CommitmentOutput | null
+  action_step_output: ActionStepOutput | null
+  publishing_log_entry: PublishingLogEntryOutput | null
   safety_state: 'engaged' | 'watchful' | 'redirected'
 }
 
@@ -104,6 +174,42 @@ function parseCommitmentOutput(raw: string | null): CommitmentOutput | null {
   }
 }
 
+function parseActionStepOutput(raw: string | null): ActionStepOutput | null {
+  if (!raw) return null
+  try {
+    return JSON.parse(raw) as ActionStepOutput
+  } catch {
+    return null
+  }
+}
+
+function parsePublishingLogEntry(raw: string | null): PublishingLogEntryOutput | null {
+  if (!raw) return null
+  try {
+    return JSON.parse(raw) as PublishingLogEntryOutput
+  } catch {
+    return null
+  }
+}
+
+function parseGoalOutput(raw: string | null): GoalOutput | null {
+  if (!raw) return null
+  try {
+    return JSON.parse(raw) as GoalOutput
+  } catch {
+    return null
+  }
+}
+
+function parseGoalPatches(raw: string | null): GoalPatch[] {
+  if (!raw) return []
+  try {
+    return JSON.parse(raw) as GoalPatch[]
+  } catch {
+    return []
+  }
+}
+
 function detectSafetyState(text: string): 'engaged' | 'watchful' | 'redirected' {
   if (text.includes('[SAFETY:redirected]')) return 'redirected'
   if (text.includes('[SAFETY:watchful]')) return 'watchful'
@@ -113,7 +219,11 @@ function detectSafetyState(text: string): 'engaged' | 'watchful' | 'redirected' 
 function stripControlBlocks(text: string): string {
   return text
     .replace(/\[PROFILE_PATCHES\][\s\S]*?\[\/PROFILE_PATCHES\]/gi, '')
+    .replace(/\[GOAL_OUTPUT\][\s\S]*?\[\/GOAL_OUTPUT\]/gi, '')
+    .replace(/\[GOAL_PATCHES\][\s\S]*?\[\/GOAL_PATCHES\]/gi, '')
     .replace(/\[COMMITMENT_OUTPUT\][\s\S]*?\[\/COMMITMENT_OUTPUT\]/gi, '')
+    .replace(/\[ACTION_STEP_OUTPUT\][\s\S]*?\[\/ACTION_STEP_OUTPUT\]/gi, '')
+    .replace(/\[PUBLISHING_LOG_ENTRY\][\s\S]*?\[\/PUBLISHING_LOG_ENTRY\]/gi, '')
     .replace(/\[SAFETY:[^\]]+\]/gi, '')
     .trim()
 }
@@ -150,12 +260,20 @@ export async function runTurn(
 
   const safetyState = detectSafetyState(rawText)
   const patchesRaw = extractBlock(rawText, 'PROFILE_PATCHES')
+  const goalOutputRaw = extractBlock(rawText, 'GOAL_OUTPUT')
+  const goalPatchesRaw = extractBlock(rawText, 'GOAL_PATCHES')
   const commitmentRaw = extractBlock(rawText, 'COMMITMENT_OUTPUT')
+  const actionStepRaw = extractBlock(rawText, 'ACTION_STEP_OUTPUT')
+  const publishingRaw = extractBlock(rawText, 'PUBLISHING_LOG_ENTRY')
 
   return {
     message: stripControlBlocks(rawText),
     profile_patches: parseProfilePatches(patchesRaw),
+    goal_output: parseGoalOutput(goalOutputRaw),
+    goal_patches: parseGoalPatches(goalPatchesRaw),
     commitment_output: parseCommitmentOutput(commitmentRaw),
+    action_step_output: parseActionStepOutput(actionStepRaw),
+    publishing_log_entry: parsePublishingLogEntry(publishingRaw),
     safety_state: safetyState
   }
 }

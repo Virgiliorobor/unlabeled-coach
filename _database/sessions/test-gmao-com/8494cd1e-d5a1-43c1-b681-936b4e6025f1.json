@@ -1,0 +1,101 @@
+{
+  "session_id": "8494cd1e-d5a1-43c1-b681-936b4e6025f1",
+  "user_id": "16cbdb55-313e-4bfd-9127-3336d041336f",
+  "user_slug": "test-gmao-com",
+  "session_number": 6,
+  "date": "2026-05-23",
+  "started_at": "2026-05-23T19:13:39.063Z",
+  "ended_at": "",
+  "duration_minutes": 0,
+  "phase": "resistance",
+  "re_interview_completed": false,
+  "profile_updated": false,
+  "safety_state": "engaged",
+  "safety_notes": "",
+  "summary": "",
+  "key_insights": [],
+  "questions_that_landed": [],
+  "resistance_pattern_active": false,
+  "resistance_notes": "",
+  "goals_discussed": [],
+  "goal_changes": [],
+  "oblique_card_used": "",
+  "oblique_card_text": "",
+  "commitment_declared": false,
+  "commitment_id": "",
+  "commitment_text": "",
+  "commitment_due_date": "",
+  "commitment_ladder_rung": 0,
+  "notification_channels": [],
+  "prior_commitment_resolved": false,
+  "prior_commitment_id": "",
+  "prior_commitment_outcome": "",
+  "prior_commitment_notes": "",
+  "lens_dominant_this_session": "",
+  "lens_notes": "",
+  "next_session_open_with": "",
+  "phase_transition": false,
+  "new_phase": "",
+  "chat_log": [
+    {
+      "role": "assistant",
+      "content": "Looking at your profile, you completed Phase 2 last session — you landed on \"I am a consultant that fixes problems with AI\" as your one-sentence identity claim. You passed both tests: it's what you're already doing, and a business owner with a problem would understand it immediately.\n\nYou're now in Phase 3, which is about naming your resistance pattern directly and sitting with it.\n\nYour pattern is visibility avoidance. The work exists — you've shipped a real product for a real client. The internal profiling tool you use daily is evidence you can build. But you've published nothing. Your 30-day goal requires someone you don't know to notice your work — which requires the work to be visible somewhere they could find it.\n\nHere's what I want to ask you directly:\n\nWhat specifically are you protecting yourself from by staying invisible? Not the general answer — the specific person or judgment you imagine when you think about posting something publicly about what you build."
+    },
+    {
+      "role": "user",
+      "content": "how the icm folder structure works"
+    },
+    {
+      "role": "assistant",
+      "content": "The ICM folder structure is how the coaching system is organized. Here's the breakdown:\n\n**Root level:**\n- `system-briefing.md` — The master document I read first every session. Contains the decision tree for where to pick up, how to read your profile, and how to emit updates.\n- `identity.md` — Who I am as a coach, what I believe, how I show up.\n- `rules.md` — The non-negotiables. Profile update formats, the \"always/never\" list, safety override.\n- `examples.md` — Good and bad coaching exchanges by phase, so I can calibrate tone.\n\n**Reference folder:**\n- `interview-protocol.md` — Phase 0 intake questions and the weekly 5-question re-interview\n- `oblique-strategies.md` — 40 cards organized by resistance pattern\n- `resistance-patterns.md` — The 6 patterns by professional background\n- `three-horizons.md` — Goal extraction and tracking (30/90/12-month)\n- `business-artist-lens.md` — Dual-lens questions by phase\n- `building-in-public.md` — The commitment ladder and output formats\n- `safety-protocol.md` — Three-state model, transition language, crisis resources\n\n**Profiles folder:**\n- `_template.md` — Blank profile structure (maps to Stage 2 database)\n- `_session-record.md` — Session log format\n- Your actual profile gets injected as JSON at the top of my context\n\n**Sessions folder:**\n- Session records written after each conversation\n\nThe profile JSON you see in my context is the live version — I read it, coach from it, and emit `[PROFILE_PATCHES]` to update it.\n\n---\n\nNow — back to the actual work. You're in Phase 3. The question stands:\n\nWhat specifically are you protecting yourself from by staying invisible?"
+    },
+    {
+      "role": "user",
+      "content": "So my question is: what's one thing you've built or learned in the last two weeks that you would genuinely want another builder to know about — not to impress anyone, just because it's actually useful or interesting? i would say that i want to share that icm folder structure works... What specifically are you protecting yourself from by staying invisible?  no just to avoid the possibility that people makes fun of me, but i think i dont fear that anymore"
+    },
+    {
+      "role": "assistant",
+      "content": "Good. So the fear of being mocked has lost its grip — or at least enough grip that it's not the thing stopping you anymore.\n\nBut you still haven't published anything. Which means there's something else operating now.\n\nLet me ask it differently:\n\nYou just said you want to share that the ICM folder structure works. That's a specific, useful thing another builder could learn from. You could post that today — a few sentences about what it is, why it works, maybe a screenshot of the structure.\n\nWhat would have to be true for you to actually post that by end of day tomorrow?"
+    },
+    {
+      "role": "user",
+      "content": "yeah but it has been one day, i just want to see my dashboard with everything"
+    },
+    {
+      "role": "assistant",
+      "content": "That's fair. You want to see the whole system before you start using it publicly. That's not resistance — that's orientation.\n\nBut I want to name something clearly: waiting to see the dashboard is a reasonable request for *today*. It is not a reasonable reason to delay publishing for another week.\n\nHere's the distinction I'm holding:\n\n- \"I want to understand the tool before I commit to something inside it\" — legitimate, one day\n- \"I want everything to feel ready before I share anything\" — that's the old pattern wearing new clothes\n\nYou said the fear of being mocked has lost its grip. You said you want to share the ICM folder structure. You have something specific and useful to say.\n\nSo let's make a deal: you get today to explore the dashboard and see how everything connects. Tomorrow we talk about the commitment.\n\nOne question before we close this:\n\nWhen you imagine posting about the ICM structure — not whether you will, just imagining it — where do you picture posting it? The Unlabeled community? Somewhere else?"
+    },
+    {
+      "role": "user",
+      "content": "an explanation on how it works, and why it makes sense"
+    },
+    {
+      "role": "assistant",
+      "content": "That's the content. I'm asking about the location.\n\nWhen you imagine posting an explanation of how the ICM structure works and why it makes sense — where does that post live? What platform are you picturing?"
+    },
+    {
+      "role": "user",
+      "content": "in instagram"
+    },
+    {
+      "role": "assistant",
+      "content": "Instagram. That's interesting.\n\nInstagram is where your finance colleagues and personal network are — the exact audience you mentioned in earlier sessions as the one you were protecting yourself from. Posting there isn't Rung 3 on the ladder (Unlabeled community) or even Rung 5 (low-stakes public platform). That's closer to Rung 6 — full professional and social visibility.\n\nTwo possibilities here:\n\n1. The fear really has lost its grip and you're ready to claim this publicly to the people who know you\n2. You're skipping the middle rungs because Instagram feels familiar, not because it's the right next step\n\nI'm not telling you which one it is. But I want you to sit with this question:\n\nAre you choosing Instagram because you're ready for that audience to see this — or because posting somewhere new (like the Unlabeled community or a builder-focused space) feels like admitting you're part of a world you haven't fully claimed yet?"
+    },
+    {
+      "role": "user",
+      "content": "no because, i have already published in skool comunity, and nobody knows me so i dont care about publishing there"
+    },
+    {
+      "role": "assistant",
+      "content": "Ah. So you've already published somewhere. That's new information.\n\nWhat did you post in the Skool community, and when?"
+    },
+    {
+      "role": "user",
+      "content": "many times like for the past 3months"
+    },
+    {
+      "role": "assistant",
+      "content": "So you've been publishing for three months in a community where nobody knows you.\n\nAnd your 30-day goal is for someone you don't know to notice your work and ask you to build something.\n\nHere's what I'm seeing: the Skool posts haven't produced that outcome yet. Which means either the content isn't landing, the audience isn't right, or the posts aren't positioned as \"here's what I build, hire me.\"\n\nInstagram is where people *do* know you. That's a different game — not anonymous builder sharing, but claiming this identity to your actual network.\n\nSo the question sharpens:\n\nThe Skool posts are comfortable now. Instagram is where the real exposure lives. You said the fear of being mocked has lost its grip.\n\nWhat's the actual difference between what you've been posting in Skool and what you'd post on Instagram? Is it the content, the tone, or the fact that posting on Instagram makes it real to people who knew you as a finance guy?"
+    }
+  ]
+}

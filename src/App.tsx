@@ -2,8 +2,11 @@ import { useState, useEffect, useRef } from 'react'
 import Dashboard from './pages/Dashboard'
 import Session from './pages/Session'
 import Onboarding from './pages/Onboarding'
+import AgentChat, { AgentId } from './pages/AgentChat'
+import ClearnessCommittee from './pages/ClearnessCommittee'
+import TaskSimplifier from './pages/TaskSimplifier'
 
-type AppView = 'loading' | 'onboarding' | 'dashboard' | 'session'
+type AppView = 'loading' | 'onboarding' | 'dashboard' | 'session' | 'agent' | 'clearness' | 'simplify'
 type Quadrant = 'sanctuary' | 'sandbox' | 'system' | 'workbench'
 
 interface AppUser {
@@ -29,6 +32,7 @@ export default function App() {
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
   const [openingMessage, setOpeningMessage] = useState<string | null>(null)
   const [currentPhase, setCurrentPhase] = useState<string>('phase_0')
+  const [activeAgentId, setActiveAgentId] = useState<AgentId | null>(null)
   const prevQuadrantRef = useRef<Quadrant>('sanctuary')
 
   // Apply quadrant to <html> data attribute; trigger snap animation on sandbox→system
@@ -46,23 +50,45 @@ export default function App() {
     prevQuadrantRef.current = q
   }, [currentPhase])
 
-  // Check auth on mount
+  // Check auth on mount — also handles ?demo auto-login
   useEffect(() => {
-    fetch('/api/dashboard', { credentials: 'include' })
-      .then(res => {
-        if (res.ok) return res.json()
-        return null
-      })
-      .then(data => {
-        if (data?.profile) {
-          setUser({ slug: data.profile.slug, user_id: data.profile.slug })
-          setCurrentPhase(data.profile.current_phase || 'phase_0')
-          setView('dashboard')
-        } else {
-          setView('onboarding')
+    async function init() {
+      // If ?demo in URL, hit the demo endpoint first
+      if (window.location.search.includes('demo')) {
+        try {
+          const demoRes = await fetch('/api/auth/demo', { credentials: 'include' })
+          if (demoRes.ok) {
+            const demoData = await demoRes.json()
+            setUser({ slug: demoData.slug, user_id: demoData.user_id })
+            setCurrentPhase('commitment')
+            setView('dashboard')
+            // Clean the URL without reloading
+            window.history.replaceState({}, '', window.location.pathname)
+            return
+          }
+        } catch {
+          // fall through to normal auth check
         }
-      })
-      .catch(() => setView('onboarding'))
+      }
+
+      // Normal auth check
+      fetch('/api/dashboard', { credentials: 'include' })
+        .then(res => {
+          if (res.ok) return res.json()
+          return null
+        })
+        .then(data => {
+          if (data?.profile) {
+            setUser({ slug: data.profile.slug, user_id: data.profile.slug })
+            setCurrentPhase(data.profile.current_phase || 'phase_0')
+            setView('dashboard')
+          } else {
+            setView('onboarding')
+          }
+        })
+        .catch(() => setView('onboarding'))
+    }
+    init()
   }, [])
 
   const handleOnboardingComplete = (slug: string) => {
@@ -116,11 +142,31 @@ export default function App() {
     )
   }
 
+  if (view === 'agent' && activeAgentId) {
+    return (
+      <AgentChat
+        agentId={activeAgentId}
+        onBack={() => { setActiveAgentId(null); setView('dashboard') }}
+      />
+    )
+  }
+
+  if (view === 'clearness') {
+    return <ClearnessCommittee onBack={() => setView('dashboard')} />
+  }
+
+  if (view === 'simplify') {
+    return <TaskSimplifier onBack={() => setView('dashboard')} />
+  }
+
   return (
     <Dashboard
       slug={user?.slug || ''}
       onStartSession={handleStartSession}
       onPhaseChange={setCurrentPhase}
+      onEnterAgent={(id: AgentId) => { setActiveAgentId(id); setView('agent') }}
+      onEnterClearness={() => setView('clearness')}
+      onEnterSimplify={() => setView('simplify')}
     />
   )
 }

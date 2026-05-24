@@ -7,14 +7,16 @@
 :root {
   /* Canvas — never pure white */
   --canvas:        #F4F4F0;
-  --canvas-dark:   #E8E8E4;
+  --canvas-dark:   #E8E6E0;
   --black:         #111111;
   --white:         #F4F4F0;
+  --bg:            #F4F4F0;   /* alias used in components */
 
   /* Functional color — strictly utilitarian */
   --red:           #E03C31;   /* NASA red: deadlines, commitments, destructive */
   --yellow:        #FFF000;   /* Highlighter: insights, active selections */
   --grey:          #888880;
+  --grey-mid:      #888880;   /* alias used in components */
   --grey-light:    #D8D8D4;
 
   /* Borders — harsh, structural */
@@ -66,7 +68,7 @@ body {
   position: relative;
 }
 
-/* Paper grain overlay — always present, subtle */
+/* Paper grain overlay — denser than before */
 body::after {
   content: '';
   position: fixed;
@@ -74,7 +76,7 @@ body::after {
   pointer-events: none;
   z-index: 9999;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  opacity: 0.025;
+  opacity: 0.04;
 }
 
 /* ── TYPOGRAPHY BASE ────────────────────────────────────────── */
@@ -146,6 +148,59 @@ textarea { resize: none; min-height: 80px; }
 
 button { cursor: pointer; border: none; background: none; font-family: var(--font-mono); }
 
+/* ── Global button defaults (used across tools, agents, clearness) ── */
+.btn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: var(--border-thick);
+  padding: 8px 16px;
+  background: transparent;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.1s, transform 0.1s;
+}
+.btn:hover:not(:disabled) {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+.btn:disabled { opacity: 0.4; cursor: default; }
+
+.btn-primary {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: var(--black);
+  color: var(--canvas);
+  border: var(--border-thick);
+  padding: 10px 20px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.1s, transform 0.1s;
+}
+.btn-primary:hover:not(:disabled) {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+.btn-primary:disabled { opacity: 0.4; cursor: default; }
+
+/* Session-specific textarea */
+.session-textarea {
+  flex: 1;
+  font-family: var(--font-typewriter);
+  font-size: 0.9rem;
+  border: var(--border);
+  padding: 10px 12px;
+  resize: none;
+  background: transparent;
+  min-height: 0;
+}
+.session-textarea:focus { outline: none; border: var(--border-thick); }
+
 .text-muted  { color: var(--grey); }
 .text-red    { color: var(--red); }
 .text-small  { font-size: 0.85rem; }
@@ -166,7 +221,14 @@ button { cursor: pointer; border: none; background: none; font-family: var(--fon
 
 [data-quadrant="sanctuary"] body,
 [data-quadrant="sanctuary"] {
-  background: var(--canvas);
+  background-color: var(--canvas);
+  /* Ledger ruled lines — aged document feel */
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 31px,
+    rgba(0,0,0,0.045) 31px,
+    rgba(0,0,0,0.045) 32px
+  );
 }
 
 /* Vast margins — content floats */
@@ -246,11 +308,58 @@ button { cursor: pointer; border: none; background: none; font-family: var(--fon
   text-align: right;
 }
 
+/* ── Label machine tape — red Dymo-style embossed wordmark ── */
+.label-machine {
+  display: inline-block;
+  background: #B01A28;
+  color: #F5EDE0;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  padding: 7px 16px 6px;
+  transform: rotate(-0.6deg);
+  position: relative;
+  /* Embossed letter illusion */
+  text-shadow:
+    0 1px 0 rgba(255,255,255,0.22),
+    0 -1px 0 rgba(0,0,0,0.45);
+  /* Tape physical depth */
+  box-shadow:
+    inset 0 3px 6px rgba(255,255,255,0.1),
+    inset 0 -3px 6px rgba(0,0,0,0.28),
+    3px 4px 0 rgba(0,0,0,0.32);
+}
+/* Tape edge highlights (the cut edges of the tape strip) */
+.label-machine::before,
+.label-machine::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to right, rgba(255,255,255,0.08), transparent);
+}
+.label-machine::before { left: 0; }
+.label-machine::after  { right: 0; background: linear-gradient(to left, rgba(0,0,0,0.15), transparent); }
+
 /* ── Sanctuary page component classes (Onboarding) ─── */
 .sanctuary-page {
   max-width: 540px;
   margin: 0 auto;
   padding: var(--space-xl) var(--space-lg);
+  position: relative;
+}
+/* Crop mark — top right corner, print-design reference */
+.sanctuary-page::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  right: 28px;
+  width: 18px;
+  height: 18px;
+  border-top: 1px solid rgba(0,0,0,0.18);
+  border-right: 1px solid rgba(0,0,0,0.18);
+  pointer-events: none;
 }
 
 .sanctuary-wordmark {
@@ -291,16 +400,17 @@ button { cursor: pointer; border: none; background: none; font-family: var(--fon
 .sanctuary-cta {
   all: unset;
   font-family: var(--font-serif);
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-style: italic;
   cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  /* Highlighter sweep — marker drawn over the text */
+  background: linear-gradient(transparent 52%, rgba(255,240,0,0.72) 52%);
+  padding: 0 3px;
   color: var(--black);
   transition: opacity 0.2s;
 }
-.sanctuary-cta:hover { opacity: 0.55; }
-.sanctuary-cta:disabled { opacity: 0.4; cursor: default; }
+.sanctuary-cta:hover { opacity: 0.7; }
+.sanctuary-cta:disabled { opacity: 0.35; cursor: default; background: none; }
 
 .sanctuary-back {
   all: unset;
@@ -977,12 +1087,41 @@ button { cursor: pointer; border: none; background: none; font-family: var(--fon
 }
 
 .session-header {
-  padding: var(--space-sm) 0;
-  border-bottom: var(--border);
+  padding: 12px var(--space-sm);
+  background: var(--black);
+  color: var(--canvas);
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
+  /* Subtle tape strip at very top */
+  border-top: 3px solid rgba(255,240,0,0.6);
+}
+
+/* Agent/tool chat messages (used in AgentChat, ClearnessCommittee) */
+.message {
+  display: flex;
+  flex-direction: column;
+}
+.message-user { align-items: flex-end; }
+.message-assistant { align-items: flex-start; }
+
+.message-content {
+  max-width: 88%;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+.message-user .message-content {
+  background: var(--canvas-dark);
+  border: var(--border);
+  padding: 10px 14px;
+  transform: rotate(0.3deg);
+  box-shadow: var(--shadow-sm);
+}
+.message-assistant .message-content {
+  padding: 0;
 }
 
 .session-messages {

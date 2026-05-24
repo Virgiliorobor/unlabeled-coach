@@ -1,0 +1,55 @@
+{
+  "user_id": "1f19b42c-2c56-4fba-8ee8-d9b9d8ed871d",
+  "slug": "jay",
+  "created_at": "2026-05-23T18:46:43.868Z",
+  "last_updated": "2026-05-23T18:50:40.767Z",
+  "re_interview_due": "2026-05-30T18:46:43.868Z",
+  "background": {
+    "domain": "",
+    "domain_detail": "",
+    "years_experience": 0,
+    "transition_type": ""
+  },
+  "build": {
+    "name": "",
+    "description": "",
+    "state": "idea",
+    "shipped": [],
+    "target_user": ""
+  },
+  "goals": [],
+  "calibration": {
+    "dominant_lens": "split",
+    "resistance_pattern": "",
+    "tone": "balanced",
+    "oblique_subset": [],
+    "behavioral_signals": {
+      "avoidance_language": [],
+      "engagement_triggers": [],
+      "excuse_structure": ""
+    }
+  },
+  "program": {
+    "initial_interview_done": false,
+    "sessions_completed": 1,
+    "last_session_date": "2026-05-23T18:50:39.717Z"
+  },
+  "publishing_log": [],
+  "notifications": {
+    "email": "virgilio.robor@gmail.com",
+    "telegram_chat_id": null,
+    "channels": [
+      "email"
+    ],
+    "daily_signal_time": "08:00",
+    "timezone": "America/New_York",
+    "re_interview_reminder": true
+  },
+  "safety": {
+    "current_state": "engaged",
+    "watchful_triggers": 0,
+    "last_state_change": "2026-05-23T18:46:43.868Z",
+    "flagged_sessions": []
+  },
+  "coach_notes": ""
+}
