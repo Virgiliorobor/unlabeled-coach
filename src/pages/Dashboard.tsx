@@ -721,9 +721,14 @@ function GoalOverviewCards({
                     {PHASE_LABELS[g.phase] || g.phase}
                   </span>
                 </div>
-                <p style={{ ...SERIF, fontSize: '1rem', lineHeight: 1.3 }}>{g.title}</p>
+                <p style={{ ...SERIF, fontSize: '1rem', lineHeight: 1.3, marginBottom: g.description ? 8 : 0 }}>{g.title}</p>
+                {g.description && (
+                  <p style={{ ...SERIF, fontSize: '0.778rem', color: T.grey, lineHeight: 1.5, marginBottom: 6 }}>
+                    {g.description}
+                  </p>
+                )}
                 {(g.active_commitment || g.action_steps.pending.length > 0) && (
-                  <p style={{ ...MONO, fontSize: '0.611rem', color: gOverdue ? T.red : T.grey, marginTop: 6, textTransform: 'uppercase' }}>
+                  <p style={{ ...MONO, fontSize: '0.611rem', color: gOverdue ? T.red : T.grey, marginTop: 4, textTransform: 'uppercase' }}>
                     {gOverdue ? '⚠ overdue' : g.active_commitment ? '⚡ committed' : '■ step pending'}
                   </p>
                 )}
