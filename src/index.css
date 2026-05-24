@@ -885,6 +885,30 @@ button { cursor: pointer; border: none; background: none; font-family: var(--fon
 .phase-pip.current { background: var(--yellow); border: var(--border-thick); }
 .phase-pip.pending { background: transparent; }
 
+/* ── Early-phase guide block ────────────────────────────────── */
+.phase-guide {
+  border-left: 3px solid var(--yellow);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--canvas-dark);
+}
+
+.interview-checklist {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.interview-check {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+}
+
+.interview-check.done    { color: var(--black); }
+.interview-check.active  { color: var(--black); font-weight: bold; }
+.interview-check.pending { color: var(--grey); }
+
 /* ── Signal row: oblique card + today's prompt ───────────────── */
 .signal-row {
   display: grid;

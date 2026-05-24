@@ -169,40 +169,37 @@ export async function writeSession(session: SessionRecord): Promise<void> {
   )
 }
 
-// Returns all user slugs by listing the _database/users/ directory.
-export async function listUserSlugs(): Promise<string[]> {
+// ── DIRECTORY LISTING ────────────────────────────────────────
+
+export async function listDirectory(dirPath: string): Promise<string[]> {
   if (MODE === 'github') {
     try {
-      const dirPath = BASE_PATH ? `${BASE_PATH}/_database/users` : '_database/users'
-      const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${dirPath}?ref=${GITHUB_BRANCH}`
+      const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${githubPath(dirPath)}?ref=${GITHUB_BRANCH}`
       const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json' }
+        headers: {
+          Authorization: `Bearer ${GITHUB_TOKEN}`,
+          Accept: 'application/vnd.github.v3+json'
+        }
       })
       if (!res.ok) return []
-      const files = await res.json() as Array<{ name: string; type: string }>
-      return files
-        .filter(f => f.type === 'file' && f.name.endsWith('.json') && !f.name.startsWith('.'))
-        .map(f => f.name.replace('.json', ''))
+      const data = await res.json() as Array<{ name: string; type: string }>
+      return data.filter(f => f.type === 'file').map(f => f.name)
     } catch {
       return []
     }
   }
-  // Local mode — scan filesystem
-  const dir = path.join(process.cwd(), '_database/users')
-  if (!fs.existsSync(dir)) return []
-  return fs.readdirSync(dir)
-    .filter(f => f.endsWith('.json') && !f.startsWith('.'))
-    .map(f => f.replace('.json', ''))
+  const full = path.join(process.cwd(), dirPath)
+  if (!fs.existsSync(full)) return []
+  return fs.readdirSync(full)
 }
 
-// Finds a profile by email address. Scans all user files.
+// Find profile by email — scans all users (O(n), fine for MVP scale).
 export async function findProfileByEmail(email: string): Promise<UserProfile | null> {
-  const slugs = await listUserSlugs()
-  for (const slug of slugs) {
-    const profile = await readProfile(slug)
-    if (profile?.notifications?.email?.toLowerCase() === email.toLowerCase()) {
-      return profile
-    }
+  const files = await listDirectory('_database/users')
+  for (const file of files) {
+    if (!file.endsWith('.json')) continue
+    const profile = await readProfile(file.replace('.json', ''))
+    if (profile?.notifications?.email?.toLowerCase() === email.toLowerCase()) return profile
   }
   return null
 }
