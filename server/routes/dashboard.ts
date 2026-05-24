@@ -5,9 +5,11 @@
  * and commitments live inside each goal.
  */
 
+import crypto from 'crypto'
 import { Router, Request, Response } from 'express'
 import { requireAuth, issueSession, clearSession } from '../auth.js'
-import { readProfile, writeProfile, fileExists, findProfileByEmail } from '../storage.js'
+import { readProfile, writeProfile, fileExists, readFile, writeFile, findProfileByEmail } from '../storage.js'
+import { sendEmail } from '../notifications.js'
 import { registerUser } from '../scheduler.js'
 import { v4 as uuidv4 } from 'uuid'
 import { UserProfile, PublishingLogEntry, Portfolio, FirstMove } from '../types.js'
@@ -33,7 +35,9 @@ router.post('/auth/register', async (req: Request, res: Response) => {
   }
 
   const now = new Date()
-  const reInterviewDue = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+  // 7-day clock starts only after the interview completes (phase advances past 'interview').
+  // Set far future on registration so the re-interview banner doesn't fire prematurely.
+  const reInterviewDue = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000)
 
   const profile: UserProfile = {
     user_id: uuidv4(),
@@ -106,6 +110,7 @@ router.post('/auth/register', async (req: Request, res: Response) => {
 })
 
 // ── POST /api/auth/login ──────────────────────────────────────
+// Sends a magic link to the provided email address.
 
 router.post('/auth/login', async (req: Request, res: Response) => {
   const { email } = req.body
@@ -114,14 +119,101 @@ router.post('/auth/login', async (req: Request, res: Response) => {
     return
   }
 
-  const profile = await findProfileByEmail(email.trim().toLowerCase())
-  if (!profile) {
-    res.status(200).json({ ok: true, message: 'If that email is registered, you are now logged in.' })
+  const profile = await findProfileByEmail(email)
+
+  if (profile) {
+    const token = crypto.randomBytes(32).toString('hex')
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+
+    await writeFile(
+      `_database/auth/${token}.json`,
+      JSON.stringify({ slug: profile.slug, expires_at: expiresAt.toISOString(), used: false }),
+      `auth token for ${profile.slug}`
+    )
+
+    const appUrl = process.env.CLIENT_URL || 'http://localhost:3001'
+    const loginUrl = `${appUrl}/api/auth/verify?token=${token}`
+
+    const sent = await sendEmail({
+      to: email,
+      subject: 'Your Unlabeled sign-in link',
+      html: `
+        <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; padding: 40px 24px; color: #111;">
+          <p style="font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #888; margin-bottom: 32px;">
+            Unlabeled
+          </p>
+          <p style="font-size: 20px; line-height: 1.6; margin-bottom: 32px;">
+            Here's your sign-in link. It expires in 15 minutes.
+          </p>
+          <p style="margin-bottom: 32px;">
+            <a href="${loginUrl}" style="background: #111; color: #F4F4F0; padding: 12px 24px; text-decoration: none; font-family: 'Courier New', monospace; font-size: 0.85rem; letter-spacing: 0.05em;">
+              SIGN IN →
+            </a>
+          </p>
+          <p style="font-size: 13px; color: #666; border-top: 1px solid #eee; padding-top: 20px;">
+            If you didn't request this, ignore this email.
+          </p>
+        </div>
+      `,
+      text: `Sign in to Unlabeled: ${loginUrl}\n\nThis link expires in 15 minutes. If you didn't request this, ignore this email.`
+    })
+
+    if (!sent) {
+      console.warn(`[auth] Magic link generated for ${profile.slug} but email delivery failed (RESEND_API_KEY configured?)`)
+    }
+  }
+
+  // Always return 200 — don't reveal whether the email is registered
+  res.json({ ok: true, message: "If an account exists for that email, a sign-in link is on its way." })
+})
+
+// ── GET /api/auth/verify ──────────────────────────────────────
+// Validates a magic link token and issues a session cookie.
+
+router.get('/auth/verify', async (req: Request, res: Response) => {
+  const { token } = req.query
+  if (!token || typeof token !== 'string') {
+    res.status(400).send('Invalid or missing token.')
     return
   }
 
-  issueSession(res, profile.user_id, profile.slug)
-  res.json({ ok: true, slug: profile.slug })
+  const raw = await readFile(`_database/auth/${token}.json`)
+  if (!raw) {
+    res.status(401).send('Sign-in link not found or already used.')
+    return
+  }
+
+  const { slug, expires_at, used } = JSON.parse(raw)
+
+  if (used) {
+    res.status(401).send('This sign-in link has already been used.')
+    return
+  }
+
+  if (new Date() > new Date(expires_at)) {
+    res.status(401).send('This sign-in link has expired. Request a new one.')
+    return
+  }
+
+  // Invalidate the token (single-use)
+  await writeFile(
+    `_database/auth/${token}.json`,
+    JSON.stringify({ slug, expires_at, used: true, used_at: new Date().toISOString() }),
+    `auth token used: ${slug}`
+  )
+
+  const profile = await readProfile(slug)
+  if (!profile) {
+    res.status(404).send('Account not found.')
+    return
+  }
+
+  issueSession(res, profile.user_id, slug)
+
+  const frontendUrl = process.env.NODE_ENV === 'production'
+    ? (process.env.CLIENT_URL || '/')
+    : 'http://localhost:5173'
+  res.redirect(frontendUrl)
 })
 
 // ── POST /api/auth/dev-login ──────────────────────────────────
