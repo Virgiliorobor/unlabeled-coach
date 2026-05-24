@@ -194,15 +194,19 @@ export default function AgentChat({ agentId, onBack }: Props) {
           </div>
         )}
         {messages.map((m, i) => (
-          <div key={i} className={`message message-${m.role}`}>
-            <div className="message-content">
+          <div key={i} className={`message-block ${m.role === 'user' ? 'user-message' : 'coach-message'}`}>
+            <span className="message-label label" style={{ color: 'var(--grey-mid)' }}>
+              {m.role === 'user' ? 'you' : agent.author.toLowerCase()}
+            </span>
+            <p className="message-text">
               {m.role === 'assistant' ? renderMessage(m.content) : m.content}
-            </div>
+            </p>
           </div>
         ))}
         {sending && (
-          <div className="message message-assistant">
-            <div className="message-content" style={{ color: 'var(--grey-mid)' }}>…</div>
+          <div className="message-block coach-message">
+            <span className="message-label label" style={{ color: 'var(--grey-mid)' }}>{agent.author.toLowerCase()}</span>
+            <span className="message-text" style={{ color: 'var(--grey-mid)' }}>…</span>
           </div>
         )}
         <div ref={bottomRef} />

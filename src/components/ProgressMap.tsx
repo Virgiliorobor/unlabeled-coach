@@ -75,9 +75,7 @@ export default function ProgressMap({
   const completedGoals = goals.filter(g => g.status === 'completed')
 
   return (
-    <div style={{
-      border: '2px solid var(--black)',
-      boxShadow: '4px 4px 0px var(--black)',
+    <div className="tape-border" style={{
       marginBottom: 'var(--space-lg)',
       background: 'var(--bg)',
     }}>

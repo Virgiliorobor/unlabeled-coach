@@ -68,14 +68,48 @@ export default function Onboarding({ onComplete }: Props) {
   if (step === 'welcome') {
     return (
       <div className="sanctuary-page">
-        <div style={{ marginBottom: 'var(--space-xl)' }}>
-          <span className="sanctuary-wordmark">Unlabeled</span>
+
+        {/* Label machine wordmark + intake marker */}
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 'var(--space-lg)' }}>
+          <span className="label-machine" style={{ fontSize: '1.05rem' }}>Unlabeled</span>
+          <span style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.45rem',
+            letterSpacing: '0.2em',
+            color: 'rgba(0,0,0,0.3)',
+            textTransform: 'uppercase',
+            paddingBottom: 2,
+          }}>
+            intake · vol. I
+          </span>
         </div>
 
-        <h1 className="sanctuary-headline">
-          You're already doing the work.<br />
-          You just haven't claimed it yet.
-        </h1>
+        {/* Thin ruled separator */}
+        <div style={{ borderTop: '1px solid rgba(0,0,0,0.15)', marginBottom: 'var(--space-md)' }} />
+
+        {/* Split headline */}
+        <div style={{ marginBottom: 'var(--space-md)' }}>
+          <div style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '3rem',
+            fontWeight: 'normal',
+            lineHeight: 1.08,
+            letterSpacing: '-0.02em',
+            marginBottom: '0.45em',
+          }}>
+            You're already doing the work.
+          </div>
+          <div style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '1.55rem',
+            fontStyle: 'italic',
+            lineHeight: 1.3,
+            color: 'var(--grey)',
+            paddingLeft: '0.15em',
+          }}>
+            You just haven't claimed it yet.
+          </div>
+        </div>
 
         <p className="sanctuary-body">
           A structured self-reflection coach for solo builders in identity transition.
@@ -83,14 +117,30 @@ export default function Onboarding({ onComplete }: Props) {
           what you should be doing and you're still not doing it.
         </p>
 
-        <button className="sanctuary-cta" onClick={() => setStep('register')}>
-          Begin
-        </button>
+        {/* CTA with handwritten annotation */}
+        <div style={{ position: 'relative', display: 'inline-block', marginTop: 'var(--space-sm)' }}>
+          <span style={{
+            position: 'absolute',
+            top: -26,
+            left: -8,
+            fontFamily: 'var(--font-marker)',
+            fontSize: '0.75rem',
+            color: 'var(--grey)',
+            transform: 'rotate(-4deg)',
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap',
+          }}>
+            start here
+          </span>
+          <button className="sanctuary-cta" onClick={() => setStep('register')}>
+            Begin
+          </button>
+        </div>
 
         <p style={{ marginTop: 'var(--space-md)', fontSize: '0.85rem' }}>
           <button
             onClick={() => { setStep('login'); setError('') }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontFamily: 'inherit', fontSize: 'inherit', color: 'var(--grey)' }}
           >
             Already have an account? Sign in
           </button>
