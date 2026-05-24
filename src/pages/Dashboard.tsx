@@ -90,6 +90,8 @@ interface Props {
   onStartSession: () => void
   onPhaseChange?: (phase: string) => void
   onEnterAgent?: (id: AgentId) => void
+  onEnterClearness?: () => void
+  onEnterSimplify?: () => void
 }
 
 function formatDate(iso: string): string {
@@ -126,7 +128,7 @@ function horizonLabel(h: string): string {
   return labels[h] || h
 }
 
-export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnterAgent }: Props) {
+export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnterAgent, onEnterClearness, onEnterSimplify }: Props) {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [expandedGoal, setExpandedGoal] = useState<string | null>(null)
@@ -641,6 +643,69 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
             ))}
           </div>
         )}
+      </div>
+
+      {/* Tools */}
+      <div style={{ marginTop: 'var(--space-lg)' }}>
+        <div style={{
+          borderBottom: '2px solid var(--black)', paddingBottom: 6, marginBottom: 12,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
+        }}>
+          <span className="label" style={{ fontSize: '0.65rem', letterSpacing: '0.12em' }}>TOOLS</span>
+          <span className="mono" style={{ fontSize: '0.55rem', color: 'var(--grey-mid)' }}>standalone utilities</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          {[
+            {
+              label: 'Clearness Committee',
+              sub: 'Quaker process',
+              desc: 'Bring a dilemma. Nine questions, no advice. Two observations at the end. Clarity arrives on its own.',
+              onClick: onEnterClearness,
+            },
+            {
+              label: 'Task Simplifier',
+              sub: 'Making Ideas Happen',
+              desc: 'Paste the task that feels too big. Get concrete action steps, a first move, and the blockers to watch for.',
+              onClick: onEnterSimplify,
+            },
+          ].map(tool => (
+            <div
+              key={tool.label}
+              style={{
+                border: '2px solid var(--black)',
+                boxShadow: '3px 3px 0px var(--black)',
+                padding: '12px 14px',
+                background: 'var(--bg)',
+                cursor: 'pointer',
+                transition: 'box-shadow 0.1s, transform 0.1s',
+              }}
+              onClick={tool.onClick}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.boxShadow = '1px 1px 0px var(--black)'
+                ;(e.currentTarget as HTMLElement).style.transform = 'translate(2px,2px)'
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.boxShadow = '3px 3px 0px var(--black)'
+                ;(e.currentTarget as HTMLElement).style.transform = 'translate(0,0)'
+              }}
+            >
+              <div style={{ marginBottom: 4 }}>
+                <span className="mono" style={{ fontSize: '0.55rem', color: 'var(--grey-mid)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  {tool.sub}
+                </span>
+              </div>
+              <div style={{ fontWeight: 600, fontSize: '0.75rem', marginBottom: 6, lineHeight: 1.2 }}>
+                {tool.label}
+              </div>
+              <p style={{ fontSize: '0.65rem', color: 'var(--grey-mid)', lineHeight: 1.4, margin: 0 }}>
+                {tool.desc}
+              </p>
+              <div style={{ marginTop: 10, textAlign: 'right' }}>
+                <span className="mono" style={{ fontSize: '0.6rem', letterSpacing: '0.1em' }}>OPEN →</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Agent Library */}

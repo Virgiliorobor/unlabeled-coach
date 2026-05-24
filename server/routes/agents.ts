@@ -17,6 +17,14 @@ const MODEL = process.env.ANTHROPIC_MODEL || 'claude-opus-4-5'
 type AgentId = 'creative-act' | 'make-ideas-happen' | 'show-your-work' | 'unstuck'
 const VALID_AGENTS: AgentId[] = ['creative-act', 'make-ideas-happen', 'show-your-work', 'unstuck']
 
+const TOOLS_CONTEXT = `## AVAILABLE TOOLS ON THE DASHBOARD
+You can suggest these tools at any time — they are accessible from the user's dashboard.
+
+- **Clearness Committee**: A structured 9-question process (3 surface, 3 medium, 3 deep) followed by 2 mirror observations. No advice given — only questions. Use this when the user is facing a genuine dilemma with weight, when they're pulled in multiple directions, or when the real question hasn't been named yet. Say: "There's a Clearness Committee tool on your dashboard — it might be exactly right for this."
+
+- **Task Simplifier**: Takes one complex or vague task and breaks it into concrete action steps with a clear first move and potential blockers. Use this when the user's next step feels too big to start, when they're circling an action without taking it, or when "I need to figure out X" keeps appearing. Say: "The Task Simplifier on your dashboard is built for exactly this — it'll give you a first move you can do in the next 30 minutes."
+`
+
 function buildUserContext(profile: Awaited<ReturnType<typeof readProfile>>): string {
   if (!profile) return ''
   const activeGoals = (profile.goals || []).filter(g => g.status === 'active')
@@ -60,6 +68,8 @@ ${book}
 
 ## CURATED PASSAGES
 ${quotes}
+
+${TOOLS_CONTEXT}
 `
     }
 
@@ -93,6 +103,8 @@ ${book}
 
 ## CURATED PASSAGES
 ${quotes}
+
+${TOOLS_CONTEXT}
 `
     }
 
@@ -125,6 +137,8 @@ ${book}
 
 ## CURATED PASSAGES
 ${quotes}
+
+${TOOLS_CONTEXT}
 `
     }
 
@@ -163,6 +177,8 @@ ${diagnosis}
 
 ## CURATED PASSAGES
 ${quotes}
+
+${TOOLS_CONTEXT}
 `
     }
   }

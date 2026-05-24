@@ -7,6 +7,7 @@ import sessionRouter from './routes/session.js'
 import dashboardRouter from './routes/dashboard.js'
 import communityRouter from './routes/community.js'
 import agentsRouter from './routes/agents.js'
+import toolsRouter from './routes/tools.js'
 
 const app = express()
 const PORT = parseInt(process.env.PORT || '3001')
@@ -28,6 +29,7 @@ app.use('/api', dashboardRouter)       // auth + dashboard
 app.use('/api/session', sessionRouter)
 app.use('/api/community', communityRouter)
 app.use('/api/agents', agentsRouter)
+app.use('/api/tools', toolsRouter)
 
 // ── HEALTH CHECK ─────────────────────────────────────────────
 

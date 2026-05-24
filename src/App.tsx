@@ -3,8 +3,10 @@ import Dashboard from './pages/Dashboard'
 import Session from './pages/Session'
 import Onboarding from './pages/Onboarding'
 import AgentChat, { AgentId } from './pages/AgentChat'
+import ClearnessCommittee from './pages/ClearnessCommittee'
+import TaskSimplifier from './pages/TaskSimplifier'
 
-type AppView = 'loading' | 'onboarding' | 'dashboard' | 'session' | 'agent'
+type AppView = 'loading' | 'onboarding' | 'dashboard' | 'session' | 'agent' | 'clearness' | 'simplify'
 type Quadrant = 'sanctuary' | 'sandbox' | 'system' | 'workbench'
 
 interface AppUser {
@@ -127,12 +129,22 @@ export default function App() {
     )
   }
 
+  if (view === 'clearness') {
+    return <ClearnessCommittee onBack={() => setView('dashboard')} />
+  }
+
+  if (view === 'simplify') {
+    return <TaskSimplifier onBack={() => setView('dashboard')} />
+  }
+
   return (
     <Dashboard
       slug={user?.slug || ''}
       onStartSession={handleStartSession}
       onPhaseChange={setCurrentPhase}
       onEnterAgent={(id: AgentId) => { setActiveAgentId(id); setView('agent') }}
+      onEnterClearness={() => setView('clearness')}
+      onEnterSimplify={() => setView('simplify')}
     />
   )
 }
