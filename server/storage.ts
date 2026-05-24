@@ -169,6 +169,41 @@ export async function writeSession(session: SessionRecord): Promise<void> {
   )
 }
 
+// ── DIRECTORY LISTING ────────────────────────────────────────
+
+export async function listDirectory(dirPath: string): Promise<string[]> {
+  if (MODE === 'github') {
+    try {
+      const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${githubPath(dirPath)}?ref=${GITHUB_BRANCH}`
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${GITHUB_TOKEN}`,
+          Accept: 'application/vnd.github.v3+json'
+        }
+      })
+      if (!res.ok) return []
+      const data = await res.json() as Array<{ name: string; type: string }>
+      return data.filter(f => f.type === 'file').map(f => f.name)
+    } catch {
+      return []
+    }
+  }
+  const full = path.join(process.cwd(), dirPath)
+  if (!fs.existsSync(full)) return []
+  return fs.readdirSync(full)
+}
+
+// Find profile by email — scans all users (O(n), fine for MVP scale).
+export async function findProfileByEmail(email: string): Promise<UserProfile | null> {
+  const files = await listDirectory('_database/users')
+  for (const file of files) {
+    if (!file.endsWith('.json')) continue
+    const profile = await readProfile(file.replace('.json', ''))
+    if (profile?.notifications.email === email) return profile
+  }
+  return null
+}
+
 // ── ICM FILE LOADER ──────────────────────────────────────────
 // ICM files are always read from local filesystem (committed to repo).
 // They never change at runtime — they are the coach's identity.

@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import path from 'path'
 import { startScheduler, loadUserRegistry } from './scheduler.js'
+import { listDirectory } from './storage.js'
 import sessionRouter from './routes/session.js'
 import dashboardRouter from './routes/dashboard.js'
 import communityRouter from './routes/community.js'
@@ -75,8 +76,11 @@ async function start() {
     console.warn('[startup] ⚠ Storage mode is LOCAL — data will be lost on redeploy. Set STORAGE_MODE=github.')
   }
 
-  // Load user registry for scheduler
-  loadUserRegistry([])
+  // Load user registry from existing profiles on disk/GitHub
+  const userFiles = await listDirectory('_database/users')
+  const slugs = userFiles.filter(f => f.endsWith('.json')).map(f => f.replace('.json', ''))
+  loadUserRegistry(slugs)
+  console.log(`[startup] Scheduler registry: ${slugs.length} user(s) loaded`)
 
   // Start the notification scheduler
   startScheduler()
