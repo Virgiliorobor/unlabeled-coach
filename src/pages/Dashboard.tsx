@@ -97,6 +97,16 @@ const HORIZON_LABELS: Record<string, string> = {
   thirty_days: '30 days', ninety_days: '90 days', twelve_months: '12 months', ongoing: 'Ongoing',
 }
 
+function quadrantFromPhase(phase: string): 'sanctuary' | 'sandbox' | 'system' | 'workbench' {
+  switch (phase) {
+    case 'interview': case 'intake': return 'sanctuary'
+    case 'reflection': case 'clarity': return 'sandbox'
+    case 'resistance': return 'system'
+    case 'commitment': case 'accountability': return 'workbench'
+    default: return 'sanctuary'
+  }
+}
+
 // ── Main component ─────────────────────────────────────────────
 export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnterAgent, onEnterClearness, onEnterSimplify }: Props) {
   const [data, setData] = useState<DashboardData | null>(null)
@@ -185,6 +195,7 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
   const primaryPhase = activeGoals.length > 0
     ? [...activeGoals].sort((a, b) => new Date(b.last_touched).getTime() - new Date(a.last_touched).getTime())[0].phase
     : 'intake'
+  const quadrant = quadrantFromPhase(primaryPhase)
 
   const goalRows = goals.map(g => ({
     goal_id: g.goal_id, title: g.title, horizon: g.horizon, phase: g.phase, status: g.status,
@@ -311,8 +322,39 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
           </div>
         </header>
 
-        {/* Scrollable main content */}
-        <main style={{ flex: 1, overflowY: 'auto', padding: '28px 28px 80px' }}>
+        {/* Scrollable main content — phase-adaptive */}
+        <main style={{
+          flex: 1,
+          ...(quadrant === 'sanctuary' ? {
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            cursor: 'crosshair', padding: '64px 48px',
+          } : {
+            overflowY: 'auto', padding: '28px 28px 80px',
+            ...(quadrant === 'system' ? {
+              backgroundImage: 'linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px)',
+              backgroundSize: '24px 24px',
+            } : quadrant === 'workbench' ? {
+              backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.07) 1px, transparent 1px)',
+              backgroundSize: '20px 20px',
+            } : {}),
+          }),
+        }}>
+
+          {quadrant === 'sanctuary' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <p style={{ ...SERIF, fontSize: '2.2rem', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', maxWidth: 500, marginBottom: 16 }}>
+                {profile.initial_interview_done ? 'What are you working on?' : 'Who are you becoming?'}
+              </p>
+              <p style={{ ...SERIF, fontSize: '1rem', color: T.grey, fontStyle: 'italic', textAlign: 'center', marginBottom: 52 }}>
+                {profile.initial_interview_done
+                  ? 'Your goals will appear after your first session.'
+                  : 'Start a session to begin your intake interview.'}
+              </p>
+              <DymoBtn onClick={onStartSession}>
+                {profile.initial_interview_done ? 'Start session' : 'Begin intake'}
+              </DymoBtn>
+            </div>
+          ) : <>
 
           {/* Progress map */}
           <div style={{ marginBottom: 28 }}>
@@ -329,8 +371,10 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 24, alignItems: 'start' }}>
 
             {/* ── GOALS column ────────────────────────────── */}
-            <div>
-              <SectionLabel>Goals</SectionLabel>
+            <div className={quadrant === 'workbench' ? 'tape-border' : undefined}>
+              <SectionLabel>
+                {quadrant === 'workbench' ? 'Obligation manifest' : quadrant === 'system' ? 'Clarity log' : 'Goals'}
+              </SectionLabel>
 
               {activeGoals.length === 0 ? (
                 <p style={{ ...MONO, fontSize: '0.55rem', color: T.grey, lineHeight: 1.7 }}>
@@ -640,6 +684,7 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
 
             </div>
           </div>
+          </>}
         </main>
       </div>
     </div>
