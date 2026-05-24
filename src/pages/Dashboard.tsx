@@ -97,6 +97,16 @@ const HORIZON_LABELS: Record<string, string> = {
   thirty_days: '30 days', ninety_days: '90 days', twelve_months: '12 months', ongoing: 'Ongoing',
 }
 
+function quadrantFromPhase(phase: string): 'sanctuary' | 'sandbox' | 'system' | 'workbench' {
+  switch (phase) {
+    case 'interview': case 'intake': return 'sanctuary'
+    case 'reflection': case 'clarity': return 'sandbox'
+    case 'resistance': return 'system'
+    case 'commitment': case 'accountability': return 'workbench'
+    default: return 'sanctuary'
+  }
+}
+
 // ── Main component ─────────────────────────────────────────────
 export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnterAgent, onEnterClearness, onEnterSimplify }: Props) {
   const [data, setData] = useState<DashboardData | null>(null)
@@ -185,6 +195,11 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
   const primaryPhase = activeGoals.length > 0
     ? [...activeGoals].sort((a, b) => new Date(b.last_touched).getTime() - new Date(a.last_touched).getTime())[0].phase
     : 'intake'
+  const quadrant = quadrantFromPhase(primaryPhase)
+  const layoutMode: 'sanctuary' | 'reflection' | 'grid' =
+    quadrant === 'sanctuary' ? 'sanctuary' :
+    primaryPhase === 'reflection' ? 'reflection' :
+    'grid'
 
   const goalRows = goals.map(g => ({
     goal_id: g.goal_id, title: g.title, horizon: g.horizon, phase: g.phase, status: g.status,
@@ -311,8 +326,60 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
           </div>
         </header>
 
-        {/* Scrollable main content */}
-        <main style={{ flex: 1, overflowY: 'auto', padding: '28px 28px 80px' }}>
+        {/* Scrollable main content — phase-adaptive */}
+        <main style={{
+          flex: 1,
+          ...(quadrant === 'sanctuary' ? {
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            cursor: 'crosshair', padding: '64px 48px',
+          } : {
+            overflowY: 'auto', padding: '28px 28px 80px',
+            ...(quadrant === 'system' ? {
+              backgroundImage: 'linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px)',
+              backgroundSize: '24px 24px',
+            } : quadrant === 'workbench' ? {
+              backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.07) 1px, transparent 1px)',
+              backgroundSize: '20px 20px',
+            } : {}),
+          }),
+        }}>
+
+          {layoutMode === 'sanctuary' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <p style={{ ...SERIF, fontSize: '2.2rem', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', maxWidth: 500, marginBottom: 16 }}>
+                {profile.initial_interview_done ? 'What are you working on?' : 'Who are you becoming?'}
+              </p>
+              <p style={{ ...SERIF, fontSize: '1rem', color: T.grey, fontStyle: 'italic', textAlign: 'center', marginBottom: 52 }}>
+                {profile.initial_interview_done
+                  ? 'Your goals will appear after your first session.'
+                  : 'Start a session to begin your intake interview.'}
+              </p>
+              <DymoBtn onClick={onStartSession}>
+                {profile.initial_interview_done ? 'Start session' : 'Begin intake'}
+              </DymoBtn>
+            </div>
+          ) : layoutMode === 'reflection' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', animation: 'fadeIn 0.8s ease' }}>
+              <p style={{ ...SERIF, fontSize: '2rem', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', maxWidth: 520, marginBottom: 36, animation: 'fadeIn 0.9s 0.15s ease both' }}>
+                What are you noticing right now?
+              </p>
+              <textarea
+                placeholder="type into the void"
+                style={{
+                  ...SERIF, fontStyle: 'italic', fontSize: '1.1rem', lineHeight: 1.8,
+                  width: '100%', maxWidth: 520, minHeight: 160,
+                  background: 'transparent', border: 'none', outline: 'none',
+                  borderBottom: `1px solid ${T.greyLight}`,
+                  resize: 'none', padding: '8px 0', color: T.black,
+                  textAlign: 'center',
+                  animation: 'fadeIn 1s 0.3s ease both',
+                }}
+              />
+              <p style={{ ...MONO, fontSize: '0.4rem', color: T.greyLight, textTransform: 'uppercase', letterSpacing: '0.12em', marginTop: 16 }}>
+                nothing is saved
+              </p>
+            </div>
+          ) : <>
 
           {/* Progress map */}
           <div style={{ marginBottom: 28 }}>
@@ -329,10 +396,14 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 24, alignItems: 'start' }}>
 
             {/* ── GOALS column ────────────────────────────── */}
-            <div>
-              <SectionLabel>Goals</SectionLabel>
+            <div className={quadrant === 'workbench' ? 'tape-border' : undefined}>
+              <SectionLabel>
+                {quadrant === 'workbench' ? 'Obligation manifest' : quadrant === 'system' ? 'Clarity log' : 'Goals'}
+              </SectionLabel>
 
-              {activeGoals.length === 0 ? (
+              {quadrant === 'system' ? (
+                <BentoGoals goals={activeGoals} sessionsCompleted={profile.sessions_completed} />
+              ) : activeGoals.length === 0 ? (
                 <p style={{ ...MONO, fontSize: '0.55rem', color: T.grey, lineHeight: 1.7 }}>
                   {profile.initial_interview_done
                     ? 'No active goals — start a session to add your first goal.'
@@ -640,6 +711,7 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
 
             </div>
           </div>
+          </>}
         </main>
       </div>
     </div>
@@ -647,6 +719,70 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
 }
 
 // ── SHARED SUBCOMPONENTS ────────────────────────────────────────
+
+function BentoGoals({ goals, sessionsCompleted }: { goals: GoalData[]; sessionsCompleted: number }) {
+  if (goals.length === 0) return (
+    <div style={{ borderTop: `1px solid ${T.black}`, borderLeft: `1px solid ${T.black}` }}>
+      <div style={{ borderRight: `1px solid ${T.black}`, borderBottom: `1px solid ${T.black}`, padding: '20px 24px' }}>
+        <p style={{ ...MONO, fontSize: '0.52rem', color: T.grey }}>No active goals — start a session to define your system.</p>
+      </div>
+    </div>
+  )
+  const primary = goals[0]
+  const isOverdue = primary.active_commitment ? daysUntil(primary.active_commitment.due_date) <= 0 : false
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 0, borderTop: `1px solid ${T.black}`, borderLeft: `1px solid ${T.black}` }}>
+      {/* Primary goal — 8 cols */}
+      <div style={{ gridColumn: '1 / 9', borderRight: `1px solid ${T.black}`, borderBottom: `1px solid ${T.black}`, padding: '20px 24px', background: T.white, position: 'relative' }}>
+        {isOverdue && <div style={{ position: 'absolute', top: 0, right: 0, width: 0, height: 0, borderTop: `24px solid ${T.red}`, borderLeft: '24px solid transparent' }} />}
+        <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
+          <span style={{ ...MONO, fontSize: '0.42rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '2px 6px', background: T.black, color: T.ivory }}>{HORIZON_LABELS[primary.horizon] || primary.horizon}</span>
+          <span style={{ ...MONO, fontSize: '0.42rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '2px 6px', color: T.grey, border: `1px solid ${T.greyLight}` }}>{PHASE_LABELS[primary.phase] || primary.phase}</span>
+        </div>
+        <p style={{ ...SERIF, fontSize: '1.05rem', lineHeight: 1.35, marginBottom: primary.description ? 8 : 0 }}>{primary.title}</p>
+        {primary.description && <p style={{ ...SERIF, fontSize: '0.83rem', color: T.grey, lineHeight: 1.4, marginBottom: 12 }}>{primary.description.length > 140 ? primary.description.slice(0, 140) + '…' : primary.description}</p>}
+        {primary.action_steps.pending.length > 0 && (
+          <div style={{ paddingTop: 10, borderTop: `1px solid ${T.greyLight}` }}>
+            <span style={{ ...MONO, fontSize: '0.38rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 5 }}>Current exercise</span>
+            <p style={{ ...SERIF, fontSize: '0.88rem', lineHeight: 1.4 }}>{primary.action_steps.pending[0].text}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Metrics — 4 cols */}
+      <div style={{ gridColumn: '9 / 13', borderRight: `1px solid ${T.black}`, borderBottom: `1px solid ${T.black}`, padding: '16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div>
+          <span style={{ ...MONO, fontSize: '0.38rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 3 }}>Phase</span>
+          <span style={{ ...MONO, fontSize: '0.52rem', fontWeight: 700, textTransform: 'uppercase' }}>{PHASE_LABELS[primary.phase] || primary.phase}</span>
+        </div>
+        <div>
+          <span style={{ ...MONO, fontSize: '0.38rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 3 }}>Days in phase</span>
+          <span style={{ ...MONO, fontSize: '0.52rem', fontWeight: 700 }}>{primary.phase_progress.days_elapsed}</span>
+        </div>
+        {primary.active_commitment && (
+          <div>
+            <span style={{ ...MONO, fontSize: '0.38rem', color: isOverdue ? T.red : T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 3 }}>{isOverdue ? '⚠ Overdue' : 'Commitment'}</span>
+            <p style={{ ...MONO, fontSize: '0.42rem', color: isOverdue ? T.red : T.black, lineHeight: 1.4 }}>{primary.active_commitment.text.length > 80 ? primary.active_commitment.text.slice(0, 80) + '…' : primary.active_commitment.text}</p>
+          </div>
+        )}
+        <div>
+          <span style={{ ...MONO, fontSize: '0.38rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 3 }}>Sessions</span>
+          <span style={{ ...MONO, fontSize: '0.52rem', fontWeight: 700 }}>{sessionsCompleted}</span>
+        </div>
+      </div>
+
+      {/* Additional goals — 6 cols each */}
+      {goals.slice(1).map((g, idx) => (
+        <div key={g.goal_id} style={{ gridColumn: idx % 2 === 0 ? '1 / 7' : '7 / 13', borderRight: `1px solid ${T.black}`, borderBottom: `1px solid ${T.black}`, padding: '14px 16px', background: T.white }}>
+          <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
+            <span style={{ ...MONO, fontSize: '0.38rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '2px 5px', background: T.black, color: T.ivory }}>{HORIZON_LABELS[g.horizon] || g.horizon}</span>
+          </div>
+          <p style={{ ...SERIF, fontSize: '0.88rem', lineHeight: 1.35 }}>{g.title}</p>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 function SectionLabel({ children, small, inline }: { children: React.ReactNode; small?: boolean; inline?: boolean }) {
   const style: React.CSSProperties = {
