@@ -21,7 +21,16 @@ const SERIF: React.CSSProperties = {
   fontFamily: "'EB Garamond', Georgia, serif",
 }
 
-// ── Nav phases — from all Stitch screens ──────────────────────
+// Font scale at html { font-size: 18px }:
+// 0.611rem = 11px   ← DYMO labels
+// 0.667rem = 12px   ← tags, captions
+// 0.778rem = 14px   ← secondary body
+// 0.889rem = 16px   ← body-small
+// 1rem     = 18px   ← body
+// 1.333rem = 24px   ← subheads
+// 1.778rem = 32px   ← page headers
+// 2.667rem = 48px   ← display
+
 const NAV_ITEMS = [
   { id: 'intake',         label: 'Intake',         icon: '○' },
   { id: 'reflection',     label: 'Reflection',      icon: '◎' },
@@ -31,7 +40,6 @@ const NAV_ITEMS = [
   { id: 'accountability', label: 'Accountability',  icon: '✓' },
 ]
 
-// ── Interfaces ─────────────────────────────────────────────────
 interface ActionStep {
   step_id: string; text: string; assigned_at: string; due_date: string
   status: 'pending' | 'done' | 'skipped'; coach_reason: string
@@ -76,7 +84,8 @@ interface Props {
   onEnterSimplify?: () => void
 }
 
-// ── Helpers ────────────────────────────────────────────────────
+type InnerView = 'overview' | 'goal' | 'tools'
+
 function fmt(iso: string) {
   if (!iso) return '—'
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
@@ -111,7 +120,8 @@ function quadrantFromPhase(phase: string): 'sanctuary' | 'sandbox' | 'system' | 
 export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnterAgent, onEnterClearness, onEnterSimplify }: Props) {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [expandedGoal, setExpandedGoal] = useState<string | null>(null)
+  const [innerView, setInnerView] = useState<InnerView>('overview')
+  const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null)
   const [completingStep, setCompletingStep] = useState<string | null>(null)
   const [completionNote, setCompletionNote] = useState('')
   const [skippingStep, setSkippingStep] = useState<string | null>(null)
@@ -133,7 +143,7 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
           new Date(b.last_touched).getTime() - new Date(a.last_touched).getTime()
         )[0]
         onPhaseChange?.(primary.phase)
-        if (!expandedGoal) setExpandedGoal(primary.goal_id)
+        if (!selectedGoalId) setSelectedGoalId(primary.goal_id)
       } else {
         onPhaseChange?.('interview')
       }
@@ -185,21 +195,26 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
 
   if (loading) return (
     <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', background: T.ivory }}>
-      <span style={{ ...MONO, fontSize: '0.55rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: T.grey }}>Loading…</span>
+      <span style={{ ...MONO, fontSize: '0.778rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: T.grey }}>Loading…</span>
     </div>
   )
   if (!data) return null
 
   const { profile, goals, publishing_log } = data
   const activeGoals = goals.filter(g => g.status === 'active')
-  const primaryPhase = activeGoals.length > 0
-    ? [...activeGoals].sort((a, b) => new Date(b.last_touched).getTime() - new Date(a.last_touched).getTime())[0].phase
-    : 'intake'
+  const primaryGoal = activeGoals.length > 0
+    ? [...activeGoals].sort((a, b) => new Date(b.last_touched).getTime() - new Date(a.last_touched).getTime())[0]
+    : null
+  const primaryPhase = primaryGoal?.phase || 'intake'
   const quadrant = quadrantFromPhase(primaryPhase)
   const layoutMode: 'sanctuary' | 'reflection' | 'grid' =
     quadrant === 'sanctuary' ? 'sanctuary' :
     primaryPhase === 'reflection' ? 'reflection' :
     'grid'
+
+  const selectedGoal = selectedGoalId
+    ? activeGoals.find(g => g.goal_id === selectedGoalId) || null
+    : null
 
   const goalRows = goals.map(g => ({
     goal_id: g.goal_id, title: g.title, horizon: g.horizon, phase: g.phase, status: g.status,
@@ -210,63 +225,67 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
   }))
 
   const tools = [
-    { label: 'Clearness Committee', sub: 'Quaker practice', desc: 'Nine questions, no advice. Clarity arrives on its own.', onClick: onEnterClearness },
+    { label: 'Clearness Committee', sub: 'Quaker practice', desc: 'Nine questions, no advice.', onClick: onEnterClearness },
     { label: 'Task Simplifier', sub: 'Making Ideas Happen', desc: 'Find the first move buried inside the task.', onClick: onEnterSimplify },
   ]
 
+  const phaseHeader = primaryPhase === 'commitment' ? 'Workbench · Commitment'
+    : primaryPhase === 'accountability' ? 'Workbench · Accountability'
+    : primaryPhase === 'resistance' ? 'System · Resistance'
+    : primaryPhase === 'clarity' ? 'Sandbox · Clarity'
+    : PHASE_LABELS[primaryPhase] || 'Dashboard'
+
   return (
-    // ── ROOT: full-viewport flex row — matches all Stitch screens ──
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: T.ivory }}>
 
-      {/* ── LEFT SIDEBAR ─────────────────────────────────────── */}
+      {/* ── LEFT SIDEBAR ──────────────────────────────────────── */}
       <aside style={{
-        width: 240, flexShrink: 0,
+        width: 220, flexShrink: 0,
         height: '100%', display: 'flex', flexDirection: 'column',
         borderRight: `2px solid ${T.black}`,
         background: T.ivory,
       }}>
-        {/* Brand header */}
-        <div style={{ padding: '20px 16px', borderBottom: `1px solid ${T.greyLight}` }}>
+        {/* Brand */}
+        <div style={{ padding: '20px 16px 16px', borderBottom: `1px solid ${T.greyLight}` }}>
           <div style={{
-            ...MONO, fontSize: '0.55rem', fontWeight: 700,
+            ...MONO, fontSize: '0.611rem', fontWeight: 700,
             letterSpacing: '0.22em', textTransform: 'uppercase',
             background: T.red, color: T.white,
-            padding: '5px 10px', display: 'inline-block',
+            padding: '6px 10px', display: 'inline-block',
             boxShadow: `2px 2px 0px ${T.black}`,
           }}>
             Unlabeled
           </div>
-          <p style={{ ...MONO, fontSize: '0.42rem', color: T.grey, marginTop: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-            Phase: {PHASE_LABELS[primaryPhase] || 'Intake'}
+          <p style={{ ...MONO, fontSize: '0.611rem', color: T.grey, marginTop: 10, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            {PHASE_LABELS[primaryPhase] || 'Intake'}
           </p>
         </div>
 
-        {/* Phase navigation — yellow active state from all Stitch screens */}
+        {/* Phase nav */}
         <nav style={{ flex: 1, padding: '8px 0', overflowY: 'auto' }}>
           {NAV_ITEMS.map(item => {
             const isActive = item.id === primaryPhase
             return (
               <div
                 key={item.id}
+                onClick={() => { if (isActive) setInnerView('overview') }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '9px 16px',
+                  padding: '10px 16px',
                   background: isActive ? T.yellow : 'transparent',
                   border: isActive ? `1px solid ${T.black}` : '1px solid transparent',
+                  boxShadow: isActive ? `4px 4px 0px ${T.black}` : 'none',
                   transform: isActive ? 'translateX(3px)' : 'none',
-                  cursor: 'default',
-                  marginBottom: 1,
+                  cursor: isActive ? 'pointer' : 'default',
+                  marginBottom: 2,
                   transition: 'background 0.1s',
                 }}
               >
-                <span style={{
-                  ...MONO, fontSize: '0.5rem', color: isActive ? T.black : T.grey,
-                  letterSpacing: '0.06em',
-                }}>
+                <span style={{ ...MONO, fontSize: '0.667rem', color: isActive ? T.black : T.grey }}>
                   {item.icon}
                 </span>
                 <span style={{
-                  ...MONO, fontSize: '0.52rem', textTransform: 'uppercase',
+                  ...MONO, fontSize: '0.667rem', textTransform: 'uppercase',
                   letterSpacing: '0.08em', fontWeight: isActive ? 700 : 400,
                   color: isActive ? T.black : T.grey,
                 }}>
@@ -277,18 +296,17 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
           })}
         </nav>
 
-        {/* Sidebar footer — session button + sign out */}
-        <div style={{ borderTop: `1px solid ${T.greyLight}`, padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {/* Start Session — DYMO black label button */}
+        {/* Footer */}
+        <div style={{ borderTop: `1px solid ${T.greyLight}`, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <DymoBtn onClick={onStartSession} fullWidth>Start session</DymoBtn>
-          <p style={{ ...MONO, fontSize: '0.4rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'center' }}>
-            {profile.sessions_completed} sessions completed
+          <p style={{ ...MONO, fontSize: '0.611rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'center' }}>
+            {profile.sessions_completed} sessions
           </p>
           <button
             onClick={handleLogout}
             style={{
               ...MONO, background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: '0.42rem', letterSpacing: '0.1em', textTransform: 'uppercase',
+              fontSize: '0.611rem', letterSpacing: '0.1em', textTransform: 'uppercase',
               color: T.grey, padding: '4px 0', textAlign: 'left',
             }}
           >
@@ -297,7 +315,7 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
         </div>
       </aside>
 
-      {/* ── MAIN AREA: top bar + scrollable content ──────────── */}
+      {/* ── MAIN AREA ─────────────────────────────────────────── */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
         {/* Top bar */}
@@ -306,50 +324,57 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
           borderBottom: `2px solid ${T.black}`,
           background: T.ivory,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '0 28px',
+          padding: '0 32px',
         }}>
-          <span style={{ ...MONO, fontSize: '0.62rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-            {PHASE_LABELS[primaryPhase] || 'Dashboard'}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            {innerView !== 'overview' && (
+              <button
+                onClick={() => setInnerView('overview')}
+                style={{ ...MONO, fontSize: '0.667rem', background: 'none', border: 'none', cursor: 'pointer', color: T.grey, padding: 0, letterSpacing: '0.08em', textTransform: 'uppercase' }}
+              >
+                ← Overview
+              </button>
+            )}
+            <span style={{ ...MONO, fontSize: '0.889rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              {innerView === 'goal' && selectedGoal ? selectedGoal.title
+               : innerView === 'tools' ? 'Tools'
+               : phaseHeader}
+            </span>
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
             {profile.resistance_pattern && (
-              <span style={{ ...MONO, fontSize: '0.42rem', color: T.grey, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              <span style={{ ...MONO, fontSize: '0.611rem', color: T.grey, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                 {profile.resistance_pattern.replace(/_/g, ' ')}
               </span>
             )}
-            <span style={{ ...MONO, fontSize: '0.45rem', color: T.grey }}>{slug}</span>
+            <span style={{ ...MONO, fontSize: '0.667rem', color: T.grey }}>{slug}</span>
             {profile.re_interview_overdue && (
-              <span style={{ ...MONO, fontSize: '0.42rem', background: T.red, color: T.white, padding: '3px 8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ ...MONO, fontSize: '0.611rem', background: T.red, color: T.white, padding: '4px 10px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Check-in due
               </span>
             )}
           </div>
         </header>
 
-        {/* Scrollable main content — phase-adaptive */}
+        {/* Scrollable content */}
         <main style={{
-          flex: 1,
-          ...(quadrant === 'sanctuary' ? {
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            cursor: 'crosshair', padding: '64px 48px',
-          } : {
-            overflowY: 'auto', padding: '28px 28px 80px',
-            ...(quadrant === 'system' ? {
-              backgroundImage: 'linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px)',
-              backgroundSize: '24px 24px',
-            } : quadrant === 'workbench' ? {
-              backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.07) 1px, transparent 1px)',
-              backgroundSize: '20px 20px',
-            } : {}),
-          }),
+          flex: 1, overflowY: 'auto',
+          ...(quadrant === 'system' ? {
+            backgroundImage: 'linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+          } : quadrant === 'workbench' ? {
+            backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px)',
+            backgroundSize: '20px 20px',
+          } : {}),
         }}>
 
-          {layoutMode === 'sanctuary' ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <p style={{ ...SERIF, fontSize: '2.2rem', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', maxWidth: 500, marginBottom: 16 }}>
+          {/* ── SANCTUARY ──────────────────────────────────────── */}
+          {layoutMode === 'sanctuary' && (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: '80px 48px', cursor: 'crosshair' }}>
+              <p style={{ ...SERIF, fontSize: '2.2rem', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', maxWidth: 520, marginBottom: 20 }}>
                 {profile.initial_interview_done ? 'What are you working on?' : 'Who are you becoming?'}
               </p>
-              <p style={{ ...SERIF, fontSize: '1rem', color: T.grey, fontStyle: 'italic', textAlign: 'center', marginBottom: 52 }}>
+              <p style={{ ...SERIF, fontSize: '1rem', color: T.grey, fontStyle: 'italic', textAlign: 'center', marginBottom: 56 }}>
                 {profile.initial_interview_done
                   ? 'Your goals will appear after your first session.'
                   : 'Start a session to begin your intake interview.'}
@@ -358,9 +383,12 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
                 {profile.initial_interview_done ? 'Start session' : 'Begin intake'}
               </DymoBtn>
             </div>
-          ) : layoutMode === 'reflection' ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', animation: 'fadeIn 0.8s ease' }}>
-              <p style={{ ...SERIF, fontSize: '2rem', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', maxWidth: 520, marginBottom: 36, animation: 'fadeIn 0.9s 0.15s ease both' }}>
+          )}
+
+          {/* ── REFLECTION ─────────────────────────────────────── */}
+          {layoutMode === 'reflection' && (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px 48px', animation: 'fadeIn 0.8s ease' }}>
+              <p style={{ ...SERIF, fontSize: '2rem', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', maxWidth: 520, marginBottom: 40, animation: 'fadeIn 0.9s 0.15s ease both' }}>
                 What are you noticing right now?
               </p>
               <textarea
@@ -370,349 +398,687 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
                   width: '100%', maxWidth: 520, minHeight: 160,
                   background: 'transparent', border: 'none', outline: 'none',
                   borderBottom: `1px solid ${T.greyLight}`,
-                  resize: 'none', padding: '8px 0', color: T.black,
-                  textAlign: 'center',
+                  resize: 'none', padding: '8px 0', color: T.black, textAlign: 'center',
                   animation: 'fadeIn 1s 0.3s ease both',
                 }}
               />
-              <p style={{ ...MONO, fontSize: '0.4rem', color: T.greyLight, textTransform: 'uppercase', letterSpacing: '0.12em', marginTop: 16 }}>
+              <p style={{ ...MONO, fontSize: '0.611rem', color: T.greyLight, textTransform: 'uppercase', letterSpacing: '0.12em', marginTop: 16 }}>
                 nothing is saved
               </p>
-            </div>
-          ) : <>
-
-          {/* Progress map */}
-          <div style={{ marginBottom: 28 }}>
-            <ProgressMap
-              goals={goalRows}
-              publishingCount={publishing_log.length}
-              sessionsCompleted={profile.sessions_completed}
-              resistancePattern={profile.resistance_pattern}
-              initialInterviewDone={profile.initial_interview_done}
-            />
-          </div>
-
-          {/* Two-column grid: goals + right sidebar */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 24, alignItems: 'start' }}>
-
-            {/* ── GOALS column ────────────────────────────── */}
-            <div className={quadrant === 'workbench' ? 'tape-border' : undefined}>
-              <SectionLabel>
-                {quadrant === 'workbench' ? 'Obligation manifest' : quadrant === 'system' ? 'Clarity log' : 'Goals'}
-              </SectionLabel>
-
-              {quadrant === 'system' ? (
-                <BentoGoals goals={activeGoals} sessionsCompleted={profile.sessions_completed} />
-              ) : activeGoals.length === 0 ? (
-                <p style={{ ...MONO, fontSize: '0.55rem', color: T.grey, lineHeight: 1.7 }}>
-                  {profile.initial_interview_done
-                    ? 'No active goals — start a session to add your first goal.'
-                    : 'Start a session to begin your intake interview.'}
-                </p>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                  {activeGoals.map(goal => {
-                    const isExpanded = expandedGoal === goal.goal_id
-                    const isOverdue = goal.active_commitment ? daysUntil(goal.active_commitment.due_date) <= 0 : false
-                    const hasPending = goal.action_steps.pending.length > 0
-
-                    return (
-                      <div key={goal.goal_id} style={{
-                        background: T.white,
-                        border: `1px solid ${T.black}`,
-                        borderBottom: 'none',
-                        position: 'relative',
-                      }}>
-                        {/* Last goal gets bottom border */}
-                        {/* NASA red corner flag for overdue */}
-                        {isOverdue && (
-                          <div style={{
-                            position: 'absolute', top: 0, right: 0, zIndex: 1,
-                            width: 0, height: 0,
-                            borderTop: `24px solid ${T.red}`,
-                            borderLeft: '24px solid transparent',
-                          }} />
-                        )}
-
-                        {/* Goal header row */}
-                        <button
-                          onClick={() => setExpandedGoal(isExpanded ? null : goal.goal_id)}
-                          style={{
-                            width: '100%', display: 'flex', justifyContent: 'space-between',
-                            alignItems: 'flex-start', background: 'none', border: 'none',
-                            cursor: 'pointer', padding: '14px 16px', textAlign: 'left',
-                          }}
-                        >
-                          <div style={{ flex: 1 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 7, flexWrap: 'wrap' }}>
-                              {/* Horizon tag */}
-                              <span style={{
-                                ...MONO, fontSize: '0.42rem', letterSpacing: '0.1em',
-                                textTransform: 'uppercase', padding: '2px 6px',
-                                background: T.black, color: T.ivory,
-                                border: `1px solid ${T.black}`,
-                              }}>
-                                {HORIZON_LABELS[goal.horizon] || goal.horizon}
-                              </span>
-                              {/* Phase tag */}
-                              <span style={{
-                                ...MONO, fontSize: '0.42rem', letterSpacing: '0.08em',
-                                textTransform: 'uppercase', padding: '2px 6px',
-                                background: 'transparent', color: T.grey,
-                                border: `1px solid ${T.greyLight}`,
-                              }}>
-                                {PHASE_LABELS[goal.phase] || goal.phase}
-                                {!goal.phase_progress.time_gate_clear && ` · d${goal.phase_progress.days_elapsed}`}
-                              </span>
-                              {goal.active_commitment && (
-                                <span style={{
-                                  ...MONO, fontSize: '0.4rem', letterSpacing: '0.06em',
-                                  textTransform: 'uppercase',
-                                  color: isOverdue ? T.red : T.black,
-                                }}>
-                                  {isOverdue ? '⚠ overdue' : '⚡ committed'}
-                                </span>
-                              )}
-                              {hasPending && !goal.active_commitment && (
-                                <span style={{ ...MONO, fontSize: '0.4rem', color: T.grey, textTransform: 'uppercase' }}>
-                                  ■ step pending
-                                </span>
-                              )}
-                            </div>
-                            <p style={{ ...SERIF, fontSize: '1rem', lineHeight: 1.35 }}>
-                              {goal.title}
-                            </p>
-                            {goal.description && !isExpanded && (
-                              <p style={{ ...SERIF, fontSize: '0.83rem', color: T.grey, lineHeight: 1.4, marginTop: 3 }}>
-                                {goal.description.length > 120 ? goal.description.slice(0, 120) + '…' : goal.description}
-                              </p>
-                            )}
-                          </div>
-                          <span style={{ ...MONO, marginLeft: 10, fontSize: '0.5rem', color: T.grey, flexShrink: 0, paddingTop: 2 }}>
-                            {isExpanded ? '▲' : '▼'}
-                          </span>
-                        </button>
-
-                        {/* Expanded detail */}
-                        {isExpanded && (
-                          <div style={{ borderTop: `1px solid ${T.greyLight}`, padding: '16px 16px' }}>
-                            {goal.description && (
-                              <p style={{ ...SERIF, fontSize: '0.92rem', lineHeight: 1.6, marginBottom: 18, color: T.grey }}>
-                                {goal.description}
-                              </p>
-                            )}
-
-                            {/* Pending action steps */}
-                            {hasPending && (
-                              <div style={{ marginBottom: 18 }}>
-                                <SectionLabel small>Current exercise</SectionLabel>
-                                {goal.action_steps.pending.map(step => (
-                                  <div key={step.step_id} style={{
-                                    padding: 12, background: T.greyBg,
-                                    border: `1px solid ${T.greyLight}`, marginBottom: 8,
-                                  }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                                      <span style={{ ...MONO, fontSize: '0.42rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                                        Level {step.exercise_level}
-                                      </span>
-                                      <span style={{
-                                        ...MONO, fontSize: '0.42rem',
-                                        color: daysUntil(step.due_date) <= 0 ? T.red : T.grey,
-                                        textTransform: 'uppercase', letterSpacing: '0.08em',
-                                      }}>
-                                        due {fmt(step.due_date)}{daysUntil(step.due_date) <= 0 && ' · overdue'}
-                                      </span>
-                                    </div>
-                                    <p style={{ ...SERIF, fontSize: '0.92rem', lineHeight: 1.5, marginBottom: 5 }}>{step.text}</p>
-                                    {step.coach_reason && (
-                                      <p style={{ ...SERIF, fontSize: '0.78rem', color: T.grey, fontStyle: 'italic', marginBottom: 8 }}>{step.coach_reason}</p>
-                                    )}
-                                    {completingStep === step.step_id ? (
-                                      <div>
-                                        <textarea value={completionNote} onChange={e => setCompletionNote(e.target.value)}
-                                          placeholder="What did you do? What came up? (optional)" rows={3}
-                                          style={{ ...SERIF, width: '100%', marginBottom: 8, fontSize: '0.88rem', padding: 9, border: `1px solid ${T.black}`, resize: 'vertical', background: T.white }} />
-                                        <div style={{ display: 'flex', gap: 8 }}>
-                                          <Btn onClick={() => completeStep(step.step_id)}>Done — save note</Btn>
-                                          <Btn ghost onClick={() => setCompletingStep(null)}>Cancel</Btn>
-                                        </div>
-                                      </div>
-                                    ) : skippingStep === step.step_id ? (
-                                      <div>
-                                        <textarea value={skipReason} onChange={e => setSkipReason(e.target.value)}
-                                          placeholder="What got in the way? (the coach will see this)" rows={2}
-                                          style={{ ...SERIF, width: '100%', marginBottom: 8, fontSize: '0.88rem', padding: 9, border: `1px solid ${T.black}`, resize: 'vertical', background: T.white }} />
-                                        <div style={{ display: 'flex', gap: 8 }}>
-                                          <Btn ghost onClick={() => skipStep(step.step_id)}>Skip with reason</Btn>
-                                          <Btn ghost onClick={() => setSkippingStep(null)}>Cancel</Btn>
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <div style={{ display: 'flex', gap: 8 }}>
-                                        <Btn ghost onClick={() => { setCompletingStep(step.step_id); setSkippingStep(null) }}>Mark done</Btn>
-                                        <Btn ghost dim onClick={() => { setSkippingStep(step.step_id); setCompletingStep(null) }}>Skip</Btn>
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Active commitment */}
-                            {goal.active_commitment && (
-                              <div style={{ marginBottom: 18 }}>
-                                <SectionLabel small>Active commitment</SectionLabel>
-                                <div style={{
-                                  padding: 14, background: T.white,
-                                  border: `2px solid ${isOverdue ? T.red : T.black}`,
-                                  boxShadow: `3px 3px 0px ${isOverdue ? T.red : T.black}`,
-                                }}>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 7, paddingBottom: 7, borderBottom: `1px solid ${T.greyLight}` }}>
-                                    <span style={{ ...MONO, fontSize: '0.42rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: T.grey }}>Rung {goal.active_commitment.ladder_rung}</span>
-                                    <span style={{ ...MONO, fontSize: '0.42rem', color: isOverdue ? T.red : T.grey, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                                      due {fmt(goal.active_commitment.due_date)}{isOverdue && ' · overdue'}
-                                    </span>
-                                  </div>
-                                  <p style={{ ...SERIF, fontSize: '0.92rem', lineHeight: 1.5, marginBottom: 10 }}>{goal.active_commitment.text}</p>
-                                  {goal.active_commitment.share_post && (
-                                    <div style={{ marginBottom: 10, padding: '8px 12px', background: T.greyBg, borderLeft: `3px solid ${T.black}` }}>
-                                      <span style={{ ...MONO, fontSize: '0.42rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: T.grey, display: 'block', marginBottom: 3 }}>Ready to post</span>
-                                      <p style={{ ...SERIF, fontSize: '0.85rem', fontStyle: 'italic' }}>{goal.active_commitment.share_post}</p>
-                                    </div>
-                                  )}
-                                  <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-                                    <Btn onClick={() => resolveCommitment(goal.active_commitment!.commitment_id, 'done')}>Mark done</Btn>
-                                    <Btn ghost onClick={() => resolveCommitment(goal.active_commitment!.commitment_id, 'partial')}>Partial</Btn>
-                                    <Btn ghost dim onClick={() => resolveCommitment(goal.active_commitment!.commitment_id, 'missed')}>Missed</Btn>
-                                  </div>
-                                  {showProofForm !== goal.goal_id ? (
-                                    <button onClick={() => setShowProofForm(goal.goal_id)}
-                                      style={{ ...MONO, fontSize: '0.42rem', letterSpacing: '0.08em', color: T.grey, cursor: 'pointer', background: 'none', border: 'none', padding: 0, textTransform: 'uppercase' }}>
-                                      + Add proof of publication
-                                    </button>
-                                  ) : (
-                                    <form onSubmit={e => submitProof(e, goal.goal_id, goal.active_commitment!.commitment_id)} style={{ marginTop: 8 }}>
-                                      <ProofFields url={proofUrl} setUrl={setProofUrl} platform={proofPlatform} setPlatform={setProofPlatform}
-                                        description={proofDescription} setDescription={setProofDescription}
-                                        submitting={submittingProof} onCancel={() => setShowProofForm(null)} />
-                                    </form>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Completed exercises */}
-                            {goal.action_steps.recent_done.length > 0 && (
-                              <div style={{ marginBottom: 14 }}>
-                                <SectionLabel small>Completed ({goal.phase_progress.completed_action_steps})</SectionLabel>
-                                {goal.action_steps.recent_done.map(step => (
-                                  <div key={step.step_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '5px 0', borderBottom: `1px solid ${T.greyLight}` }}>
-                                    <div style={{ flex: 1 }}>
-                                      <p style={{ ...SERIF, fontSize: '0.83rem', textDecoration: 'line-through', color: T.grey }}>{step.text}</p>
-                                      {step.completion_note && (
-                                        <p style={{ ...SERIF, fontSize: '0.72rem', color: T.grey, fontStyle: 'italic', marginTop: 1 }}>"{step.completion_note}"</p>
-                                      )}
-                                    </div>
-                                    <span style={{ ...MONO, marginLeft: 8, fontSize: '0.4rem', color: T.grey, whiteSpace: 'nowrap' }}>Lv {step.exercise_level}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Commitment history */}
-                            {goal.commitment_history.length > 0 && (
-                              <div>
-                                <SectionLabel small>Commitment log</SectionLabel>
-                                {[...goal.commitment_history].reverse().map((c, i) => (
-                                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 0', borderBottom: `1px solid ${T.greyLight}` }}>
-                                    <p style={{ flex: 1, ...SERIF, fontSize: '0.83rem', color: c.status === 'done' ? T.grey : T.black, textDecoration: c.status === 'done' ? 'line-through' : 'none' }}>{c.text}</p>
-                                    <span style={{ marginLeft: 8, ...MONO, fontSize: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: c.status === 'done' ? '#2d6a2d' : c.status === 'missed' ? T.red : T.grey }}>
-                                      {c.status}
-                                    </span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
-                  {/* Close the stacked border */}
-                  <div style={{ height: 1, background: T.black }} />
+              {activeGoals.length > 0 && (
+                <div style={{ marginTop: 64, width: '100%', maxWidth: 640 }}>
+                  <GoalOverviewCards
+                    goals={activeGoals}
+                    publishingLog={publishing_log}
+                    onSelectGoal={(id) => { setSelectedGoalId(id); setInnerView('goal') }}
+                    onOpenTools={() => setInnerView('tools')}
+                  />
                 </div>
               )}
             </div>
+          )}
 
-            {/* ── RIGHT PANEL: tools, agents, publishing log ── */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-
-              {/* Tools */}
-              <div>
-                <SectionLabel>Tools</SectionLabel>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                  {tools.map(tool => (
-                    <ToolCard key={tool.label} label={tool.label} sub={tool.sub} desc={tool.desc} onClick={tool.onClick} cta="Open →" />
-                  ))}
-                </div>
+          {/* ── GRID / OVERVIEW ────────────────────────────────── */}
+          {layoutMode === 'grid' && innerView === 'overview' && (
+            <div style={{ padding: '32px 32px 80px' }}>
+              {/* Progress map */}
+              <div style={{ marginBottom: 32 }}>
+                <ProgressMap
+                  goals={goalRows}
+                  publishingCount={publishing_log.length}
+                  sessionsCompleted={profile.sessions_completed}
+                  resistancePattern={profile.resistance_pattern}
+                  initialInterviewDone={profile.initial_interview_done}
+                />
               </div>
 
-              {/* Thinking Tools (Agents) */}
-              <div>
-                <SectionLabel>Thinking tools</SectionLabel>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                  {AGENTS.map(agent => (
-                    <ToolCard key={agent.id} label={agent.name} sub={agent.author} desc={agent.tagline} onClick={() => onEnterAgent?.(agent.id)} cta="Enter →" />
-                  ))}
-                </div>
-              </div>
-
-              {/* Publishing log */}
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
-                  <SectionLabel inline>Published {publishing_log.length > 0 && `(${publishing_log.length})`}</SectionLabel>
-                  {!showProofForm && (
-                    <button onClick={() => setShowProofForm('global')}
-                      style={{ ...MONO, fontSize: '0.4rem', letterSpacing: '0.1em', color: T.grey, cursor: 'pointer', background: 'none', border: 'none', padding: 0, textTransform: 'uppercase' }}>
-                      + Add
-                    </button>
-                  )}
-                </div>
-                {showProofForm === 'global' && (
-                  <form onSubmit={e => submitProof(e, '', '')} style={{ marginBottom: 12 }}>
-                    <ProofFields url={proofUrl} setUrl={setProofUrl} platform={proofPlatform} setPlatform={setProofPlatform}
-                      description={proofDescription} setDescription={setProofDescription}
-                      submitting={submittingProof} onCancel={() => setShowProofForm(null)} />
-                  </form>
+              {/* Page header */}
+              <div style={{ marginBottom: 32, borderBottom: `2px solid ${T.black}`, paddingBottom: 20 }}>
+                <h1 style={{ ...MONO, fontSize: '1.778rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>
+                  {phaseHeader}
+                </h1>
+                {profile.build_name && (
+                  <p style={{ ...SERIF, fontSize: '1rem', color: T.grey, marginTop: 6, fontStyle: 'italic' }}>
+                    {profile.build_name}
+                    {profile.build_description ? ` — ${profile.build_description}` : ''}
+                  </p>
                 )}
-                {publishing_log.length === 0 ? (
-                  <p style={{ ...MONO, fontSize: '0.48rem', color: T.grey, lineHeight: 1.6 }}>Nothing published yet.</p>
-                ) : (
-                  <div>
-                    {publishing_log.slice(0, 5).map(entry => (
-                      <div key={entry.log_id} style={{ padding: '7px 0 7px 10px', borderBottom: `1px solid ${T.greyLight}`, borderLeft: `2px solid ${T.black}`, marginBottom: 4 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 1 }}>
-                          <span style={{ ...MONO, fontSize: '0.4rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{PLATFORM_LABELS[entry.platform] || entry.platform}</span>
-                          <span style={{ ...MONO, fontSize: '0.4rem', color: T.grey }}>{fmt(entry.published_at)}</span>
+              </div>
+
+              {activeGoals.length === 0 ? (
+                <div style={{ padding: '40px 0' }}>
+                  <p style={{ ...MONO, fontSize: '0.889rem', color: T.grey }}>
+                    {profile.initial_interview_done
+                      ? 'No active goals — start a session to add your first goal.'
+                      : 'Start a session to begin your intake interview.'}
+                  </p>
+                </div>
+              ) : (
+                <GoalOverviewCards
+                  goals={activeGoals}
+                  publishingLog={publishing_log}
+                  onSelectGoal={(id) => { setSelectedGoalId(id); setInnerView('goal') }}
+                  onOpenTools={() => setInnerView('tools')}
+                />
+              )}
+
+              {/* Tools row */}
+              <div style={{ marginTop: 36 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16 }}>
+                  <span style={{ ...MONO, fontSize: '0.667rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: T.grey }}>
+                    Tools & Agents
+                  </span>
+                  <button
+                    onClick={() => setInnerView('tools')}
+                    style={{ ...MONO, fontSize: '0.667rem', background: 'none', border: 'none', cursor: 'pointer', color: T.grey, padding: 0, textTransform: 'uppercase', letterSpacing: '0.08em' }}
+                  >
+                    View all →
+                  </button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
+                  {[...tools, ...AGENTS.slice(0, 2).map(a => ({ label: a.name, sub: a.author, desc: a.tagline, onClick: () => onEnterAgent?.(a.id) }))].map(t => (
+                    <ToolCardLg key={t.label} label={t.label} sub={t.sub} desc={t.desc} onClick={t.onClick} />
+                  ))}
+                </div>
+              </div>
+
+              {/* Publishing log strip */}
+              {publishing_log.length > 0 && (
+                <div style={{ marginTop: 40 }}>
+                  <span style={{ ...MONO, fontSize: '0.667rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: T.grey, display: 'block', marginBottom: 16 }}>
+                    Publication log ({publishing_log.length})
+                  </span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 0, border: `2px solid ${T.black}`, boxShadow: `4px 4px 0px ${T.black}` }}>
+                    {publishing_log.slice(0, 5).map((entry, i) => (
+                      <div key={entry.log_id} style={{
+                        padding: '14px 18px',
+                        borderBottom: i < Math.min(publishing_log.length, 5) - 1 ? `1px solid ${T.greyLight}` : 'none',
+                        background: T.white,
+                        display: 'flex', gap: 16, alignItems: 'flex-start',
+                      }}>
+                        <span style={{ ...MONO, fontSize: '0.611rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap', paddingTop: 3 }}>
+                          {fmt(entry.published_at)}
+                        </span>
+                        <div style={{ flex: 1 }}>
+                          <p style={{ ...SERIF, fontSize: '1rem', lineHeight: 1.4 }}>{entry.description}</p>
+                          <div style={{ display: 'flex', gap: 12, marginTop: 4, alignItems: 'center' }}>
+                            <span style={{ ...MONO, fontSize: '0.611rem', color: T.grey, textTransform: 'uppercase' }}>
+                              {PLATFORM_LABELS[entry.platform] || entry.platform}
+                            </span>
+                            {entry.url && entry.url !== 'direct message — no url' && (
+                              <a href={entry.url} target="_blank" rel="noopener noreferrer"
+                                style={{ ...MONO, fontSize: '0.611rem', color: T.grey }}>
+                                {entry.url.length > 60 ? entry.url.slice(0, 60) + '…' : entry.url}
+                              </a>
+                            )}
+                          </div>
                         </div>
-                        <p style={{ ...SERIF, fontSize: '0.82rem', lineHeight: 1.4 }}>{entry.description}</p>
-                        {entry.url && entry.url !== 'direct message — no url' && (
-                          <a href={entry.url} target="_blank" rel="noopener noreferrer"
-                            style={{ ...MONO, fontSize: '0.4rem', color: T.grey, wordBreak: 'break-all' }}>{entry.url}</a>
-                        )}
                       </div>
                     ))}
-                    {publishing_log.length > 5 && (
-                      <p style={{ ...MONO, fontSize: '0.45rem', color: T.grey, paddingTop: 4 }}>+{publishing_log.length - 5} more</p>
-                    )}
+                  </div>
+                  {publishing_log.length > 5 && (
+                    <p style={{ ...MONO, fontSize: '0.611rem', color: T.grey, paddingTop: 8 }}>+{publishing_log.length - 5} more entries</p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── GOAL DETAIL ────────────────────────────────────── */}
+          {innerView === 'goal' && selectedGoal && (
+            <GoalDetail
+              goal={selectedGoal}
+              completingStep={completingStep}
+              setCompletingStep={setCompletingStep}
+              completionNote={completionNote}
+              setCompletionNote={setCompletionNote}
+              skippingStep={skippingStep}
+              setSkippingStep={setSkippingStep}
+              skipReason={skipReason}
+              setSkipReason={setSkipReason}
+              showProofForm={showProofForm}
+              setShowProofForm={setShowProofForm}
+              proofUrl={proofUrl}
+              setProofUrl={setProofUrl}
+              proofPlatform={proofPlatform}
+              setProofPlatform={setProofPlatform}
+              proofDescription={proofDescription}
+              setProofDescription={setProofDescription}
+              submittingProof={submittingProof}
+              resolveCommitment={resolveCommitment}
+              completeStep={completeStep}
+              skipStep={skipStep}
+              submitProof={submitProof}
+              otherGoals={activeGoals.filter(g => g.goal_id !== selectedGoal.goal_id)}
+              onSelectGoal={(id) => setSelectedGoalId(id)}
+            />
+          )}
+
+          {/* ── TOOLS VIEW ─────────────────────────────────────── */}
+          {innerView === 'tools' && (
+            <ToolsView
+              tools={tools}
+              agents={AGENTS}
+              onEnterAgent={onEnterAgent}
+              showProofForm={showProofForm}
+              setShowProofForm={setShowProofForm}
+              proofUrl={proofUrl}
+              setProofUrl={setProofUrl}
+              proofPlatform={proofPlatform}
+              setProofPlatform={setProofPlatform}
+              proofDescription={proofDescription}
+              setProofDescription={setProofDescription}
+              submittingProof={submittingProof}
+              submitProof={submitProof}
+              publishingLog={publishing_log}
+            />
+          )}
+        </main>
+      </div>
+    </div>
+  )
+}
+
+// ── GOAL OVERVIEW CARDS ────────────────────────────────────────
+function GoalOverviewCards({
+  goals, publishingLog, onSelectGoal, onOpenTools
+}: {
+  goals: GoalData[]
+  publishingLog: PublishingEntry[]
+  onSelectGoal: (id: string) => void
+  onOpenTools: () => void
+}) {
+  const primary = goals[0]
+  const secondary = goals.slice(1)
+  const isOverdue = primary.active_commitment ? daysUntil(primary.active_commitment.due_date) <= 0 : false
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 0, border: `2px solid ${T.black}`, boxShadow: `4px 4px 0px ${T.black}` }}>
+
+      {/* Primary goal — 8 cols */}
+      <div
+        onClick={() => onSelectGoal(primary.goal_id)}
+        style={{
+          gridColumn: secondary.length > 0 ? '1 / 9' : '1 / 13',
+          borderRight: secondary.length > 0 ? `1px solid ${T.black}` : 'none',
+          padding: '28px 28px', background: T.white, cursor: 'pointer',
+          position: 'relative',
+          transition: 'background 0.1s',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.background = T.greyBg)}
+        onMouseLeave={e => (e.currentTarget.style.background = T.white)}
+      >
+        {/* NASA red corner if overdue */}
+        {isOverdue && (
+          <div style={{
+            position: 'absolute', top: 0, right: 0,
+            width: 0, height: 0,
+            borderTop: `32px solid ${T.red}`,
+            borderLeft: '32px solid transparent',
+          }} />
+        )}
+
+        {/* DYMO label */}
+        <div style={{ marginBottom: 16 }}>
+          <span style={{
+            ...MONO, fontSize: '0.611rem', fontWeight: 800, letterSpacing: '0.14em',
+            textTransform: 'uppercase', background: T.black, color: T.white,
+            padding: '5px 10px', display: 'inline-block',
+          }}>
+            Obligation Manifest
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
+          <span style={{ ...MONO, fontSize: '0.667rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '3px 8px', background: T.black, color: T.ivory }}>
+            {HORIZON_LABELS[primary.horizon] || primary.horizon}
+          </span>
+          <span style={{ ...MONO, fontSize: '0.667rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '3px 8px', color: T.grey, border: `1px solid ${T.greyLight}` }}>
+            {PHASE_LABELS[primary.phase] || primary.phase}
+            {!primary.phase_progress.time_gate_clear && ` · d${primary.phase_progress.days_elapsed}`}
+          </span>
+          {primary.active_commitment && (
+            <span style={{ ...MONO, fontSize: '0.667rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: isOverdue ? T.red : T.black, padding: '3px 8px', border: `1px solid ${isOverdue ? T.red : T.greyLight}` }}>
+              {isOverdue ? '⚠ overdue' : '⚡ committed'}
+            </span>
+          )}
+          {primary.action_steps.pending.length > 0 && !primary.active_commitment && (
+            <span style={{ ...MONO, fontSize: '0.667rem', color: T.grey, textTransform: 'uppercase', padding: '3px 8px' }}>
+              ■ step pending
+            </span>
+          )}
+        </div>
+
+        <h2 style={{ ...SERIF, fontSize: '1.333rem', lineHeight: 1.3, marginBottom: primary.description ? 10 : 0, fontWeight: 400 }}>
+          {primary.title}
+        </h2>
+        {primary.description && (
+          <p style={{ ...SERIF, fontSize: '0.889rem', color: T.grey, lineHeight: 1.5, marginBottom: 16 }}>
+            {primary.description.length > 160 ? primary.description.slice(0, 160) + '…' : primary.description}
+          </p>
+        )}
+
+        {primary.action_steps.pending.length > 0 && (
+          <div style={{ paddingTop: 14, borderTop: `1px solid ${T.greyLight}` }}>
+            <span style={{ ...MONO, fontSize: '0.611rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 8 }}>
+              Current exercise
+            </span>
+            <p style={{ ...SERIF, fontSize: '1rem', lineHeight: 1.5 }}>
+              {primary.action_steps.pending[0].text}
+            </p>
+            {primary.action_steps.pending[0].coach_reason && (
+              <p style={{ ...SERIF, fontSize: '0.778rem', color: T.grey, fontStyle: 'italic', marginTop: 6 }}>
+                {primary.action_steps.pending[0].coach_reason}
+              </p>
+            )}
+          </div>
+        )}
+
+        {primary.active_commitment && (
+          <div style={{ paddingTop: 14, borderTop: `1px solid ${T.greyLight}`, marginTop: primary.action_steps.pending.length > 0 ? 14 : 0 }}>
+            <span style={{ ...MONO, fontSize: '0.611rem', color: isOverdue ? T.red : T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 8 }}>
+              {isOverdue ? '⚠ Commitment overdue' : 'Active commitment'} — due {fmt(primary.active_commitment.due_date)}
+            </span>
+            <p style={{ ...SERIF, fontSize: '1rem', lineHeight: 1.5 }}>
+              {primary.active_commitment.text.length > 140 ? primary.active_commitment.text.slice(0, 140) + '…' : primary.active_commitment.text}
+            </p>
+          </div>
+        )}
+
+        <p style={{ ...MONO, fontSize: '0.611rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 20 }}>
+          Click to open →
+        </p>
+      </div>
+
+      {/* Secondary goals — 4 cols, stacked */}
+      {secondary.length > 0 && (
+        <div style={{ gridColumn: '9 / 13', display: 'flex', flexDirection: 'column' }}>
+          {secondary.map((g, i) => {
+            const gOverdue = g.active_commitment ? daysUntil(g.active_commitment.due_date) <= 0 : false
+            return (
+              <div
+                key={g.goal_id}
+                onClick={() => onSelectGoal(g.goal_id)}
+                style={{
+                  flex: 1, padding: '18px 16px', background: T.white, cursor: 'pointer',
+                  borderTop: i === 0 ? 'none' : `1px solid ${T.greyLight}`,
+                  transition: 'background 0.1s', position: 'relative',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = T.greyBg)}
+                onMouseLeave={e => (e.currentTarget.style.background = T.white)}
+              >
+                {gOverdue && (
+                  <div style={{ position: 'absolute', top: 0, right: 0, width: 0, height: 0, borderTop: `20px solid ${T.red}`, borderLeft: '20px solid transparent' }} />
+                )}
+                <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+                  <span style={{ ...MONO, fontSize: '0.611rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '2px 6px', background: T.black, color: T.ivory }}>
+                    {HORIZON_LABELS[g.horizon] || g.horizon}
+                  </span>
+                  <span style={{ ...MONO, fontSize: '0.611rem', color: T.grey, textTransform: 'uppercase', padding: '2px 6px', border: `1px solid ${T.greyLight}` }}>
+                    {PHASE_LABELS[g.phase] || g.phase}
+                  </span>
+                </div>
+                <p style={{ ...SERIF, fontSize: '1rem', lineHeight: 1.3 }}>{g.title}</p>
+                {(g.active_commitment || g.action_steps.pending.length > 0) && (
+                  <p style={{ ...MONO, fontSize: '0.611rem', color: gOverdue ? T.red : T.grey, marginTop: 6, textTransform: 'uppercase' }}>
+                    {gOverdue ? '⚠ overdue' : g.active_commitment ? '⚡ committed' : '■ step pending'}
+                  </p>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── GOAL DETAIL VIEW ───────────────────────────────────────────
+function GoalDetail({
+  goal, completingStep, setCompletingStep, completionNote, setCompletionNote,
+  skippingStep, setSkippingStep, skipReason, setSkipReason,
+  showProofForm, setShowProofForm, proofUrl, setProofUrl, proofPlatform, setProofPlatform,
+  proofDescription, setProofDescription, submittingProof,
+  resolveCommitment, completeStep, skipStep, submitProof,
+  otherGoals, onSelectGoal,
+}: {
+  goal: GoalData
+  completingStep: string | null; setCompletingStep: (v: string | null) => void
+  completionNote: string; setCompletionNote: (v: string) => void
+  skippingStep: string | null; setSkippingStep: (v: string | null) => void
+  skipReason: string; setSkipReason: (v: string) => void
+  showProofForm: string | null; setShowProofForm: (v: string | null) => void
+  proofUrl: string; setProofUrl: (v: string) => void
+  proofPlatform: string; setProofPlatform: (v: string) => void
+  proofDescription: string; setProofDescription: (v: string) => void
+  submittingProof: boolean
+  resolveCommitment: (id: string, status: 'done' | 'missed' | 'partial') => void
+  completeStep: (id: string) => void
+  skipStep: (id: string) => void
+  submitProof: (e: { preventDefault: () => void }, goalId: string, commitmentId: string) => void
+  otherGoals: GoalData[]; onSelectGoal: (id: string) => void
+}) {
+  const isOverdue = goal.active_commitment ? daysUntil(goal.active_commitment.due_date) <= 0 : false
+  const hasPending = goal.action_steps.pending.length > 0
+
+  return (
+    <div style={{ padding: '32px 32px 80px', maxWidth: 800 }}>
+      {/* Goal header */}
+      <div style={{ marginBottom: 32, border: `2px solid ${T.black}`, boxShadow: `4px 4px 0px ${T.black}`, background: T.white, padding: '28px 28px', position: 'relative' }}>
+        {isOverdue && (
+          <div style={{ position: 'absolute', top: 0, right: 0, width: 0, height: 0, borderTop: `32px solid ${T.red}`, borderLeft: '32px solid transparent' }} />
+        )}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+          <span style={{ ...MONO, fontSize: '0.667rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '3px 8px', background: T.black, color: T.ivory }}>
+            {HORIZON_LABELS[goal.horizon] || goal.horizon}
+          </span>
+          <span style={{ ...MONO, fontSize: '0.667rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '3px 8px', color: T.grey, border: `1px solid ${T.greyLight}` }}>
+            {PHASE_LABELS[goal.phase] || goal.phase}
+          </span>
+          {!goal.phase_progress.time_gate_clear && (
+            <span style={{ ...MONO, fontSize: '0.667rem', color: T.grey, padding: '3px 8px', textTransform: 'uppercase' }}>
+              Day {goal.phase_progress.days_elapsed} of {goal.phase_progress.minimum_days} min
+            </span>
+          )}
+        </div>
+        <h2 style={{ ...SERIF, fontSize: '1.778rem', lineHeight: 1.2, fontWeight: 400, marginBottom: goal.description ? 12 : 0 }}>
+          {goal.title}
+        </h2>
+        {goal.description && (
+          <p style={{ ...SERIF, fontSize: '1rem', color: T.grey, lineHeight: 1.6, marginTop: 8 }}>
+            {goal.description}
+          </p>
+        )}
+        <div style={{ display: 'flex', gap: 24, marginTop: 18, paddingTop: 18, borderTop: `1px solid ${T.greyLight}` }}>
+          <div>
+            <span style={{ ...MONO, fontSize: '0.611rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 3 }}>Phase started</span>
+            <span style={{ ...MONO, fontSize: '0.778rem' }}>{fmt(goal.phase_started_at)}</span>
+          </div>
+          <div>
+            <span style={{ ...MONO, fontSize: '0.611rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 3 }}>Steps done</span>
+            <span style={{ ...MONO, fontSize: '0.778rem' }}>{goal.phase_progress.completed_action_steps}</span>
+          </div>
+          <div>
+            <span style={{ ...MONO, fontSize: '0.611rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 3 }}>Commitments</span>
+            <span style={{ ...MONO, fontSize: '0.778rem' }}>{goal.commitment_history.length}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Pending action steps */}
+      {hasPending && (
+        <div style={{ marginBottom: 28 }}>
+          <span style={{ ...MONO, fontSize: '0.667rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: T.grey, display: 'block', marginBottom: 16 }}>
+            Current exercises ({goal.action_steps.pending.length})
+          </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {goal.action_steps.pending.map(step => (
+              <div key={step.step_id} style={{
+                padding: '20px 22px', background: T.white,
+                border: `2px solid ${T.black}`, boxShadow: `3px 3px 0px ${T.black}`,
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <span style={{ ...MONO, fontSize: '0.667rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    Level {step.exercise_level}
+                  </span>
+                  <span style={{ ...MONO, fontSize: '0.667rem', color: daysUntil(step.due_date) <= 0 ? T.red : T.grey, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    due {fmt(step.due_date)}{daysUntil(step.due_date) <= 0 && ' · overdue'}
+                  </span>
+                </div>
+                <p style={{ ...SERIF, fontSize: '1.111rem', lineHeight: 1.5, marginBottom: step.coach_reason ? 10 : 16 }}>{step.text}</p>
+                {step.coach_reason && (
+                  <p style={{ ...SERIF, fontSize: '0.889rem', color: T.grey, fontStyle: 'italic', marginBottom: 16 }}>{step.coach_reason}</p>
+                )}
+                {completingStep === step.step_id ? (
+                  <div>
+                    <textarea value={completionNote} onChange={e => setCompletionNote(e.target.value)}
+                      placeholder="What did you do? What came up? (optional)" rows={3}
+                      style={{ ...SERIF, width: '100%', marginBottom: 10, fontSize: '0.889rem', padding: 10, border: `1px solid ${T.black}`, resize: 'vertical', background: T.white }} />
+                    <div style={{ display: 'flex', gap: 10 }}>
+                      <Btn onClick={() => completeStep(step.step_id)}>Done — save note</Btn>
+                      <Btn ghost onClick={() => setCompletingStep(null)}>Cancel</Btn>
+                    </div>
+                  </div>
+                ) : skippingStep === step.step_id ? (
+                  <div>
+                    <textarea value={skipReason} onChange={e => setSkipReason(e.target.value)}
+                      placeholder="What got in the way? (the coach will see this)" rows={2}
+                      style={{ ...SERIF, width: '100%', marginBottom: 10, fontSize: '0.889rem', padding: 10, border: `1px solid ${T.black}`, resize: 'vertical', background: T.white }} />
+                    <div style={{ display: 'flex', gap: 10 }}>
+                      <Btn ghost onClick={() => skipStep(step.step_id)}>Skip with reason</Btn>
+                      <Btn ghost onClick={() => setSkippingStep(null)}>Cancel</Btn>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', gap: 10 }}>
+                    <Btn ghost onClick={() => { setCompletingStep(step.step_id); setSkippingStep(null) }}>Mark done</Btn>
+                    <Btn ghost dim onClick={() => { setSkippingStep(step.step_id); setCompletingStep(null) }}>Skip</Btn>
                   </div>
                 )}
               </div>
-
-            </div>
+            ))}
           </div>
-          </>}
-        </main>
+        </div>
+      )}
+
+      {/* Active commitment */}
+      {goal.active_commitment && (
+        <div style={{ marginBottom: 28 }}>
+          <span style={{ ...MONO, fontSize: '0.667rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: isOverdue ? T.red : T.grey, display: 'block', marginBottom: 16 }}>
+            {isOverdue ? '⚠ Active commitment — overdue' : 'Active commitment'}
+          </span>
+          <div style={{
+            padding: '22px 24px', background: T.white,
+            border: `2px solid ${isOverdue ? T.red : T.black}`,
+            boxShadow: `4px 4px 0px ${isOverdue ? T.red : T.black}`,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 12, borderBottom: `1px solid ${T.greyLight}` }}>
+              <span style={{ ...MONO, fontSize: '0.667rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: T.grey }}>
+                Commitment ladder rung {goal.active_commitment.ladder_rung}
+              </span>
+              <span style={{ ...MONO, fontSize: '0.667rem', color: isOverdue ? T.red : T.grey, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                due {fmt(goal.active_commitment.due_date)}{isOverdue && ' · overdue'}
+              </span>
+            </div>
+            <p style={{ ...SERIF, fontSize: '1.111rem', lineHeight: 1.5, marginBottom: 16 }}>{goal.active_commitment.text}</p>
+            {goal.active_commitment.share_post && (
+              <div style={{ marginBottom: 18, padding: '12px 14px', background: T.greyBg, borderLeft: `3px solid ${T.black}` }}>
+                <span style={{ ...MONO, fontSize: '0.611rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: T.grey, display: 'block', marginBottom: 6 }}>Ready to post</span>
+                <p style={{ ...SERIF, fontSize: '0.889rem', fontStyle: 'italic' }}>{goal.active_commitment.share_post}</p>
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
+              <DymoBtn onClick={() => resolveCommitment(goal.active_commitment!.commitment_id, 'done')}>
+                Mark done
+              </DymoBtn>
+              <Btn ghost onClick={() => resolveCommitment(goal.active_commitment!.commitment_id, 'partial')}>Partial</Btn>
+              <Btn ghost dim onClick={() => resolveCommitment(goal.active_commitment!.commitment_id, 'missed')}>Missed</Btn>
+            </div>
+            {showProofForm !== goal.goal_id ? (
+              <button onClick={() => setShowProofForm(goal.goal_id)}
+                style={{ ...MONO, fontSize: '0.667rem', letterSpacing: '0.08em', color: T.grey, cursor: 'pointer', background: 'none', border: 'none', padding: 0, textTransform: 'uppercase' }}>
+                + Add proof of publication
+              </button>
+            ) : (
+              <form onSubmit={e => submitProof(e, goal.goal_id, goal.active_commitment!.commitment_id)} style={{ marginTop: 12 }}>
+                <ProofFields url={proofUrl} setUrl={setProofUrl} platform={proofPlatform} setPlatform={setProofPlatform}
+                  description={proofDescription} setDescription={setProofDescription}
+                  submitting={submittingProof} onCancel={() => setShowProofForm(null)} />
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Completed exercises */}
+      {goal.action_steps.recent_done.length > 0 && (
+        <div style={{ marginBottom: 24 }}>
+          <span style={{ ...MONO, fontSize: '0.667rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: T.grey, display: 'block', marginBottom: 16 }}>
+            Completed exercises ({goal.phase_progress.completed_action_steps})
+          </span>
+          <div style={{ border: `1px solid ${T.greyLight}`, background: T.white }}>
+            {goal.action_steps.recent_done.map((step, i) => (
+              <div key={step.step_id} style={{
+                padding: '12px 16px',
+                borderBottom: i < goal.action_steps.recent_done.length - 1 ? `1px solid ${T.greyLight}` : 'none',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+              }}>
+                <div style={{ flex: 1 }}>
+                  <p style={{ ...SERIF, fontSize: '0.889rem', textDecoration: 'line-through', color: T.grey }}>{step.text}</p>
+                  {step.completion_note && (
+                    <p style={{ ...SERIF, fontSize: '0.778rem', color: T.grey, fontStyle: 'italic', marginTop: 3 }}>"{step.completion_note}"</p>
+                  )}
+                </div>
+                <span style={{ ...MONO, marginLeft: 12, fontSize: '0.611rem', color: T.grey, whiteSpace: 'nowrap', paddingTop: 3 }}>
+                  Lv {step.exercise_level}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Commitment history */}
+      {goal.commitment_history.length > 0 && (
+        <div style={{ marginBottom: 24 }}>
+          <span style={{ ...MONO, fontSize: '0.667rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: T.grey, display: 'block', marginBottom: 16 }}>
+            Commitment log
+          </span>
+          <div style={{ border: `1px solid ${T.greyLight}`, background: T.white }}>
+            {[...goal.commitment_history].reverse().map((c, i) => (
+              <div key={i} style={{
+                padding: '12px 16px',
+                borderBottom: i < goal.commitment_history.length - 1 ? `1px solid ${T.greyLight}` : 'none',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              }}>
+                <p style={{ flex: 1, ...SERIF, fontSize: '0.889rem', color: c.status === 'done' ? T.grey : T.black, textDecoration: c.status === 'done' ? 'line-through' : 'none' }}>{c.text}</p>
+                <span style={{ marginLeft: 12, ...MONO, fontSize: '0.611rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: c.status === 'done' ? '#2d6a2d' : c.status === 'missed' ? T.red : T.grey }}>
+                  {c.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Other goals nav */}
+      {otherGoals.length > 0 && (
+        <div style={{ marginTop: 40, paddingTop: 28, borderTop: `1px solid ${T.greyLight}` }}>
+          <span style={{ ...MONO, fontSize: '0.667rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: T.grey, display: 'block', marginBottom: 16 }}>
+            Other active goals
+          </span>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            {otherGoals.map(g => (
+              <button key={g.goal_id} onClick={() => onSelectGoal(g.goal_id)}
+                style={{
+                  ...SERIF, fontSize: '0.889rem', fontStyle: 'italic', padding: '10px 16px',
+                  border: `1px solid ${T.black}`, background: T.white, cursor: 'pointer',
+                  boxShadow: `2px 2px 0px ${T.black}`, transition: 'all 0.1s',
+                }}>
+                {g.title}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── TOOLS VIEW ─────────────────────────────────────────────────
+function ToolsView({
+  tools, agents, onEnterAgent,
+  showProofForm, setShowProofForm, proofUrl, setProofUrl, proofPlatform, setProofPlatform,
+  proofDescription, setProofDescription, submittingProof, submitProof, publishingLog,
+}: {
+  tools: Array<{ label: string; sub: string; desc: string; onClick?: () => void }>
+  agents: typeof AGENTS
+  onEnterAgent?: (id: AgentId) => void
+  showProofForm: string | null; setShowProofForm: (v: string | null) => void
+  proofUrl: string; setProofUrl: (v: string) => void
+  proofPlatform: string; setProofPlatform: (v: string) => void
+  proofDescription: string; setProofDescription: (v: string) => void
+  submittingProof: boolean
+  submitProof: (e: { preventDefault: () => void }, goalId: string, commitmentId: string) => void
+  publishingLog: PublishingEntry[]
+}) {
+  return (
+    <div style={{ padding: '32px 32px 80px' }}>
+      <h1 style={{ ...MONO, fontSize: '1.778rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 32px', borderBottom: `2px solid ${T.black}`, paddingBottom: 20 }}>
+        Tools
+      </h1>
+
+      {/* Practice tools */}
+      <div style={{ marginBottom: 40 }}>
+        <span style={{ ...MONO, fontSize: '0.667rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: T.grey, display: 'block', marginBottom: 16 }}>
+          Practice
+        </span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+          {tools.map(tool => (
+            <ToolCardLg key={tool.label} label={tool.label} sub={tool.sub} desc={tool.desc} onClick={tool.onClick} />
+          ))}
+        </div>
+      </div>
+
+      {/* Thinking agents */}
+      <div style={{ marginBottom: 40 }}>
+        <span style={{ ...MONO, fontSize: '0.667rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: T.grey, display: 'block', marginBottom: 16 }}>
+          Thinking agents
+        </span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+          {agents.map(agent => (
+            <ToolCardLg key={agent.id} label={agent.name} sub={agent.author} desc={agent.tagline} onClick={() => onEnterAgent?.(agent.id)} />
+          ))}
+        </div>
+      </div>
+
+      {/* Publishing log */}
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16 }}>
+          <span style={{ ...MONO, fontSize: '0.667rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: T.grey }}>
+            Publication log {publishingLog.length > 0 && `(${publishingLog.length})`}
+          </span>
+          {!showProofForm && (
+            <button onClick={() => setShowProofForm('global')}
+              style={{ ...MONO, fontSize: '0.667rem', letterSpacing: '0.1em', color: T.grey, cursor: 'pointer', background: 'none', border: 'none', padding: 0, textTransform: 'uppercase' }}>
+              + Add
+            </button>
+          )}
+        </div>
+        {showProofForm === 'global' && (
+          <form onSubmit={e => submitProof(e, '', '')} style={{ marginBottom: 16, maxWidth: 480 }}>
+            <ProofFields url={proofUrl} setUrl={setProofUrl} platform={proofPlatform} setPlatform={setProofPlatform}
+              description={proofDescription} setDescription={setProofDescription}
+              submitting={submittingProof} onCancel={() => setShowProofForm(null)} />
+          </form>
+        )}
+        {publishingLog.length === 0 ? (
+          <p style={{ ...MONO, fontSize: '0.778rem', color: T.grey }}>Nothing published yet.</p>
+        ) : (
+          <div style={{ border: `2px solid ${T.black}`, boxShadow: `4px 4px 0px ${T.black}` }}>
+            {publishingLog.map((entry, i) => (
+              <div key={entry.log_id} style={{
+                padding: '16px 20px', background: T.white,
+                borderBottom: i < publishingLog.length - 1 ? `1px solid ${T.greyLight}` : 'none',
+                display: 'flex', gap: 16, alignItems: 'flex-start',
+              }}>
+                <div style={{ width: 80, flexShrink: 0 }}>
+                  <span style={{ ...MONO, fontSize: '0.611rem', color: T.grey, textTransform: 'uppercase' }}>{fmt(entry.published_at)}</span>
+                  <span style={{ ...MONO, fontSize: '0.611rem', color: T.grey, textTransform: 'uppercase', display: 'block', marginTop: 3 }}>{PLATFORM_LABELS[entry.platform] || entry.platform}</span>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <p style={{ ...SERIF, fontSize: '1rem', lineHeight: 1.4, marginBottom: entry.url ? 6 : 0 }}>{entry.description}</p>
+                  {entry.url && entry.url !== 'direct message — no url' && (
+                    <a href={entry.url} target="_blank" rel="noopener noreferrer"
+                      style={{ ...MONO, fontSize: '0.611rem', color: T.grey, wordBreak: 'break-all' }}>
+                      {entry.url}
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -720,81 +1086,16 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
 
 // ── SHARED SUBCOMPONENTS ────────────────────────────────────────
 
-function BentoGoals({ goals, sessionsCompleted }: { goals: GoalData[]; sessionsCompleted: number }) {
-  if (goals.length === 0) return (
-    <div style={{ borderTop: `1px solid ${T.black}`, borderLeft: `1px solid ${T.black}` }}>
-      <div style={{ borderRight: `1px solid ${T.black}`, borderBottom: `1px solid ${T.black}`, padding: '20px 24px' }}>
-        <p style={{ ...MONO, fontSize: '0.52rem', color: T.grey }}>No active goals — start a session to define your system.</p>
-      </div>
-    </div>
-  )
-  const primary = goals[0]
-  const isOverdue = primary.active_commitment ? daysUntil(primary.active_commitment.due_date) <= 0 : false
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 0, borderTop: `1px solid ${T.black}`, borderLeft: `1px solid ${T.black}` }}>
-      {/* Primary goal — 8 cols */}
-      <div style={{ gridColumn: '1 / 9', borderRight: `1px solid ${T.black}`, borderBottom: `1px solid ${T.black}`, padding: '20px 24px', background: T.white, position: 'relative' }}>
-        {isOverdue && <div style={{ position: 'absolute', top: 0, right: 0, width: 0, height: 0, borderTop: `24px solid ${T.red}`, borderLeft: '24px solid transparent' }} />}
-        <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
-          <span style={{ ...MONO, fontSize: '0.42rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '2px 6px', background: T.black, color: T.ivory }}>{HORIZON_LABELS[primary.horizon] || primary.horizon}</span>
-          <span style={{ ...MONO, fontSize: '0.42rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '2px 6px', color: T.grey, border: `1px solid ${T.greyLight}` }}>{PHASE_LABELS[primary.phase] || primary.phase}</span>
-        </div>
-        <p style={{ ...SERIF, fontSize: '1.05rem', lineHeight: 1.35, marginBottom: primary.description ? 8 : 0 }}>{primary.title}</p>
-        {primary.description && <p style={{ ...SERIF, fontSize: '0.83rem', color: T.grey, lineHeight: 1.4, marginBottom: 12 }}>{primary.description.length > 140 ? primary.description.slice(0, 140) + '…' : primary.description}</p>}
-        {primary.action_steps.pending.length > 0 && (
-          <div style={{ paddingTop: 10, borderTop: `1px solid ${T.greyLight}` }}>
-            <span style={{ ...MONO, fontSize: '0.38rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 5 }}>Current exercise</span>
-            <p style={{ ...SERIF, fontSize: '0.88rem', lineHeight: 1.4 }}>{primary.action_steps.pending[0].text}</p>
-          </div>
-        )}
-      </div>
-
-      {/* Metrics — 4 cols */}
-      <div style={{ gridColumn: '9 / 13', borderRight: `1px solid ${T.black}`, borderBottom: `1px solid ${T.black}`, padding: '16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div>
-          <span style={{ ...MONO, fontSize: '0.38rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 3 }}>Phase</span>
-          <span style={{ ...MONO, fontSize: '0.52rem', fontWeight: 700, textTransform: 'uppercase' }}>{PHASE_LABELS[primary.phase] || primary.phase}</span>
-        </div>
-        <div>
-          <span style={{ ...MONO, fontSize: '0.38rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 3 }}>Days in phase</span>
-          <span style={{ ...MONO, fontSize: '0.52rem', fontWeight: 700 }}>{primary.phase_progress.days_elapsed}</span>
-        </div>
-        {primary.active_commitment && (
-          <div>
-            <span style={{ ...MONO, fontSize: '0.38rem', color: isOverdue ? T.red : T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 3 }}>{isOverdue ? '⚠ Overdue' : 'Commitment'}</span>
-            <p style={{ ...MONO, fontSize: '0.42rem', color: isOverdue ? T.red : T.black, lineHeight: 1.4 }}>{primary.active_commitment.text.length > 80 ? primary.active_commitment.text.slice(0, 80) + '…' : primary.active_commitment.text}</p>
-          </div>
-        )}
-        <div>
-          <span style={{ ...MONO, fontSize: '0.38rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', marginBottom: 3 }}>Sessions</span>
-          <span style={{ ...MONO, fontSize: '0.52rem', fontWeight: 700 }}>{sessionsCompleted}</span>
-        </div>
-      </div>
-
-      {/* Additional goals — 6 cols each */}
-      {goals.slice(1).map((g, idx) => (
-        <div key={g.goal_id} style={{ gridColumn: idx % 2 === 0 ? '1 / 7' : '7 / 13', borderRight: `1px solid ${T.black}`, borderBottom: `1px solid ${T.black}`, padding: '14px 16px', background: T.white }}>
-          <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
-            <span style={{ ...MONO, fontSize: '0.38rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '2px 5px', background: T.black, color: T.ivory }}>{HORIZON_LABELS[g.horizon] || g.horizon}</span>
-          </div>
-          <p style={{ ...SERIF, fontSize: '0.88rem', lineHeight: 1.35 }}>{g.title}</p>
-        </div>
-      ))}
-    </div>
-  )
-}
-
 function SectionLabel({ children, small, inline }: { children: React.ReactNode; small?: boolean; inline?: boolean }) {
-  const style: React.CSSProperties = {
-    fontFamily: "'Space Mono', monospace",
-    fontSize: small ? '0.42rem' : '0.52rem',
-    letterSpacing: '0.18em',
-    textTransform: 'uppercase',
-    color: '#888880',
-    display: inline ? 'inline' : 'block',
-    marginBottom: inline ? 0 : 10,
-  }
-  return <span style={style}>{children}</span>
+  return (
+    <span style={{
+      ...MONO, fontSize: small ? '0.611rem' : '0.667rem',
+      letterSpacing: '0.18em', textTransform: 'uppercase', color: T.grey,
+      display: inline ? 'inline' : 'block', marginBottom: inline ? 0 : 12,
+    }}>
+      {children}
+    </span>
+  )
 }
 
 function DymoBtn({ children, onClick, fullWidth }: { children: React.ReactNode; onClick?: () => void; fullWidth?: boolean }) {
@@ -802,10 +1103,10 @@ function DymoBtn({ children, onClick, fullWidth }: { children: React.ReactNode; 
   return (
     <button onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{
-        fontFamily: "'Space Mono', monospace", fontWeight: 700,
-        fontSize: '0.55rem', letterSpacing: '0.18em', textTransform: 'uppercase',
+        ...MONO, fontWeight: 700,
+        fontSize: '0.667rem', letterSpacing: '0.18em', textTransform: 'uppercase',
         background: T.black, color: T.white,
-        border: `2px solid ${T.black}`, padding: '10px 16px', cursor: 'pointer',
+        border: `2px solid ${T.black}`, padding: '11px 18px', cursor: 'pointer',
         width: fullWidth ? '100%' : 'auto',
         boxShadow: hov ? `1px 1px 0px ${T.black}` : `4px 4px 0px ${T.black}`,
         transform: hov ? 'translate(3px,3px)' : 'none',
@@ -821,8 +1122,8 @@ function Btn({ children, onClick, ghost, dim }: { children: React.ReactNode; onC
   return (
     <button onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{
-        fontFamily: "'Space Mono', monospace", fontSize: '0.42rem',
-        letterSpacing: '0.1em', textTransform: 'uppercase', padding: '5px 10px',
+        ...MONO, fontSize: '0.667rem',
+        letterSpacing: '0.1em', textTransform: 'uppercase', padding: '7px 14px',
         border: `1px solid ${dim ? T.greyLight : T.black}`,
         background: ghost ? 'transparent' : T.black,
         color: ghost ? (dim ? T.grey : T.black) : T.white,
@@ -836,25 +1137,21 @@ function Btn({ children, onClick, ghost, dim }: { children: React.ReactNode; onC
   )
 }
 
-function ToolCard({ label, sub, desc, onClick, cta }: { label: string; sub: string; desc: string; onClick?: () => void; cta: string }) {
+function ToolCardLg({ label, sub, desc, onClick }: { label: string; sub: string; desc: string; onClick?: () => void }) {
   const [hov, setHov] = useState(false)
   return (
     <div onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{
-        border: `1px solid ${T.black}`,
-        borderBottom: 'none',
-        padding: '10px 12px', cursor: 'pointer',
+        border: `2px solid ${T.black}`,
+        boxShadow: hov ? `1px 1px 0px ${T.black}` : `4px 4px 0px ${T.black}`,
+        transform: hov ? 'translate(3px,3px)' : 'none',
+        padding: '20px 20px', cursor: 'pointer',
         background: hov ? T.greyBg : T.white,
-        transition: 'background 0.1s',
+        transition: 'all 0.1s',
       }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 3 }}>
-        <div>
-          <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.38rem', color: T.grey, letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: 1 }}>{sub}</span>
-          <span style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '0.88rem', lineHeight: 1.2 }}>{label}</span>
-        </div>
-        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.42rem', color: T.grey, letterSpacing: '0.06em', flexShrink: 0, paddingTop: 2 }}>{cta}</span>
-      </div>
-      <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.42rem', color: T.grey, lineHeight: 1.5, letterSpacing: '0.03em' }}>{desc}</p>
+      <span style={{ ...MONO, fontSize: '0.611rem', color: T.grey, letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>{sub}</span>
+      <span style={{ ...SERIF, fontStyle: 'italic', fontSize: '1.111rem', lineHeight: 1.2, display: 'block', marginBottom: 10 }}>{label}</span>
+      <p style={{ ...MONO, fontSize: '0.667rem', color: T.grey, lineHeight: 1.6, letterSpacing: '0.03em' }}>{desc}</p>
     </div>
   )
 }
@@ -864,11 +1161,11 @@ function ProofFields({ url, setUrl, platform, setPlatform, description, setDescr
   description: string; setDescription: (v: string) => void; submitting: boolean; onCancel: () => void
 }) {
   return (
-    <div style={{ display: 'grid', gap: 8 }}>
+    <div style={{ display: 'grid', gap: 10 }}>
       <input type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="URL to what you published" required
-        style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: '0.9rem', padding: 8, border: `1px solid ${T.black}`, width: '100%', background: T.white }} />
+        style={{ ...SERIF, fontSize: '1rem', padding: 10, border: `1px solid ${T.black}`, width: '100%', background: T.white }} />
       <select value={platform} onChange={e => setPlatform(e.target.value)}
-        style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: '0.9rem', padding: 8, border: `1px solid ${T.black}`, background: T.white }}>
+        style={{ ...SERIF, fontSize: '1rem', padding: 10, border: `1px solid ${T.black}`, background: T.white }}>
         <option value="community">Unlabeled Community</option>
         <option value="linkedin">LinkedIn</option>
         <option value="twitter">X / Twitter</option>
@@ -878,10 +1175,10 @@ function ProofFields({ url, setUrl, platform, setPlatform, description, setDescr
         <option value="other">Other</option>
       </select>
       <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="What did you publish? One or two sentences." rows={2} required
-        style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: '0.9rem', padding: 8, border: `1px solid ${T.black}`, resize: 'vertical', background: T.white }} />
-      <div style={{ display: 'flex', gap: 8 }}>
+        style={{ ...SERIF, fontSize: '1rem', padding: 10, border: `1px solid ${T.black}`, resize: 'vertical', background: T.white }} />
+      <div style={{ display: 'flex', gap: 10 }}>
         <button type="submit" disabled={submitting}
-          style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.42rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '5px 10px', border: `1px solid ${T.black}`, background: T.black, color: T.white, cursor: 'pointer', opacity: submitting ? 0.5 : 1, boxShadow: `2px 2px 0px ${T.black}` }}>
+          style={{ ...MONO, fontSize: '0.667rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '8px 14px', border: `1px solid ${T.black}`, background: T.black, color: T.white, cursor: 'pointer', opacity: submitting ? 0.5 : 1, boxShadow: `2px 2px 0px ${T.black}` }}>
           {submitting ? 'Saving…' : 'Save proof'}
         </button>
         <Btn ghost dim onClick={onCancel}>Cancel</Btn>
