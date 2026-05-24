@@ -50,23 +50,45 @@ export default function App() {
     prevQuadrantRef.current = q
   }, [currentPhase])
 
-  // Check auth on mount
+  // Check auth on mount — also handles ?demo auto-login
   useEffect(() => {
-    fetch('/api/dashboard', { credentials: 'include' })
-      .then(res => {
-        if (res.ok) return res.json()
-        return null
-      })
-      .then(data => {
-        if (data?.profile) {
-          setUser({ slug: data.profile.slug, user_id: data.profile.slug })
-          setCurrentPhase(data.profile.current_phase || 'phase_0')
-          setView('dashboard')
-        } else {
-          setView('onboarding')
+    async function init() {
+      // If ?demo in URL, hit the demo endpoint first
+      if (window.location.search.includes('demo')) {
+        try {
+          const demoRes = await fetch('/api/auth/demo', { credentials: 'include' })
+          if (demoRes.ok) {
+            const demoData = await demoRes.json()
+            setUser({ slug: demoData.slug, user_id: demoData.user_id })
+            setCurrentPhase('commitment')
+            setView('dashboard')
+            // Clean the URL without reloading
+            window.history.replaceState({}, '', window.location.pathname)
+            return
+          }
+        } catch {
+          // fall through to normal auth check
         }
-      })
-      .catch(() => setView('onboarding'))
+      }
+
+      // Normal auth check
+      fetch('/api/dashboard', { credentials: 'include' })
+        .then(res => {
+          if (res.ok) return res.json()
+          return null
+        })
+        .then(data => {
+          if (data?.profile) {
+            setUser({ slug: data.profile.slug, user_id: data.profile.slug })
+            setCurrentPhase(data.profile.current_phase || 'phase_0')
+            setView('dashboard')
+          } else {
+            setView('onboarding')
+          }
+        })
+        .catch(() => setView('onboarding'))
+    }
+    init()
   }, [])
 
   const handleOnboardingComplete = (slug: string) => {

@@ -141,6 +141,21 @@ router.post('/auth/dev-login', async (req: Request, res: Response) => {
   res.json({ ok: true, slug })
 })
 
+// ── GET /api/auth/demo ────────────────────────────────────────
+// Auto-logs in as the Bruce demo profile. Works in production.
+// Intended for sharing a populated demo with potential users.
+
+router.get('/auth/demo', async (req: Request, res: Response) => {
+  const DEMO_SLUG = process.env.DEMO_SLUG || 'bruce'
+  const profile = await readProfile(DEMO_SLUG)
+  if (!profile) {
+    res.status(404).json({ error: 'Demo profile not found' })
+    return
+  }
+  issueSession(res, profile.user_id, profile.slug)
+  res.json({ ok: true, slug: profile.slug, user_id: profile.user_id })
+})
+
 // ── POST /api/auth/logout ─────────────────────────────────────
 
 router.post('/auth/logout', (req: Request, res: Response) => {

@@ -145,6 +145,15 @@ export default function Onboarding({ onComplete }: Props) {
             Already have an account? Sign in
           </button>
         </p>
+
+        <p style={{ marginTop: 'var(--space-lg)', fontSize: '0.75rem' }}>
+          <a
+            href="/?demo"
+            style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--grey)', textDecoration: 'none', borderBottom: '1px solid var(--grey-light)' }}
+          >
+            View a populated demo profile →
+          </a>
+        </p>
       </div>
     )
   }
