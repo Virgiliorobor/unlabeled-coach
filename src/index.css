@@ -868,6 +868,11 @@ button { cursor: pointer; border: none; background: none; font-family: var(--fon
 }
 
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ═══════════════════════════════════════════════════════════
    SNAP-TO-GRID TRANSITION (Sandbox → System)
    The "Wow" moment — messy notes animate into perfect grid.
