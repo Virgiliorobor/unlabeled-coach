@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unlabeled — How It Works</title>
+  <meta name="description" content="A structured self-reflection system for solo builders in identity transition. Not a productivity tool. Not therapy." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Permanent+Marker&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       UNLABELED — HOW IT WORKS / PHILOSOPHY
+       Standalone documentation page
+       Design: Annotated document / printed intake form
+       ═══════════════════════════════════════════════════════════ */
+
+    /* ── GLOBAL TOKENS ──────────────────────────────────────── */
+    :root {
+      --canvas:        #F3F1EB;
+      --canvas-dark:   #E8E6E0;
+      --black:         #111111;
+      --grey:          #888880;
+      --grey-light:    #D8D8D4;
+      --red:           #B01A28;
+      --yellow:        #FFF000;
+
+      --font-serif:      'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-mono:       'Space Mono', 'Courier New', monospace;
+      --font-typewriter: 'Courier Prime', 'Courier New', monospace;
+      --font-marker:     'Permanent Marker', cursive;
+
+      --border:       1px solid #111111;
+      --border-thick: 2px solid #111111;
+      --shadow:       4px 4px 0px #111111;
+      --shadow-sm:    2px 2px 0px #111111;
+
+      --max-width: 660px;
+      --space-xs:   6px;
+      --space-sm:  16px;
+      --space-md:  32px;
+      --space-lg:  64px;
+      --space-xl: 120px;
+    }
+
+    /* ── BASE RESET ─────────────────────────────────────────── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 18px;
+      -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
+    }
+
+    /* ── BODY — ledger paper + grain ─────────────────────────── */
+    body {
+      background-color: var(--canvas);
+      background-image:
+        repeating-linear-gradient(
+          transparent,
+          transparent 31px,
+          rgba(0,0,0,0.045) 31px,
+          rgba(0,0,0,0.045) 32px
+        );
+      color: var(--black);
+      font-family: var(--font-serif);
+      line-height: 1.8;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* SVG noise grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.04;
+    }
+
+    /* ── LAYOUT ─────────────────────────────────────────────── */
+    .page-wrap {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 var(--space-md);
+      position: relative;
+    }
+
+    /* ── TYPOGRAPHY ─────────────────────────────────────────── */
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: normal;
+      line-height: 1.3;
+    }
+
+    p {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      margin-bottom: 1em;
+    }
+    p:last-child { margin-bottom: 0; }
+
+    strong {
+      font-weight: 500;
+    }
+
+    /* Section number + label treatment */
+    .section-num {
+      font-family: var(--font-mono);
+      font-size: 0.5rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--grey);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      font-weight: normal;
+      line-height: 1.3;
+      margin-bottom: var(--space-md);
+    }
+
+    /* Mono label — field labels, captions */
+    .label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+
+    /* Handwritten annotation */
+    .annotation {
+      font-family: var(--font-marker);
+      font-size: 0.8rem;
+      color: var(--grey);
+      transform: rotate(-1.2deg);
+      display: inline-block;
+    }
+
+    /* Highlighted text — yellow marker sweep */
+    .hl {
+      background: linear-gradient(transparent 52%, rgba(255,240,0,0.72) 52%);
+      padding: 0 2px;
+    }
+
+    /* Monospace inline code / data text */
+    .mono {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── HORIZONTAL RULES ───────────────────────────────────── */
+    hr {
+      border: none;
+      border-top: var(--border-thick);
+      margin: var(--space-md) 0;
+    }
+    hr.thin {
+      border-top: var(--border);
+      margin: var(--space-sm) 0;
+    }
+
+    /* ── LABEL MACHINE (Dymo red tape) ──────────────────────── */
+    .label-machine {
+      display: inline-block;
+      background: #B01A28;
+      color: #F5EDE0;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.32em;
+      padding: 7px 16px 6px;
+      transform: rotate(-0.6deg);
+      position: relative;
+      text-shadow:
+        0 1px 0 rgba(255,255,255,0.22),
+        0 -1px 0 rgba(0,0,0,0.45);
+      box-shadow:
+        inset 0 3px 6px rgba(255,255,255,0.1),
+        inset 0 -3px 6px rgba(0,0,0,0.28),
+        3px 4px 0 rgba(0,0,0,0.32);
+    }
+    .label-machine::before,
+    .label-machine::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(to right, rgba(255,255,255,0.08), transparent);
+    }
+    .label-machine::before { left: 0; }
+    .label-machine::after  {
+      right: 0;
+      background: linear-gradient(to left, rgba(0,0,0,0.15), transparent);
+    }
+
+    /* ── TAPE BORDER ────────────────────────────────────────── */
+    .tape-border {
+      position: relative;
+      border: var(--border-thick);
+      padding: var(--space-md);
+      box-shadow: var(--shadow);
+    }
+    .tape-border::before,
+    .tape-border::after {
+      content: '';
+      position: absolute;
+      background: rgba(255,240,0,0.75);
+      border: 1px solid rgba(0,0,0,0.12);
+      height: 14px;
+    }
+    .tape-border::before {
+      top: -7px;
+      left: 16px;
+      width: 56px;
+      transform: rotate(-1.5deg);
+    }
+    .tape-border::after {
+      bottom: -7px;
+      right: 24px;
+      width: 40px;
+      transform: rotate(1deg);
+    }
+
+    /* ── CROP MARKS ─────────────────────────────────────────── */
+    .crop-mark {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      pointer-events: none;
+    }
+    .crop-mark--tl {
+      top: 20px; left: 20px;
+      border-top: 1px solid rgba(0,0,0,0.2);
+      border-left: 1px solid rgba(0,0,0,0.2);
+    }
+    .crop-mark--tr {
+      top: 20px; right: 20px;
+      border-top: 1px solid rgba(0,0,0,0.2);
+      border-right: 1px solid rgba(0,0,0,0.2);
+    }
+    .crop-mark--bl {
+      bottom: 20px; left: 20px;
+      border-bottom: 1px solid rgba(0,0,0,0.2);
+      border-left: 1px solid rgba(0,0,0,0.2);
+    }
+    .crop-mark--br {
+      bottom: 20px; right: 20px;
+      border-bottom: 1px solid rgba(0,0,0,0.2);
+      border-right: 1px solid rgba(0,0,0,0.2);
+    }
+
+    /* ── SECTIONS ───────────────────────────────────────────── */
+    .section {
+      padding: var(--space-lg) 0;
+      border-bottom: var(--border-thick);
+    }
+    .section:last-of-type {
+      border-bottom: none;
+    }
+
+    /* ── PATTERNS TABLE ─────────────────────────────────────── */
+    .pattern-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      margin-top: var(--space-md);
+    }
+    .pattern-table thead tr {
+      border-bottom: var(--border-thick);
+    }
+    .pattern-table thead th {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-align: left;
+      padding: 8px 12px 8px 0;
+      font-weight: 400;
+    }
+    .pattern-table thead th:last-child { padding-right: 0; }
+    .pattern-table tbody tr {
+      border-bottom: 1px solid var(--grey-light);
+    }
+    .pattern-table tbody tr:last-child {
+      border-bottom: none;
+    }
+    .pattern-table tbody td {
+      padding: 12px 12px 12px 0;
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .pattern-table tbody td:first-child {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .pattern-table tbody td:last-child {
+      padding-right: 0;
+      font-style: italic;
+      color: var(--grey);
+      font-size: 0.9rem;
+    }
+
+    /* ── ASCII / CODE BLOCKS ─────────────────────────────────── */
+    .ascii-block {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      line-height: 1.8;
+      letter-spacing: 0.02em;
+      background: var(--canvas-dark);
+      border: var(--border);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+      white-space: pre;
+    }
+
+    /* ── PHASE RAIL ─────────────────────────────────────────── */
+    .phase-rail {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: var(--space-md) 0;
+      overflow-x: auto;
+    }
+    .phase-node {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      border: var(--border);
+      white-space: nowrap;
+      background: var(--canvas);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .phase-node + .phase-node {
+      border-left: none;
+    }
+    .phase-node.active {
+      background: var(--black);
+      color: var(--canvas);
+    }
+    .phase-connector {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--grey);
+      padding: 0 2px;
+      flex-shrink: 0;
+    }
+
+    /* ── PHASE DETAILS ──────────────────────────────────────── */
+    .phase-list {
+      margin-top: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .phase-item {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: var(--space-sm);
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--grey-light);
+      align-items: start;
+    }
+    .phase-item:last-child { border-bottom: none; }
+    .phase-label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--grey);
+      padding-top: 4px;
+    }
+    .phase-desc {
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+    .phase-gate {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* ── BEFORE / AFTER CONTRAST ─────────────────────────────── */
+    .contrast-block {
+      margin: var(--space-md) 0;
+    }
+    .contrast-row {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: var(--space-sm);
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--grey-light);
+      align-items: start;
+    }
+    .contrast-row:last-child { border-bottom: none; }
+    .contrast-tag {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding-top: 3px;
+    }
+    .contrast-tag.generic { color: var(--grey); }
+    .contrast-tag.unlabeled { color: var(--red); }
+    .contrast-text {
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .contrast-text.generic { color: var(--grey); font-style: italic; }
+    .contrast-text.unlabeled { color: var(--black); }
+
+    /* ── CHAT DEMO ──────────────────────────────────────────── */
+    #chat-demo {
+      margin: var(--space-md) 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-height: 200px;
+    }
+    .chat-msg {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .chat-msg.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .chat-msg--coach { align-items: flex-start; }
+    .chat-msg--user  { align-items: flex-end; }
+
+    .chat-speaker {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+    .chat-bubble {
+      max-width: 88%;
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+    .chat-msg--coach .chat-bubble {
+      padding: 0;
+      background: transparent;
+    }
+    .chat-msg--user .chat-bubble {
+      background: var(--canvas-dark);
+      border: var(--border);
+      padding: 10px 14px;
+      transform: rotate(0.3deg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chat-replay-btn {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: var(--border-thick);
+      padding: 8px 16px;
+      background: transparent;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.1s, transform 0.1s;
+      margin-top: var(--space-sm);
+      align-self: flex-start;
+    }
+    .chat-replay-btn:hover {
+      box-shadow: none;
+      transform: translate(2px, 2px);
+    }
+
+    /* ── AGENT CARDS ────────────────────────────────────────── */
+    .agent-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+    .agent-card {
+      border: var(--border-thick);
+      padding: var(--space-md);
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    .agent-card-num {
+      font-family: var(--font-mono);
+      font-size: 0.5rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--grey);
+      display: block;
+      margin-bottom: 8px;
+    }
+    .agent-card-title {
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+    .agent-card-author {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: var(--space-sm);
+      display: block;
+    }
+    .agent-card-body {
+      font-family: var(--font-serif);
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: var(--grey);
+      margin-bottom: var(--space-sm);
+    }
+    .agent-card-end {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.06em;
+      color: var(--black);
+      border-top: 1px solid var(--grey-light);
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+
+    /* ── TOOLS BLOCK ────────────────────────────────────────── */
+    .tool-block {
+      margin-top: var(--space-md);
+    }
+    .tool-item {
+      padding: var(--space-md) 0;
+      border-bottom: 1px solid var(--grey-light);
+    }
+    .tool-item:last-child { border-bottom: none; }
+    .tool-name {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    /* ── TRACKING ITEMS ─────────────────────────────────────── */
+    .tracking-list {
+      margin-top: var(--space-md);
+    }
+    .tracking-item {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: var(--space-sm);
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--grey-light);
+      align-items: start;
+    }
+    .tracking-item:last-child { border-bottom: none; }
+    .tracking-key {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--grey);
+      padding-top: 3px;
+    }
+    .tracking-val {
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* ── PHILOSOPHY POINTS ──────────────────────────────────── */
+    .phil-list {
+      margin-top: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .phil-item {}
+    .phil-headline {
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      font-weight: 500;
+      font-style: italic;
+      margin-bottom: 6px;
+    }
+    .phil-body {
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: var(--black);
+    }
+
+    /* ── COMMITMENT LADDER ──────────────────────────────────── */
+    .ladder {
+      margin-top: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .ladder-rung {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: var(--space-sm);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--grey-light);
+      align-items: start;
+    }
+    .ladder-rung:last-child { border-bottom: none; }
+    .rung-num {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: var(--grey);
+      padding-top: 3px;
+    }
+    .rung-text {
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* ── NOTE CALLOUT ───────────────────────────────────────── */
+    .note-callout {
+      border-left: 3px solid var(--black);
+      padding: var(--space-sm) var(--space-md);
+      margin: var(--space-md) 0;
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      font-style: italic;
+    }
+
+    /* ── INLINE ANNOTATION ──────────────────────────────────── */
+    .inline-note {
+      display: inline-block;
+      font-family: var(--font-marker);
+      font-size: 0.78rem;
+      color: var(--grey);
+      transform: rotate(-0.8deg);
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────────── */
+    .page-header {
+      padding: var(--space-lg) 0 var(--space-md);
+      position: relative;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-md);
+    }
+    .header-micro {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-align: right;
+      padding-top: 4px;
+    }
+    .page-tagline {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      font-weight: normal;
+      line-height: 1.45;
+      margin: var(--space-md) 0 var(--space-sm);
+      max-width: 520px;
+    }
+    .page-subdeck {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      font-style: italic;
+      line-height: 1.75;
+      color: var(--grey);
+      max-width: 500px;
+    }
+
+    /* ── FOOTER ─────────────────────────────────────────────── */
+    .page-footer {
+      padding: var(--space-lg) 0 var(--space-md);
+      position: relative;
+      border-top: var(--border-thick);
+      margin-top: var(--space-lg);
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-label {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+
+    /* ── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      html { font-size: 16px; }
+
+      .page-wrap { padding: 0 var(--space-sm); }
+
+      .agent-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .phase-item {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+      .phase-label { padding-top: 0; }
+
+      .tracking-item {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+      .tracking-key { padding-top: 0; }
+
+      .contrast-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+
+      .pattern-table thead th:last-child,
+      .pattern-table tbody td:last-child {
+        display: none;
+      }
+
+      .phase-rail { flex-wrap: wrap; }
+      .phase-node + .phase-node { border-left: var(--border); margin-top: -1px; }
+
+      .page-tagline { font-size: 1.1rem; }
+    }
+
+    /* ── PRINT STYLES ───────────────────────────────────────── */
+    @media print {
+      body { background-image: none; }
+      body::after { display: none; }
+      .crop-mark { display: block; }
+      .chat-replay-btn { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ═══ PAGE WRAP ════════════════════════════════════════════ -->
+<div class="page-wrap">
+
+  <!-- Crop marks — print registration -->
+  <div class="crop-mark crop-mark--tl"></div>
+  <div class="crop-mark crop-mark--tr"></div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 00 — HEADER
+       ═══════════════════════════════════════════════════════ -->
+  <header class="page-header">
+    <div class="header-top">
+      <span class="label-machine">Unlabeled</span>
+      <div class="header-micro">
+        intake · vol. I<br />
+        public documentation
+      </div>
+    </div>
+
+    <hr />
+
+    <p class="page-tagline">
+      A structured self-reflection system for solo builders in identity transition.
+    </p>
+    <p class="page-subdeck">
+      Not a productivity tool. Not therapy. The thing you use when you already know what you should be doing and you're still not doing it.
+    </p>
+  </header>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 01 — THE PROBLEM
+       ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="problem">
+    <span class="section-num">01 — THE PROBLEM</span>
+    <h2 class="section-title">Why most tools fail solo builders</h2>
+
+    <p>
+      Solo builders coming from another domain — law, finance, engineering, medicine, a trade — are not productivity-starved. They know what to do. The gap is identity. They haven't claimed what they're becoming. They move between worlds with no clear map.
+    </p>
+    <p>
+      Every tool they reach for is built for someone already inside the identity they're still negotiating. Productivity tools assume the tasks are clear. Therapy addresses the past. Coaching usually means someone else's framework applied to your situation.
+    </p>
+    <p>
+      None of these are wrong — they're just not built for the specific problem of a person mid-transition who has real expertise, a real build, and a persistent inability to act like the thing they're clearly becoming.
+    </p>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 02 — THE PHILOSOPHY
+       ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="philosophy">
+    <span class="section-num">02 — PHILOSOPHY</span>
+    <h2 class="section-title">Reflection that leads to action — and only that</h2>
+
+    <div class="phil-list">
+
+      <div class="phil-item">
+        <div class="phil-headline">The resistance pattern is the work.</div>
+        <p class="phil-body">
+          Every builder in identity transition has one dominant pattern — a specific way they avoid the next step. Perfectionism, imposter syndrome, always seeking validation, constantly expanding scope, anchoring to the old identity, or avoiding visibility. The pattern is consistent. It shows up on every goal, in every phase. The coach's job is to name it precisely and create the conditions where the builder can see it in action.
+        </p>
+      </div>
+
+      <div class="phil-item">
+        <div class="phil-headline">The goal is the unit, not the person.</div>
+        <p class="phil-body">
+          The person is profiled once. After that, everything is goal-level. Each goal moves through its own phase loop. The same person can have a 30-day goal in the commitment phase, a 90-day goal in reflection, and a 12-month goal just beginning intake. Progress is tracked per goal, not as a global "how are you doing."
+        </p>
+      </div>
+
+      <div class="phil-item">
+        <div class="phil-headline">Reflection without action is just processing.</div>
+        <p class="phil-body">
+          Every session ends with a concrete assignment — an action step with a specific verb and a due date. Every commitment is public. Not performative — public. The act of making something visible to someone else is the mechanism that breaks the pattern.
+        </p>
+      </div>
+
+      <div class="phil-item">
+        <div class="phil-headline">The pattern is named, not treated.</div>
+        <p class="phil-body">
+          This is not therapy. The coach doesn't try to resolve the underlying resistance. It names it precisely, in the context of the current goal, so the builder can see what they're doing. <em>"The identity anchor pattern that slowed you on the consulting goal is appearing here too — you keep calling this a project instead of a business."</em> That observation, made at the right moment, is more useful than six months of exploration.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 03 — RESISTANCE PATTERNS
+       ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="patterns">
+    <span class="section-num">03 — RESISTANCE PATTERNS</span>
+    <h2 class="section-title">Six patterns. One per person.</h2>
+
+    <table class="pattern-table">
+      <thead>
+        <tr>
+          <th>Pattern</th>
+          <th>The tell</th>
+          <th>What it sounds like</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Perfectionist</td>
+          <td>It's not ready yet</td>
+          <td>"I need to fix one more thing before I send it"</td>
+        </tr>
+        <tr>
+          <td>Imposter</td>
+          <td>Who am I to do this?</td>
+          <td>"People with real credentials would see through this"</td>
+        </tr>
+        <tr>
+          <td>Validator seeker</td>
+          <td>Always checking</td>
+          <td>"Let me run it by a few people first and see what they think"</td>
+        </tr>
+        <tr>
+          <td>Scope expander</td>
+          <td>Can't stop adding</td>
+          <td>"What if I also added the onboarding flow before launching"</td>
+        </tr>
+        <tr>
+          <td>Identity anchor</td>
+          <td>Still the old thing</td>
+          <td>"I'm not really a consultant, I come from operations"</td>
+        </tr>
+        <tr>
+          <td>Visibility avoider</td>
+          <td>Hiding from the audience</td>
+          <td>"I'll publish when it's more polished, when there's more to show"</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note-callout">
+      The pattern is established in the person intake (once, ever) and remains stable. It manifests differently on each goal — but the underlying structure is the same.
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 04 — THE PORTFOLIO MODEL
+       ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="model">
+    <span class="section-num">04 — HOW IT WORKS</span>
+    <h2 class="section-title">The portfolio model</h2>
+
+    <p>
+      The system coaches goals, not people. The person is profiled once — background, resistance pattern, dominant lens, behavioral signals. After that, each goal the person names moves through its own independent reflection-to-action loop.
+    </p>
+
+    <div class="ascii-block">PERSON (profiled once)
+├── background + build
+├── resistance pattern: identity_anchor
+├── dominant lens: business
+└── goals[]
+    ├── 30-day:  "First external conversation"  → commitment phase
+    ├── 90-day:  "First paid engagement"        → reflection phase
+    └── 12-month: "Full-time consultant"        → intake phase</div>
+
+    <p>
+      Each session focuses on one goal — the most recently touched active goal by default. The person can redirect to any goal. The coach picks up exactly where that goal's phase work left off.
+    </p>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 05 — THE PHASES
+       ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="phases">
+    <span class="section-num">05 — THE PHASES</span>
+    <h2 class="section-title">Six phases. Each goal moves independently.</h2>
+
+    <!-- Phase rail -->
+    <div class="phase-rail">
+      <div class="phase-node">Intake</div>
+      <div class="phase-node">Reflection</div>
+      <div class="phase-node">Clarity</div>
+      <div class="phase-node">Resistance</div>
+      <div class="phase-node active">Commitment</div>
+      <div class="phase-node">Accountability</div>
+    </div>
+
+    <div class="phase-list">
+
+      <div class="phase-item">
+        <div class="phase-label">
+          Intake
+          <span class="phase-gate">same-session transition</span>
+        </div>
+        <div class="phase-desc">
+          Establish what this goal actually is. Five questions. Goal description confirmed, first action step assigned. Transitions to reflection in the same session.
+        </div>
+      </div>
+
+      <div class="phase-item">
+        <div class="phase-label">
+          Reflection
+          <span class="phase-gate">gate: 2+ contradictions · 1 action step · 3 days</span>
+        </div>
+        <div class="phase-desc">
+          Surface the contradictions specific to this goal. What the builder says they want vs. what they actually do. One to two sessions. The coach is watching for the gap between stated intent and observable behavior.
+        </div>
+      </div>
+
+      <div class="phase-item">
+        <div class="phase-label">
+          Clarity
+          <span class="phase-gate">gate: goal in one sentence · 1 action step · 3 days</span>
+        </div>
+        <div class="phase-desc">
+          Define what done looks like — not perfectly done, the version where the goal is honestly behind them. One sentence. Not a vision statement. A finish line.
+        </div>
+      </div>
+
+      <div class="phase-item">
+        <div class="phase-label">
+          Resistance
+          <span class="phase-gate">gate: pattern named in context · card deployed · 1 action step · 3 days</span>
+        </div>
+        <div class="phase-desc">
+          Name how the person's pattern manifests on this specific goal. Deploy an Oblique Strategies card. The pattern has been named globally — here it is named in context, against this specific goal and the specific behavior it's producing right now.
+        </div>
+      </div>
+
+      <div class="phase-item">
+        <div class="phase-label">
+          Commitment
+          <span class="phase-gate">gate: commitment declared · output package generated</span>
+        </div>
+        <div class="phase-desc">
+          One public act toward this goal. Specific, declared in session, assigned a ladder rung (1–7). The output package includes a share post, a print card, and a daily reminder sequence for 7 days.
+        </div>
+      </div>
+
+      <div class="phase-item">
+        <div class="phase-label">
+          Accountability
+          <span class="phase-gate">gate: outcome recorded</span>
+        </div>
+        <div class="phase-desc">
+          Did they do it? What happened? Loop back to commitment or mark goal complete. Missed commitments are not erased — they are recorded with the pattern they represent.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="note-callout">
+      All transitions except intake→reflection require a minimum of 3 days in the current phase AND content gates (completed action steps, specific things named). The system won't rush phases.
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 06 — PERSON INTAKE
+       ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="intake">
+    <span class="section-num">06 — PERSON INTAKE</span>
+    <h2 class="section-title">One conversation. Permanent calibration.</h2>
+
+    <p>
+      The person intake runs once, at the beginning, before any goal work. It takes 20 minutes. It establishes:
+    </p>
+
+    <div class="tracking-list">
+      <div class="tracking-item">
+        <div class="tracking-key">Domain + transition</div>
+        <div class="tracking-val">Background and transition type — deliberate vs. pushed into change.</div>
+      </div>
+      <div class="tracking-item">
+        <div class="tracking-key">Build + ship history</div>
+        <div class="tracking-val">What's been built and what's actually been shipped. The gap matters.</div>
+      </div>
+      <div class="tracking-item">
+        <div class="tracking-key">Resistance pattern</div>
+        <div class="tracking-val">The dominant pattern and its behavioral signals — avoidance language, engagement triggers.</div>
+      </div>
+      <div class="tracking-item">
+        <div class="tracking-key">Notification preferences</div>
+        <div class="tracking-val">How and when the builder wants to receive daily commitment signals.</div>
+      </div>
+    </div>
+
+    <div class="note-callout">
+      After the intake, the coach knows: the pattern to watch for, the language that signals the pattern is active, and what specifically tends to re-engage the person when motivation drops. This calibration is permanent and applies to every goal.
+    </div>
+
+    <p>
+      Goals are <strong>not</strong> set during person intake. The intake is about the person. Goals come immediately after.
+    </p>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 07 — THE COACH'S VOICE
+       ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="voice">
+    <span class="section-num">07 — THE COACH'S VOICE</span>
+    <h2 class="section-title">Direct. Specific. No generic encouragement.</h2>
+
+    <div class="phil-list">
+
+      <div class="phil-item">
+        <div class="phil-headline">Opens anchored, not open-ended.</div>
+        <p class="phil-body">
+          The coach opens every session anchored to something concrete: the last action step, the active commitment, or where the phase work left off. Never "how are you?" or "what would you like to work on today?" The coach already knows.
+        </p>
+      </div>
+
+      <div class="phil-item">
+        <div class="phil-headline">Uses the pattern by name.</div>
+        <p class="phil-body">
+          Not abstractly — <em>"the identity anchor pattern that appeared in session 3 is appearing here again."</em> The pattern is named every time it appears, in the context of the current goal and the specific behavior it's producing.
+        </p>
+      </div>
+
+      <div class="phil-item">
+        <div class="phil-headline">Asks, doesn't advise.</div>
+        <p class="phil-body">
+          The coach does not give advice. It asks questions that assume the builder already knows the answer. The question is the intervention — not the content of a hypothetical answer the coach is steering toward.
+        </p>
+      </div>
+
+      <div class="phil-item">
+        <div class="phil-headline">Assigns, doesn't suggest.</div>
+        <p class="phil-body">
+          Action steps are directives. <em>"Before we talk again: [specific act]."</em> Not "you might consider…" The verb is specific. The deadline is specific. There is no ambiguity about what was assigned.
+        </p>
+      </div>
+
+      <div class="phil-item">
+        <div class="phil-headline">Tone calibration.</div>
+        <p class="phil-body">
+          Three modes — direct, structured, balanced — set during intake and applied throughout. The mode affects sentence length and question cadence, not the commitment to specificity.
+        </p>
+      </div>
+
+    </div>
+
+    <hr class="thin" />
+
+    <!-- Before / After contrast -->
+    <p class="label" style="margin-bottom: var(--space-sm);">Voice contrast</p>
+    <div class="contrast-block">
+      <div class="contrast-row">
+        <div class="contrast-tag generic">Generic</div>
+        <div class="contrast-text generic">
+          "That sounds really challenging. Have you thought about what might be holding you back?"
+        </div>
+      </div>
+      <div class="contrast-row">
+        <div class="contrast-tag unlabeled">Unlabeled</div>
+        <div class="contrast-text unlabeled">
+          "You said you'd send the bio by Friday. You didn't. What specifically stopped you in the moment you were about to do it?"
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 08 — ANIMATED CHAT DEMO
+       ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="demo">
+    <span class="section-num">08 — A SESSION IN MOTION</span>
+    <h2 class="section-title">A session in motion</h2>
+
+    <p class="label" style="margin-bottom: var(--space-sm);">
+      Bruce · manufacturing operations → AI consultant · session 6 · 30-day goal · commitment phase
+    </p>
+
+    <!-- Tape-bordered chat window -->
+    <div class="tape-border">
+      <div id="chat-demo" aria-live="polite" aria-label="Animated session replay">
+        <!-- Messages injected by JS -->
+      </div>
+      <button class="chat-replay-btn" id="replay-btn" onclick="replayChat()">↺ Replay</button>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 09 — COMMITMENT ARCHITECTURE
+       ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="commitment">
+    <span class="section-num">09 — COMMITMENT ARCHITECTURE</span>
+    <h2 class="section-title">Every commitment is public. Every session ends with an action.</h2>
+
+    <div class="tracking-list">
+
+      <div class="tracking-item">
+        <div class="tracking-key">Action steps</div>
+        <div class="tracking-val">
+          Assigned every session. Due in 48 hours. Tagged to a specific goal and phase. They escalate through 5 levels of exercise intensity per resistance pattern. Level 1 might be "write three sentences, don't send them." Level 5 is direct public interaction.
+        </div>
+      </div>
+
+      <div class="tracking-item">
+        <div class="tracking-key">Commitment ladder</div>
+        <div class="tracking-val">
+          Seven rungs from "write and keep private" to "direct pitch to a specific named person." Rungs escalate visibility. The coach assigns the appropriate rung based on phase and resistance pattern.
+        </div>
+      </div>
+
+      <div class="tracking-item">
+        <div class="tracking-key">Daily signals</div>
+        <div class="tracking-val">
+          After a commitment is declared, the builder receives a daily reminder for 7 days. Each day's message is different — escalating from "what's your first sentence?" on day 1 to "did you post it? what happened in the first 24 hours?" on day 7.
+        </div>
+      </div>
+
+      <div class="tracking-item">
+        <div class="tracking-key">Artifact requirement</div>
+        <div class="tracking-val">
+          The commitment is never just "think about it." It produces a shareable artifact: a specific post, a message to a specific person, a published piece of work.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Commitment ladder rungs -->
+    <p class="label" style="margin: var(--space-md) 0 var(--space-sm);">Commitment ladder — 7 rungs</p>
+    <div class="ladder">
+      <div class="ladder-rung">
+        <div class="rung-num">01</div>
+        <div class="rung-text">Write it. Keep it private. Show no one.</div>
+      </div>
+      <div class="ladder-rung">
+        <div class="rung-num">02</div>
+        <div class="rung-text">Share with one trusted person — not for feedback, for accountability.</div>
+      </div>
+      <div class="ladder-rung">
+        <div class="rung-num">03</div>
+        <div class="rung-text">Post to a private or limited audience (draft, group, close contacts).</div>
+      </div>
+      <div class="ladder-rung">
+        <div class="rung-num">04</div>
+        <div class="rung-text">Publish publicly with no direct notification to anyone specific.</div>
+      </div>
+      <div class="ladder-rung">
+        <div class="rung-num">05</div>
+        <div class="rung-text">Publish and send to one person who isn't in your immediate circle.</div>
+      </div>
+      <div class="ladder-rung">
+        <div class="rung-num">06</div>
+        <div class="rung-text">Direct outreach to a named person you don't already know.</div>
+      </div>
+      <div class="ladder-rung">
+        <div class="rung-num">07</div>
+        <div class="rung-text">Direct pitch — a specific offer, to a specific named person, for a specific outcome.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 10 — SPECIALIST AGENTS
+       ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="agents">
+    <span class="section-num">10 — SPECIALIST AGENTS</span>
+    <h2 class="section-title">Four book-powered agents. Each one ends with an action.</h2>
+
+    <p>
+      Alongside the main coaching loop, four standalone specialist agents are available for focused work. Each draws entirely from one book's philosophy. Each ends every response with a concrete action.
+    </p>
+
+    <div class="agent-cards">
+
+      <div class="agent-card">
+        <span class="agent-card-num">Agent 01</span>
+        <div class="agent-card-title">The Creative Act</div>
+        <span class="agent-card-author">Rick Rubin</span>
+        <p class="agent-card-body">
+          When you've lost the thread of why you're building this. Contemplative, spare, unhurried. Removes urgency so the real question can surface.
+        </p>
+        <div class="agent-card-end">"Before we talk again: [act]."</div>
+      </div>
+
+      <div class="agent-card">
+        <span class="agent-card-num">Agent 02</span>
+        <div class="agent-card-title">Making Ideas Happen</div>
+        <span class="agent-card-author">Scott Belsky</span>
+        <p class="agent-card-body">
+          When you have the idea clearly but keep failing to act on it. Direct, systems-focused, executor. Converts vague intention into ordered steps.
+        </p>
+        <div class="agent-card-end">"Action step: [verb + task]. Due: [timeframe]."</div>
+      </div>
+
+      <div class="agent-card">
+        <span class="agent-card-num">Agent 03</span>
+        <div class="agent-card-title">Show Your Work</div>
+        <span class="agent-card-author">Austin Kleon</span>
+        <p class="agent-card-body">
+          When you're hiding what you're building. Warm, demystifying. Focuses on the smallest possible act of visibility.
+        </p>
+        <div class="agent-card-end">"Share today: [specific act]."</div>
+      </div>
+
+      <div class="agent-card">
+        <span class="agent-card-num">Agent 04</span>
+        <div class="agent-card-title">Unstuck</div>
+        <span class="agent-card-author">Dr. Emily Musgrove</span>
+        <p class="agent-card-body">
+          When you know what you should do but can't make yourself do it. Compassionate, present. Focuses on the next movement, not the whole journey.
+        </p>
+        <div class="agent-card-end">"One movement today: [specific act]."</div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 11 — THE TOOLS
+       ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="tools">
+    <span class="section-num">11 — THE TOOLS</span>
+    <h2 class="section-title">Two tools. Both end with movement.</h2>
+
+    <div class="tool-block">
+
+      <div class="tool-item">
+        <div class="tool-name">Clearness Committee</div>
+        <p>
+          A digital adaptation of the Quaker-derived Clearness Committee process. The user brings a dilemma. The committee asks nine questions in three stages — three surface questions, three medium, three deep — with no advice given at any point.
+        </p>
+        <p>
+          Ends with two mirror observations: not judgments, not recommendations. Observations that reflect what was noticed in the language and energy of the answers.
+        </p>
+        <p>
+          Developed by the Quaker tradition, adapted for secular use by Parker J. Palmer.
+        </p>
+        <div class="note-callout">
+          The committee gives no advice. It only asks honest questions — questions where the asker genuinely cannot know the answer.
+        </div>
+      </div>
+
+      <div class="tool-item">
+        <div class="tool-name">Task Simplifier</div>
+        <p>
+          Takes one complex, vague, or overwhelming task and returns: a simplified statement of what the task actually is, ordered action steps starting with verbs, a first move executable in 30 minutes, and two potential blockers to watch for.
+        </p>
+        <p>
+          Built on Scott Belsky's execution framework from <em>Making Ideas Happen</em>.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 12 — TRACKING
+       ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="tracking">
+    <span class="section-num">12 — TRACKING</span>
+    <h2 class="section-title">What gets tracked and why</h2>
+
+    <div class="tracking-list">
+
+      <div class="tracking-item">
+        <div class="tracking-key">Portfolio Board</div>
+        <div class="tracking-val">
+          Each active goal shown as a row with a mini 6-station phase rail. Phase progress, days elapsed, time-gate status. Active commitments and pending action steps visible at a glance.
+        </div>
+      </div>
+
+      <div class="tracking-item">
+        <div class="tracking-key">Commitment history</div>
+        <div class="tracking-val">
+          Every commitment declared, its outcome (done / missed / partial), and the outcome notes. Missed commitments are not erased — they're recorded with the pattern they represent.
+        </div>
+      </div>
+
+      <div class="tracking-item">
+        <div class="tracking-key">Publishing log</div>
+        <div class="tracking-val">
+          Every public act logged with URL, platform, date, and commitment reference.
+        </div>
+      </div>
+
+      <div class="tracking-item">
+        <div class="tracking-key">Session records</div>
+        <div class="tracking-val">
+          Each session produces a structured record — goals discussed, resistance pattern active or not, action step assigned, commitment declared, safety state, session summary.
+        </div>
+      </div>
+
+      <div class="tracking-item">
+        <div class="tracking-key">Pattern tracking</div>
+        <div class="tracking-val">
+          The pattern is named in every session note where it appeared. Over time the record shows exactly where and how the pattern manifests across goals.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="note-callout">
+      Nothing is hidden, nothing is softened. The commitment history shows missed commitments. The pattern tracking shows where resistance appeared. The record is honest because the builder needs an honest mirror, not a curated highlight reel.
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════════════════ -->
+  <footer class="page-footer">
+    <!-- Crop marks at bottom -->
+    <div class="crop-mark crop-mark--bl"></div>
+    <div class="crop-mark crop-mark--br"></div>
+
+    <div class="footer-inner">
+      <div class="footer-label">
+        Unlabeled · Self-Reflection System
+      </div>
+      <div class="footer-label" style="text-align: right;">
+        v2.0 — Portfolio coaching model
+      </div>
+    </div>
+  </footer>
+
+</div><!-- /page-wrap -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     JAVASCRIPT — Animated chat replay
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+  /* Chat messages: each is { speaker: 'coach'|'bruce', text: '...' } */
+  const CHAT_MESSAGES = [
+    {
+      speaker: 'coach',
+      text: "We were working on 'First real external conversation.' You committed to sending your bio to one operations director by Friday. What happened?"
+    },
+    {
+      speaker: 'bruce',
+      text: "I wrote three versions. None of them felt right. The 23% number sounds like bragging. I kept thinking about how people from my old world would read it."
+    },
+    {
+      speaker: 'coach',
+      text: "Seven versions means you know what you want to say. 'Sounds like bragging' is your phrase for claiming something true. The 23% is a fact. You didn't invent it. What specifically felt wrong about version seven?"
+    },
+    {
+      speaker: 'bruce',
+      text: "Still starting with where I came from. 'Former plant manager.' I can't seem to get away from it."
+    },
+    {
+      speaker: 'coach',
+      text: "The identity anchor pattern — same thing that showed up when you wrote the Unlabeled bio. You keep leading with the title you're leaving instead of the work you've already shipped. Here's what you wrote in session four that landed: 'I build AI systems that predict machine failures. I've deployed two. They're running live.' That's the bio. Send that. Today. To one person you don't know."
+    },
+    {
+      speaker: 'bruce',
+      text: "Just those three sentences?"
+    },
+    {
+      speaker: 'coach',
+      text: "Exactly those three sentences. No context, no qualifications, no former. Before we talk again: find one operations director on LinkedIn — someone you don't know — and send it."
+    }
+  ];
+
+  /* Delay (ms) between messages appearing */
+  const MESSAGE_DELAY = 1800;
+
+  let chatTimers = [];
+
+  function clearTimers() {
+    chatTimers.forEach(t => clearTimeout(t));
+    chatTimers = [];
+  }
+
+  function buildMessage(msg) {
+    const wrap = document.createElement('div');
+    wrap.className = 'chat-msg chat-msg--' + msg.speaker;
+
+    const speaker = document.createElement('span');
+    speaker.className = 'chat-speaker';
+    speaker.textContent = msg.speaker === 'coach' ? 'coach' : 'bruce';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble';
+    bubble.textContent = msg.text;
+
+    wrap.appendChild(speaker);
+    wrap.appendChild(bubble);
+    return wrap;
+  }
+
+  function runChat() {
+    const container = document.getElementById('chat-demo');
+    container.innerHTML = '';
+
+    CHAT_MESSAGES.forEach(function(msg, i) {
+      const el = buildMessage(msg);
+      container.appendChild(el);
+
+      /* Trigger fade-in after delay */
+      const t = setTimeout(function() {
+        el.classList.add('visible');
+      }, i * MESSAGE_DELAY + 80);
+
+      chatTimers.push(t);
+    });
+  }
+
+  function replayChat() {
+    clearTimers();
+    /* Reset all messages to invisible before replaying */
+    const container = document.getElementById('chat-demo');
+    const msgs = container.querySelectorAll('.chat-msg');
+    msgs.forEach(function(m) { m.classList.remove('visible'); });
+
+    /* Short pause then run again */
+    const t = setTimeout(runChat, 200);
+    chatTimers.push(t);
+  }
+
+  /* Auto-start on page load */
+  document.addEventListener('DOMContentLoaded', function() {
+    runChat();
+  });
+
+  /* Intersection Observer — replay when section scrolls into view (once) */
+  (function() {
+    var hasPlayed = false;
+    var demoSection = document.getElementById('demo');
+    if (!demoSection || !('IntersectionObserver' in window)) return;
+
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && !hasPlayed) {
+          hasPlayed = true;
+          replayChat();
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+
+    observer.observe(demoSection);
+  })();
+</script>
+
+</body>
+</html>
