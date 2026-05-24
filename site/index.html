@@ -3,133 +3,709 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="A self-reflection coaching program for solo builders in identity transition.">
+  <meta name="description" content="A self-reflection system for solo builders in identity transition. For the person doing real work who keeps getting in their own way.">
   <title>Unlabeled</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="design.css">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;1,400&family=Permanent+Marker&display=swap" rel="stylesheet">
+
   <style>
-    .page {
-      max-width: 540px;
-      margin: 0 auto;
-      padding: var(--space-xl) var(--space-lg);
+    /* ═══════════════════════════════════════════════════════════
+       UNLABELED — Main Landing Page
+       Tactile OS · Physical Surface · Radical Transparency
+       ═══════════════════════════════════════════════════════════ */
+
+    :root {
+      --canvas:       #F3F1EB;
+      --canvas-dark:  #E8E6E0;
+      --black:        #111111;
+      --grey:         #888880;
+      --grey-light:   #D8D8D4;
+      --red:          #B01A28;
+      --yellow:       #FFF000;
+
+      --font-serif:      'EB Garamond', Georgia, serif;
+      --font-mono:       'Space Mono', 'Courier New', monospace;
+      --font-typewriter: 'Courier Prime', 'Courier New', monospace;
+      --font-marker:     'Permanent Marker', cursive;
+
+      --border:       1px solid #111111;
+      --border-thick: 2px solid #111111;
+      --shadow:       4px 4px 0px #111111;
+      --shadow-sm:    2px 2px 0px #111111;
+
+      --max-width: 680px;
     }
 
-    .headline {
-      font-family: var(--font-serif);
-      font-size: 2.5rem;
-      font-weight: 400;
-      line-height: 1.25;
-      letter-spacing: -0.01em;
-      margin: var(--space-lg) 0 var(--space-md);
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-size: 18px;
+      -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
     }
 
-    .subhead {
+    /* ── BODY — ruled ledger paper ─────────────────────────── */
+    body {
+      background-color: var(--canvas);
+      background-image: repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        rgba(0,0,0,0.04) 31px,
+        rgba(0,0,0,0.04) 32px
+      );
+      color: var(--black);
       font-family: var(--font-serif);
       font-size: 1.05rem;
       line-height: 1.85;
-      color: var(--grey);
-      max-width: 440px;
-      margin-bottom: var(--space-lg);
+      min-height: 100vh;
     }
 
-    .cta {
-      font-family: var(--font-serif);
-      font-size: 1rem;
-      font-style: italic;
-      color: var(--black);
-      text-decoration: underline;
-      text-underline-offset: 4px;
-      display: inline-block;
-      margin-bottom: var(--space-xl);
-      transition: opacity 0.2s;
+    /* Paper grain */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.035;
     }
-    .cta:hover { opacity: 0.5; }
 
-    .tools-label {
+    /* Crop marks */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9998;
+      background:
+        linear-gradient(var(--grey-light), var(--grey-light)) 16px 16px / 12px 1px no-repeat,
+        linear-gradient(var(--grey-light), var(--grey-light)) 16px 16px / 1px 12px no-repeat,
+        linear-gradient(var(--grey-light), var(--grey-light)) calc(100% - 16px) 16px / 12px 1px no-repeat,
+        linear-gradient(var(--grey-light), var(--grey-light)) calc(100% - 16px) 16px / 1px 12px no-repeat,
+        linear-gradient(var(--grey-light), var(--grey-light)) 16px calc(100% - 16px) / 12px 1px no-repeat,
+        linear-gradient(var(--grey-light), var(--grey-light)) 16px calc(100% - 28px) / 1px 12px no-repeat,
+        linear-gradient(var(--grey-light), var(--grey-light)) calc(100% - 16px) calc(100% - 16px) / 12px 1px no-repeat,
+        linear-gradient(var(--grey-light), var(--grey-light)) calc(100% - 16px) calc(100% - 28px) / 1px 12px no-repeat;
+    }
+
+    /* ── LAYOUT ─────────────────────────────────────────────── */
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* ── TYPE SCALE ─────────────────────────────────────────── */
+    .mono-label {
       font-family: var(--font-mono);
-      font-size: 0.6rem;
+      font-size: 0.58rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--grey);
-      margin-bottom: var(--space-md);
-      display: block;
     }
+
+    /* ── NAV ────────────────────────────────────────────────── */
+    .site-nav {
+      border-bottom: var(--border-thick);
+      padding: 18px 0;
+    }
+
+    .site-nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .wordmark {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--grey);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .nav-link {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-link:hover { color: var(--black); }
+
+    .nav-enter {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: var(--black);
+      color: var(--canvas);
+      padding: 8px 16px;
+      text-decoration: none;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.1s, transform 0.1s;
+    }
+    .nav-enter:hover { box-shadow: none; transform: translate(2px,2px); }
+
+    /* ── HERO ───────────────────────────────────────────────── */
+    .hero {
+      padding: 72px 0 56px;
+      border-bottom: var(--border-thick);
+    }
+
+    .hero-vol {
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--grey-light);
+      display: block;
+      margin-bottom: 28px;
+    }
+
+    .hero-headline {
+      font-family: var(--font-serif);
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      margin-bottom: 32px;
+      max-width: 580px;
+    }
+
+    .hero-deck {
+      font-family: var(--font-serif);
+      font-size: 1.1rem;
+      line-height: 1.85;
+      color: var(--grey);
+      max-width: 520px;
+      border-left: 3px solid var(--grey-light);
+      padding-left: 18px;
+    }
+
+    /* ── SECTIONS ───────────────────────────────────────────── */
+    .section {
+      padding: 60px 0;
+      border-bottom: var(--border-thick);
+      position: relative;
+    }
+
+    .section:last-of-type { border-bottom: none; }
+
+    .section-marker {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .section-num {
+      font-family: var(--font-mono);
+      font-size: 0.5rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--grey-light);
+      flex-shrink: 0;
+    }
+
+    .section-rule {
+      flex: 1;
+      height: 1px;
+      background: var(--grey-light);
+    }
+
+    .section-title {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--grey);
+      flex-shrink: 0;
+    }
+
+    /* ── BODY COPY ──────────────────────────────────────────── */
+    .prose p {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      line-height: 1.88;
+      margin-bottom: 1.4em;
+    }
+    .prose p:last-child { margin-bottom: 0; }
+
+    /* ── PULL QUOTE ─────────────────────────────────────────── */
+    .pull-quote {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-style: italic;
+      line-height: 1.5;
+      color: var(--black);
+      position: relative;
+      padding: 24px 28px;
+      margin: 40px 0;
+      border-left: 4px solid var(--black);
+      background: rgba(255,240,0,0.18);
+    }
+
+    /* ── YELLOW CALLOUT ─────────────────────────────────────── */
+    .callout {
+      background: var(--yellow);
+      border: var(--border-thick);
+      box-shadow: var(--shadow);
+      padding: 20px 24px;
+      margin: 40px 0;
+      position: relative;
+    }
+    .callout::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 28px;
+      width: 64px;
+      height: 14px;
+      background: rgba(255,240,0,0.9);
+      border: 1px solid rgba(0,0,0,0.12);
+      transform: rotate(-1deg);
+    }
+    .callout p {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ── AGENT GRID ─────────────────────────────────────────── */
+    .agent-intro {
+      margin-bottom: 36px;
+    }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .agent-card {
+      border: var(--border-thick);
+      padding: 20px 22px;
+      position: relative;
+      background: var(--canvas);
+    }
+
+    /* Tape strip on each card */
+    .agent-card::before {
+      content: '';
+      position: absolute;
+      top: -7px;
+      left: 16px;
+      width: 44px;
+      height: 13px;
+      background: rgba(255,240,0,0.75);
+      border: 1px solid rgba(0,0,0,0.1);
+      transform: rotate(-1.2deg);
+    }
+
+    .agent-book {
+      display: inline-block;
+      background: var(--black);
+      color: var(--canvas);
+      font-family: var(--font-mono);
+      font-size: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      margin-bottom: 10px;
+    }
+
+    .agent-author {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--grey);
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .agent-desc {
+      font-family: var(--font-serif);
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: var(--black);
+    }
+
+    /* ── TOOL LINKS ─────────────────────────────────────────── */
+    .tool-intro {
+      margin-bottom: 32px;
+    }
+
+    .tools-list {
+      border-top: var(--border-thick);
+    }
+
+    .tool-link {
+      display: block;
+      text-decoration: none;
+      color: var(--black);
+      padding: 18px 0;
+      border-bottom: var(--border);
+      transition: opacity 0.18s;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: baseline;
+    }
+    .tool-link:hover { opacity: 0.5; }
 
     .tool-name {
       font-family: var(--font-serif);
       font-size: 1.05rem;
       display: block;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
 
     .tool-desc {
       font-family: var(--font-serif);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       color: var(--grey);
       display: block;
     }
 
-    .footer {
-      margin-top: var(--space-xl);
+    .tool-arrow {
       font-family: var(--font-mono);
       font-size: 0.6rem;
-      letter-spacing: 0.08em;
+      color: var(--grey-light);
+      flex-shrink: 0;
+      align-self: center;
+    }
+
+    /* ── CLOSING MANIFESTO ──────────────────────────────────── */
+    .manifesto-not {
+      border: var(--border-thick);
+      padding: 24px 28px;
+      margin-bottom: 40px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .manifesto-not p {
+      font-family: var(--font-typewriter);
+      font-size: 0.88rem;
+      line-height: 1.8;
+      color: var(--grey);
+      margin-bottom: 0;
+    }
+
+    .manifesto-not p + p { margin-top: 1em; }
+
+    .manifesto-close {
+      text-align: center;
+      padding: 48px 0 0;
+    }
+
+    .manifesto-line {
+      font-family: var(--font-serif);
+      font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+      font-weight: 400;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .manifesto-line:last-of-type {
+      font-style: italic;
+      color: var(--grey);
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      margin-top: 16px;
+    }
+
+    /* ── FOOTER ─────────────────────────────────────────────── */
+    .site-footer {
+      border-top: var(--border-thick);
+      padding: 48px 0 40px;
+    }
+
+    .footer-cta {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--black);
+      text-decoration: underline;
+      text-underline-offset: 5px;
+      display: inline-block;
+      margin-bottom: 32px;
+      transition: opacity 0.2s;
+    }
+    .footer-cta:hover { opacity: 0.45; }
+
+    .footer-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 20px;
+      border-top: var(--border);
+    }
+
+    .footer-mark {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--grey-light);
     }
 
+    /* ── RESPONSIVE ─────────────────────────────────────────── */
     @media (max-width: 640px) {
-      .page { padding: var(--space-lg) var(--space-sm); }
-      .headline { font-size: 1.9rem; }
+      html { font-size: 16px; }
+      .container { padding: 0 20px; }
+      .nav-links { gap: 12px; }
+      .nav-link { display: none; }
+      .hero { padding: 48px 0 40px; }
+      .agent-grid { grid-template-columns: 1fr; }
+      .section { padding: 44px 0; }
+      .tool-link { grid-template-columns: 1fr; }
+      .tool-arrow { display: none; }
     }
   </style>
 </head>
 <body>
-  <main class="page">
 
-    <a href="/" class="wordmark">Unlabeled</a>
-
-    <h1 class="headline">
-      You left a field.<br>
-      You're building something.<br>
-      The work is the identity.
-    </h1>
-
-    <p class="subhead">
-      A self-reflection coaching program for solo builders in identity
-      transition — people leaving law, finance, design, and engineering
-      to build AI-powered tools and services.
-    </p>
-
-    <a href="https://unlabeled-coach.up.railway.app" class="cta">
-      Enter the program →
-    </a>
-
-    <span class="tools-label">Tools for builders</span>
-
-    <div>
-      <a href="tools/card.html" class="tool-link">
-        <span class="tool-name">Oblique Card</span>
-        <span class="tool-desc">A card for when you're stuck. Changes every 24 hours.</span>
-      </a>
-      <a href="tools/blackout.html" class="tool-link">
-        <span class="tool-name">Blackout</span>
-        <span class="tool-desc">Paste any text. The system finds what matters.</span>
-      </a>
-      <a href="tools/grow.html" class="tool-link">
-        <span class="tool-name">Grow</span>
-        <span class="tool-desc">Draw lines. Plant letters. Watch them become something else.</span>
-      </a>
-      <a href="tools/simplify.html" class="tool-link">
-        <span class="tool-name">Simplify</span>
-        <span class="tool-desc">Paste any task. Get the smallest possible first step.</span>
-      </a>
+  <!-- ── NAV ─────────────────────────────────────────────────── -->
+  <nav class="site-nav">
+    <div class="container">
+      <a href="/" class="wordmark">Unlabeled</a>
+      <div class="nav-links">
+        <a href="#tools" class="nav-link">Tools</a>
+        <a href="#agents" class="nav-link">Agents</a>
+        <a href="https://unlabeled-coach.up.railway.app" class="nav-enter">Enter the program →</a>
+      </div>
     </div>
+  </nav>
 
-    <p class="footer">Unlabeled · Self-reflection for solo builders</p>
+  <!-- ── HERO ────────────────────────────────────────────────── -->
+  <header class="hero">
+    <div class="container">
+      <span class="hero-vol">Unlabeled · Self-reflection for solo builders</span>
+      <h1 class="hero-headline">
+        Something happens<br>
+        when you start building.
+      </h1>
+      <p class="hero-deck">
+        A structured system for the person doing real work
+        in a domain they actually know — who keeps getting
+        in their own way.
+      </p>
+    </div>
+  </header>
 
-  </main>
+  <!-- ── 01 THE VOICE ─────────────────────────────────────────── -->
+  <section class="section" id="voice">
+    <div class="container">
+
+      <div class="section-marker">
+        <span class="section-num">01</span>
+        <div class="section-rule"></div>
+        <span class="section-title">The Voice</span>
+      </div>
+
+      <div class="prose">
+        <p>You have real experience. You have accumulated years of judgment in a field, a profession, a craft. You know things. And then you decide to make something new — a product, a tool, a business — and a voice appears that has nothing useful to say and won't stop talking.</p>
+
+        <p>It tells you that you are faking it. That the people who belong here have something you don't. That what you've built so far barely counts. That someone is going to find out.</p>
+
+        <p>This is often called impostor syndrome, but that name is too clean for what it actually is. Underneath it there is fear, and underneath the fear there is something more specific: a gap between who you have been and who you are becoming. The work has moved forward. The self-concept hasn't caught up.</p>
+
+        <p>The strange thing is that you already know the answer. Not because someone told you, but because you can feel it when you're honest with yourself. You know you are capable — you have built things that prove it. You know what needs to happen next. Something invisible holds you back anyway.</p>
+      </div>
+
+      <div class="callout">
+        <p>Unlabeled is a system for working through that.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── 02 THE SYSTEM ────────────────────────────────────────── -->
+  <section class="section" id="system">
+    <div class="container">
+
+      <div class="section-marker">
+        <span class="section-num">02</span>
+        <div class="section-rule"></div>
+        <span class="section-title">The System</span>
+      </div>
+
+      <div class="prose">
+        <p>It begins with self-reflection. Not journaling, not affirmations — a structured conversation with an agent that asks the questions most people avoid. About your goals, your fears, your doubts, the real blockers underneath the stated ones. The interview is direct. It is sometimes uncomfortable. It is designed to get to the thing you haven't said out loud yet, because that is usually the thing that matters.</p>
+
+        <p>From there, it moves into action. Small, specific, trackable action. Not because big goals are wrong, but because big goals without a next step are just anxiety with good intentions. The system breaks what feels overwhelming into something you can do today, and then tomorrow, and then the day after. The agent follows up. It remembers where you left off. It notices when you've gone quiet.</p>
+      </div>
+
+      <blockquote class="pull-quote">
+        Progress is not the feeling of being ready.<br>
+        Progress is doing something, even something small, every day.
+      </blockquote>
+
+    </div>
+  </section>
+
+  <!-- ── 03 THE AGENTS ────────────────────────────────────────── -->
+  <section class="section" id="agents">
+    <div class="container">
+
+      <div class="section-marker">
+        <span class="section-num">03</span>
+        <div class="section-rule"></div>
+        <span class="section-title">The Agents</span>
+      </div>
+
+      <div class="prose agent-intro">
+        <p>Inside Unlabeled you will find tools built for the moments when you need more than a conversation. The agents are inspired by thinkers who have spent serious time on these questions. These are not chatbots that quote the books. They are agents that have absorbed the thinking and apply it to your specific situation, your specific project, your specific block.</p>
+      </div>
+
+      <div class="agent-grid">
+
+        <div class="agent-card">
+          <span class="agent-book">The Creative Act</span>
+          <span class="agent-author">Rick Rubin</span>
+          <p class="agent-desc">Unhurried, non-prescriptive, oriented toward what the work wants to be. For when you need to stop managing the work and start listening to it.</p>
+        </div>
+
+        <div class="agent-card">
+          <span class="agent-book">Make Ideas Happen</span>
+          <span class="agent-author">Scott Belsky</span>
+          <p class="agent-desc">About organization, energy, and moving creative work through the world. For when the ideas are real but nothing is shipping.</p>
+        </div>
+
+        <div class="agent-card">
+          <span class="agent-book">Show Your Work</span>
+          <span class="agent-author">Austin Kleon</span>
+          <p class="agent-desc">About sharing what you make before you feel ready to share it. For when the work is done but the post is never published.</p>
+        </div>
+
+        <div class="agent-card">
+          <span class="agent-book">Unstuck</span>
+          <span class="agent-author">Emily Musgrove</span>
+          <p class="agent-desc">Built for the circular thinking that resists ordinary forward motion. For when you are genuinely stuck — not resistant, but stuck.</p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── 04 THE TOOLS ─────────────────────────────────────────── -->
+  <section class="section" id="tools">
+    <div class="container">
+
+      <div class="section-marker">
+        <span class="section-num">04</span>
+        <div class="section-rule"></div>
+        <span class="section-title">The Tools</span>
+      </div>
+
+      <div class="prose tool-intro">
+        <p>The interactive tools exist for the moments when language isn't enough. Each one does one thing. None of them require an account.</p>
+      </div>
+
+      <div class="tools-list">
+
+        <a href="tools/blackout.html" class="tool-link">
+          <div>
+            <span class="tool-name">Blackout</span>
+            <span class="tool-desc">Takes a paragraph you wrote and removes everything but the words that matter. What remains is your underlying idea, stripped of everything you added to make it sound safe.</span>
+          </div>
+          <span class="tool-arrow">→</span>
+        </a>
+
+        <a href="tools/card.html" class="tool-link">
+          <div>
+            <span class="tool-name">Oblique Card</span>
+            <span class="tool-desc">Draws from the logic of Brian Eno's Oblique Strategies — not random motivation, but a specific constraint or reframe selected for where you are in your process. Changes every 24 hours.</span>
+          </div>
+          <span class="tool-arrow">→</span>
+        </a>
+
+        <a href="tools/simplify.html" class="tool-link">
+          <div>
+            <span class="tool-name">Simplify</span>
+            <span class="tool-desc">Takes a goal that feels too large to start and breaks it into the smallest possible next action. Not a plan. The next thing.</span>
+          </div>
+          <span class="tool-arrow">→</span>
+        </a>
+
+        <a href="https://unlabeled-coach.up.railway.app" class="tool-link">
+          <div>
+            <span class="tool-name">Clearness Committee</span>
+            <span class="tool-desc">Works in the tradition of Quaker practice — a structured process for resolving a genuine dilemma, not by giving you the answer, but by asking questions until the answer becomes visible.</span>
+          </div>
+          <span class="tool-arrow">→</span>
+        </a>
+
+        <a href="tools/grow.html" class="tool-link">
+          <div>
+            <span class="tool-name">Grow</span>
+            <span class="tool-desc">Draw lines. Plant color seeds. Watch them become something else. For the moments when you need to make something with no stakes and no audience.</span>
+          </div>
+          <span class="tool-arrow">→</span>
+        </a>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── 05 WHO IT'S FOR ──────────────────────────────────────── -->
+  <section class="section" id="who">
+    <div class="container">
+
+      <div class="section-marker">
+        <span class="section-num">05</span>
+        <div class="section-rule"></div>
+        <span class="section-title">Who It's For</span>
+      </div>
+
+      <div class="manifesto-not">
+        <p>This is not a system for people who want to print money with AI, or sell a course about building before they have built anything, or perform productivity for an audience. There are many tools for that. This is not one of them.</p>
+      </div>
+
+      <div class="prose">
+        <p>This is for the person who is doing real work, in a domain they actually know, and keeps getting in their own way. The person who looks at what they have made and still isn't sure they belong in the room.</p>
+      </div>
+
+      <div class="manifesto-close">
+        <span class="manifesto-line">You belong in the room.</span>
+        <span class="manifesto-line">You have always belonged in the room.</span>
+        <span class="manifesto-line">The work is to start believing what the evidence already shows.</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── FOOTER ───────────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="container">
+      <a href="https://unlabeled-coach.up.railway.app" class="footer-cta">
+        Enter the program →
+      </a>
+      <div class="footer-meta">
+        <span class="footer-mark">Unlabeled</span>
+        <span class="footer-mark">Self-reflection for solo builders</span>
+      </div>
+    </div>
+  </footer>
+
 </body>
 </html>
