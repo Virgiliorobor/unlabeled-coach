@@ -3,133 +3,824 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="A self-reflection coaching program for solo builders in identity transition.">
+  <meta name="description" content="Self-reflection for solo builders in identity transition.">
   <title>Unlabeled</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="design.css">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Permanent+Marker&display=swap" rel="stylesheet">
+
   <style>
-    .page {
-      max-width: 540px;
-      margin: 0 auto;
-      padding: var(--space-xl) var(--space-lg);
+    /* ═══════════════════════════════════════════════════
+       UNLABELED — Landing · Bricolage Edition
+       ═══════════════════════════════════════════════════ */
+
+    :root {
+      --canvas:  #F4F4F0;
+      --dark:    #E8E8E4;
+      --black:   #111111;
+      --yellow:  #FFF000;
+      --red:     #E03C31;
+      --grey:    #888880;
+      --gl:      #D8D8D4;
+
+      --serif:   'EB Garamond', Georgia, serif;
+      --mono:    'Space Mono', monospace;
+      --type:    'Courier Prime', monospace;
+      --marker:  'Permanent Marker', cursive;
+
+      --b:  1px solid #111;
+      --bt: 2px solid #111;
+      --sh: 4px 4px 0 #111;
+      --ss: 2px 2px 0 #111;
     }
 
-    .headline {
-      font-family: var(--font-serif);
-      font-size: 2.5rem;
-      font-weight: 400;
-      line-height: 1.25;
-      letter-spacing: -0.01em;
-      margin: var(--space-lg) 0 var(--space-md);
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    .subhead {
-      font-family: var(--font-serif);
-      font-size: 1.05rem;
-      line-height: 1.85;
-      color: var(--grey);
-      max-width: 440px;
-      margin-bottom: var(--space-lg);
-    }
+    html { font-size: 18px; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
 
-    .cta {
-      font-family: var(--font-serif);
-      font-size: 1rem;
-      font-style: italic;
+    body {
+      background: var(--canvas);
       color: var(--black);
-      text-decoration: underline;
-      text-underline-offset: 4px;
-      display: inline-block;
-      margin-bottom: var(--space-xl);
-      transition: opacity 0.2s;
+      font-family: var(--serif);
+      overflow-x: hidden;
     }
-    .cta:hover { opacity: 0.5; }
+
+    /* paper grain — always */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.03;
+    }
+
+    /* ── NAV ──────────────────────────────────────── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--canvas);
+      border-bottom: var(--bt);
+      padding: 14px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+      transition: background 0.4s;
+    }
+    .nav.dark { background: var(--black); border-color: #333; }
+    .nav.yellow { background: var(--yellow); }
+
+    .wordmark {
+      font-family: var(--serif); font-style: italic; font-size: 1rem;
+      color: var(--grey); text-decoration: none; letter-spacing: 0.02em;
+    }
+    .nav.dark .wordmark { color: #888; }
+    .nav.yellow .wordmark { color: var(--black); }
+
+    .nav-enter {
+      font-family: var(--mono); font-size: 0.55rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      background: var(--black); color: var(--canvas);
+      padding: 9px 18px; text-decoration: none;
+      box-shadow: var(--ss);
+      transition: box-shadow 0.1s, transform 0.1s;
+    }
+    .nav-enter:hover { box-shadow: none; transform: translate(2px,2px); }
+    .nav.dark .nav-enter { background: var(--canvas); color: var(--black); }
+    .nav.yellow .nav-enter { background: var(--black); color: var(--yellow); box-shadow: 2px 2px 0 #000; }
+
+    /* ── HERO ─────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 100px 40px 60px;
+      position: relative;
+      background-color: var(--canvas);
+      background-image: repeating-linear-gradient(
+        transparent, transparent 31px,
+        rgba(0,0,0,0.04) 31px, rgba(0,0,0,0.04) 32px
+      );
+      overflow: hidden;
+    }
+
+    /* crop marks */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        linear-gradient(var(--gl),var(--gl)) 20px 20px/14px 1px no-repeat,
+        linear-gradient(var(--gl),var(--gl)) 20px 20px/1px 14px no-repeat,
+        linear-gradient(var(--gl),var(--gl)) calc(100% - 20px) 20px/14px 1px no-repeat,
+        linear-gradient(var(--gl),var(--gl)) calc(100% - 20px) 20px/1px 14px no-repeat,
+        linear-gradient(var(--gl),var(--gl)) 20px calc(100% - 20px)/14px 1px no-repeat,
+        linear-gradient(var(--gl),var(--gl)) 20px calc(100% - 32px)/1px 14px no-repeat,
+        linear-gradient(var(--gl),var(--gl)) calc(100% - 20px) calc(100% - 20px)/14px 1px no-repeat,
+        linear-gradient(var(--gl),var(--gl)) calc(100% - 20px) calc(100% - 32px)/1px 14px no-repeat;
+    }
+
+    .hero-vol {
+      font-family: var(--mono); font-size: 0.5rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gl); margin-bottom: 32px; display: block;
+      opacity: 0; transform: translateY(8px);
+      animation: up 0.5s 0.1s ease both;
+    }
+
+    .hero-headline {
+      font-family: var(--serif); font-weight: 400;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      line-height: 1.05; letter-spacing: -0.02em;
+      max-width: 900px; margin-bottom: 40px;
+    }
+
+    .hl {
+      display: block; overflow: hidden;
+    }
+    .hl span {
+      display: block;
+      transform: translateY(110%);
+      animation: slide-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .hl:nth-child(1) span { animation-delay: 0.2s; }
+    .hl:nth-child(2) span { animation-delay: 0.45s; }
+    .hl:nth-child(3) span { animation-delay: 0.65s; }
+
+    @keyframes slide-up {
+      to { transform: translateY(0); }
+    }
+    @keyframes up {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* handwritten annotation */
+    .hero-annotation {
+      position: absolute;
+      top: 120px; right: 60px;
+      font-family: var(--marker); font-size: 1rem;
+      color: var(--grey); transform: rotate(-8deg);
+      opacity: 0; animation: up 0.6s 1.2s ease both;
+    }
+
+    .hero-sub {
+      font-family: var(--serif); font-style: italic;
+      font-size: 1.25rem; line-height: 1.6;
+      color: var(--grey); max-width: 480px;
+      margin-bottom: 40px;
+      opacity: 0; animation: up 0.6s 1s ease both;
+    }
+
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: var(--serif); font-style: italic; font-size: 1.1rem;
+      color: var(--black); text-decoration: none;
+      border-bottom: 2px solid var(--black); padding-bottom: 2px;
+      transition: opacity 0.2s;
+      opacity: 0; animation: up 0.5s 1.2s ease both;
+    }
+    .hero-cta:hover { opacity: 0.5; }
+
+    .hero-scroll-hint {
+      position: absolute; bottom: 28px; right: 40px;
+      font-family: var(--mono); font-size: 0.5rem;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--gl);
+      writing-mode: vertical-rl;
+      opacity: 0; animation: up 0.5s 1.8s ease both;
+    }
+
+    /* ── VOICE SECTION ────────────────────────────── */
+    .voice {
+      min-height: 100vh;
+      background: var(--yellow);
+      position: relative;
+      overflow: hidden;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 80px 40px 60px;
+      border-top: var(--bt); border-bottom: var(--bt);
+    }
+
+    .voice-field {
+      position: absolute; inset: 80px 0 140px 0;
+    }
+
+    .vw {
+      position: absolute;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .vw.shown { opacity: 1; }
+
+    /* the blackout bar */
+    .vw::after {
+      content: '';
+      position: absolute; inset: -3px -4px;
+      background: var(--black);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .vw.blacked::after { transform: scaleX(1); }
+    .vw.survivor::after { display: none; }
+    .vw.survivor { font-style: normal !important; }
+
+    /* individual word styles — bricolage: mixed fonts, sizes, angles */
+    .vw-1 {
+      font-family: var(--marker); font-size: 2.4rem; color: var(--black);
+      transform: rotate(-3deg); top: 6%; left: 4%;
+    }
+    .vw-2 {
+      font-family: var(--mono); font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--black);
+      transform: rotate(1.5deg); top: 3%; left: 44%;
+    }
+    .vw-3 {
+      font-family: var(--serif); font-style: italic; font-size: 1.9rem;
+      color: var(--black); transform: rotate(-1deg); top: 22%; left: 12%;
+    }
+    .vw-4 {
+      font-family: var(--type); font-size: 1.15rem;
+      color: var(--black); transform: rotate(2deg); top: 18%; right: 8%;
+    }
+    .vw-5 {
+      font-family: var(--mono); font-size: 1.1rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--black); transform: rotate(-2.5deg); top: 40%; left: 3%;
+    }
+    .vw-6 {
+      font-family: var(--serif); font-size: 2.8rem;
+      color: var(--black); transform: rotate(1deg); top: 36%; right: 5%;
+    }
+    .vw-7 {
+      font-family: var(--type); font-style: italic; font-size: 0.9rem;
+      color: var(--black); transform: rotate(-0.5deg); top: 56%; left: 28%;
+    }
+    .vw-8 {
+      font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--black);
+      transform: rotate(1.5deg); top: 63%; left: 5%;
+    }
+
+    .voice-bottom {
+      position: relative; z-index: 2;
+      border-top: var(--bt); padding-top: 20px;
+    }
+
+    .voice-label {
+      font-family: var(--mono); font-size: 0.55rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--black); opacity: 0.5; margin-bottom: 6px; display: block;
+    }
+
+    .voice-close {
+      font-family: var(--serif); font-size: 1.4rem; line-height: 1.4;
+      color: var(--black);
+    }
+
+    /* ── SYSTEM ───────────────────────────────────── */
+    .system {
+      padding: 100px 40px;
+      background: var(--canvas);
+      background-image: repeating-linear-gradient(
+        transparent, transparent 31px,
+        rgba(0,0,0,0.04) 31px, rgba(0,0,0,0.04) 32px
+      );
+      border-bottom: var(--bt);
+    }
+
+    .sys-label {
+      font-family: var(--mono); font-size: 0.55rem;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--gl);
+      display: flex; align-items: center; gap: 12px; margin-bottom: 60px;
+    }
+    .sys-label::after { content: ''; flex: 1; height: 1px; background: var(--gl); }
+
+    .sys-steps {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 0; max-width: 900px;
+    }
+
+    .sys-step {
+      padding: 32px 28px;
+      border: var(--bt);
+      margin-right: -2px;
+      position: relative;
+      background: var(--canvas);
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.5s ease, transform 0.5s ease, background 0.2s;
+    }
+    .sys-step.visible { opacity: 1; transform: translateY(0); }
+    .sys-step:nth-child(1) { transition-delay: 0s; }
+    .sys-step:nth-child(2) { transition-delay: 0.12s; }
+    .sys-step:nth-child(3) { transition-delay: 0.24s; }
+    .sys-step:hover { background: var(--dark); }
+
+    .sys-step-num {
+      font-family: var(--mono); font-size: 0.5rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--gl);
+      margin-bottom: 16px; display: block;
+    }
+
+    .sys-step-title {
+      font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--black); margin-bottom: 12px; display: block;
+    }
+
+    .sys-step-text {
+      font-family: var(--serif); font-size: 0.95rem; line-height: 1.7;
+      color: var(--grey);
+    }
+
+    .sys-step-arrow {
+      position: absolute; right: -14px; top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--mono); font-size: 0.8rem; color: var(--gl);
+      background: var(--canvas); padding: 0 3px;
+      z-index: 2;
+    }
+    .sys-step:last-child .sys-step-arrow { display: none; }
+
+    /* ── AGENTS ───────────────────────────────────── */
+    .agents {
+      padding: 100px 40px;
+      background: var(--canvas);
+      background-image: repeating-linear-gradient(
+        transparent, transparent 31px,
+        rgba(0,0,0,0.04) 31px, rgba(0,0,0,0.04) 32px
+      );
+      border-bottom: var(--bt);
+    }
+
+    .ag-header {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 48px;
+    }
+
+    .ag-title {
+      font-family: var(--serif); font-size: 1.5rem; font-weight: 400;
+    }
+
+    .ag-sub {
+      font-family: var(--mono); font-size: 0.55rem;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--gl);
+    }
+
+    .ag-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 28px; max-width: 900px;
+    }
+
+    .ag-card {
+      border: var(--bt);
+      padding: 24px 26px;
+      position: relative;
+      background: var(--canvas);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      opacity: 0; transform: translateY(20px) rotate(var(--r, 0deg));
+    }
+    .ag-card:nth-child(1) { --r: -1.4deg; }
+    .ag-card:nth-child(2) { --r:  1.1deg; }
+    .ag-card:nth-child(3) { --r:  0.7deg; }
+    .ag-card:nth-child(4) { --r: -0.9deg; }
+
+    .ag-card.visible {
+      opacity: 1;
+      transform: rotate(var(--r, 0deg)) translateY(0);
+    }
+    .ag-card:hover {
+      transform: rotate(0deg) translateY(-2px) !important;
+      box-shadow: var(--sh);
+    }
+
+    /* tape */
+    .ag-card::before {
+      content: '';
+      position: absolute; top: -7px; left: 22px;
+      width: 48px; height: 14px;
+      background: rgba(255,240,0,0.75);
+      border: 1px solid rgba(0,0,0,0.1);
+      transform: rotate(-1.2deg);
+    }
+
+    .ag-book {
+      display: inline-block;
+      background: var(--black); color: var(--canvas);
+      font-family: var(--mono); font-size: 0.5rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 3px 9px; margin-bottom: 8px;
+    }
+
+    .ag-author {
+      font-family: var(--serif); font-style: italic;
+      font-size: 0.85rem; color: var(--grey);
+      display: block; margin-bottom: 10px;
+    }
+
+    .ag-desc {
+      font-family: var(--serif); font-size: 0.95rem; line-height: 1.65;
+    }
+
+    /* ── TOOLS ────────────────────────────────────── */
+    .tools {
+      padding: 80px 40px;
+      background: var(--dark);
+      border-bottom: var(--bt);
+    }
 
     .tools-label {
-      font-family: var(--font-mono);
-      font-size: 0.6rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--grey);
-      margin-bottom: var(--space-md);
-      display: block;
+      font-family: var(--mono); font-size: 0.55rem;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--grey);
+      display: flex; align-items: center; gap: 12px; margin-bottom: 32px;
     }
+    .tools-label::after { content: ''; flex: 1; height: 1px; background: var(--gl); }
+
+    .tool-link {
+      display: grid; grid-template-columns: 180px 1fr auto;
+      align-items: baseline; gap: 24px;
+      padding: 20px 0; border-top: var(--b);
+      text-decoration: none; color: var(--black);
+      transition: opacity 0.18s;
+    }
+    .tool-link:last-child { border-bottom: var(--b); }
+    .tool-link:hover { opacity: 0.45; }
 
     .tool-name {
-      font-family: var(--font-serif);
-      font-size: 1.05rem;
-      display: block;
-      margin-bottom: 3px;
+      font-family: var(--serif); font-size: 1.05rem;
     }
 
     .tool-desc {
-      font-family: var(--font-serif);
-      font-size: 0.9rem;
-      color: var(--grey);
-      display: block;
+      font-family: var(--serif); font-size: 0.9rem;
+      color: var(--grey); line-height: 1.55;
     }
 
-    .footer {
-      margin-top: var(--space-xl);
-      font-family: var(--font-mono);
-      font-size: 0.6rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--grey-light);
+    .tool-tag {
+      font-family: var(--mono); font-size: 0.52rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--gl); white-space: nowrap;
     }
 
-    @media (max-width: 640px) {
-      .page { padding: var(--space-lg) var(--space-sm); }
-      .headline { font-size: 1.9rem; }
+    /* ── CLOSING CTA ──────────────────────────────── */
+    .closing {
+      min-height: 100vh;
+      background: var(--black);
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-start;
+      padding: 80px 40px;
+      position: relative; overflow: hidden;
+    }
+
+    /* faint ruled lines on dark */
+    .closing::before {
+      content: '';
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: repeating-linear-gradient(
+        transparent, transparent 31px,
+        rgba(255,255,255,0.025) 31px, rgba(255,255,255,0.025) 32px
+      );
+    }
+
+    .closing-eyebrow {
+      font-family: var(--mono); font-size: 0.52rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: #444; margin-bottom: 40px; display: block;
+      position: relative;
+      opacity: 0; transform: translateY(10px);
+      transition: opacity 0.5s, transform 0.5s;
+    }
+    .closing-eyebrow.visible { opacity: 1; transform: translateY(0); }
+
+    .closing-headline {
+      font-family: var(--serif); font-weight: 400;
+      font-size: clamp(2.4rem, 6vw, 5rem);
+      line-height: 1.1; letter-spacing: -0.02em;
+      color: var(--canvas); max-width: 700px;
+      margin-bottom: 16px; position: relative;
+    }
+
+    .cl {
+      display: block; overflow: hidden;
+    }
+    .cl span {
+      display: block; color: var(--canvas);
+      transform: translateY(110%);
+      transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .closing.visible .cl:nth-child(1) span { transform: translateY(0); transition-delay: 0s; }
+    .closing.visible .cl:nth-child(2) span { transform: translateY(0); transition-delay: 0.15s; }
+
+    .closing-sub {
+      font-family: var(--serif); font-style: italic;
+      font-size: 1.1rem; color: #555; margin-bottom: 56px;
+      position: relative;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 0.5s 0.5s, transform 0.5s 0.5s;
+    }
+    .closing.visible .closing-sub { opacity: 1; transform: translateY(0); }
+
+    .closing-cta {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: var(--serif); font-style: italic; font-size: 1.2rem;
+      color: var(--canvas); text-decoration: none;
+      border-bottom: 2px solid #444; padding-bottom: 3px;
+      position: relative;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 0.5s 0.6s, transform 0.5s 0.6s, border-color 0.2s;
+    }
+    .closing.visible .closing-cta { opacity: 1; transform: translateY(0); }
+    .closing-cta:hover { border-color: var(--canvas); }
+
+    /* marker annotation on closing */
+    .closing-annotation {
+      position: absolute; bottom: 60px; right: 48px;
+      font-family: var(--marker); font-size: 1.1rem;
+      color: #333; transform: rotate(-5deg);
+      opacity: 0; transition: opacity 0.5s 0.9s;
+    }
+    .closing.visible .closing-annotation { opacity: 1; }
+
+    /* ── REVEAL UTILITY ───────────────────────────── */
+    .rx {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .rx.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ───────────────────────────────── */
+    @media (max-width: 760px) {
+      .hero { padding: 88px 24px 48px; }
+      .hero-annotation { display: none; }
+      .voice { padding: 72px 24px 48px; }
+      .vw-1 { font-size: 1.6rem; }
+      .vw-6 { font-size: 1.8rem; }
+      .system, .agents, .tools { padding: 60px 24px; }
+      .sys-steps { grid-template-columns: 1fr; }
+      .sys-step { margin-right: 0; margin-bottom: -2px; }
+      .sys-step-arrow { display: none !important; }
+      .ag-grid { grid-template-columns: 1fr; }
+      .tool-link { grid-template-columns: 1fr; gap: 4px; }
+      .tool-tag { display: none; }
+      .closing { padding: 60px 24px; }
+      .closing-annotation { display: none; }
+      .nav { padding: 12px 20px; }
     }
   </style>
 </head>
 <body>
-  <main class="page">
 
-    <a href="/" class="wordmark">Unlabeled</a>
+<!-- ── NAV ──────────────────────────────────────────── -->
+<nav class="nav" id="nav">
+  <a href="/" class="wordmark">Unlabeled</a>
+  <a href="https://unlabeled-coach.up.railway.app" class="nav-enter">Enter the program →</a>
+</nav>
 
-    <h1 class="headline">
-      You left a field.<br>
-      You're building something.<br>
-      The work is the identity.
-    </h1>
+<!-- ── HERO ─────────────────────────────────────────── -->
+<section class="hero">
+  <span class="hero-annotation">for builders</span>
 
-    <p class="subhead">
-      A self-reflection coaching program for solo builders in identity
-      transition — people leaving law, finance, design, and engineering
-      to build AI-powered tools and services.
+  <span class="hero-vol">Unlabeled · 2026</span>
+
+  <h1 class="hero-headline">
+    <span class="hl"><span>Something happens</span></span>
+    <span class="hl"><span>when you start</span></span>
+    <span class="hl"><span>building.</span></span>
+  </h1>
+
+  <p class="hero-sub">
+    The work moves forward.<br>The self-concept doesn't catch up.
+  </p>
+
+  <a href="https://unlabeled-coach.up.railway.app" class="hero-cta">
+    Enter the program →
+  </a>
+
+  <span class="hero-scroll-hint">scroll</span>
+</section>
+
+<!-- ── THE VOICE ─────────────────────────────────────── -->
+<section class="voice" id="voice">
+
+  <div class="voice-field" id="voiceField">
+    <span class="vw vw-1" id="vw1">faking it</span>
+    <span class="vw vw-2" id="vw2">wrong room</span>
+    <span class="vw vw-3" id="vw3">they'll find out</span>
+    <span class="vw vw-4" id="vw4">doesn't count</span>
+    <span class="vw vw-5" id="vw5">not enough</span>
+    <span class="vw vw-6" id="vw6">not ready</span>
+    <span class="vw vw-7" id="vw7">someone's going to notice</span>
+    <span class="vw vw-8" id="vw8">who said you belong here</span>
+  </div>
+
+  <div class="voice-bottom">
+    <span class="voice-label">The voice underneath</span>
+    <p class="voice-close">
+      Unlabeled is a system<br>for working through that.
     </p>
+  </div>
 
-    <a href="https://unlabeled-coach.up.railway.app" class="cta">
-      Enter the program →
-    </a>
+</section>
 
-    <span class="tools-label">Tools for builders</span>
+<!-- ── SYSTEM ────────────────────────────────────────── -->
+<section class="system">
 
-    <div>
-      <a href="tools/card.html" class="tool-link">
-        <span class="tool-name">Oblique Card</span>
-        <span class="tool-desc">A card for when you're stuck. Changes every 24 hours.</span>
-      </a>
-      <a href="tools/blackout.html" class="tool-link">
-        <span class="tool-name">Blackout</span>
-        <span class="tool-desc">Paste any text. The system finds what matters.</span>
-      </a>
-      <a href="tools/grow.html" class="tool-link">
-        <span class="tool-name">Grow</span>
-        <span class="tool-desc">Draw lines. Plant letters. Watch them become something else.</span>
-      </a>
-      <a href="tools/simplify.html" class="tool-link">
-        <span class="tool-name">Simplify</span>
-        <span class="tool-desc">Paste any task. Get the smallest possible first step.</span>
-      </a>
+  <div class="sys-label">01 — how it works</div>
+
+  <div class="sys-steps">
+
+    <div class="sys-step">
+      <span class="sys-step-num">01</span>
+      <span class="sys-step-title">Interview</span>
+      <p class="sys-step-text">
+        A structured conversation. Direct. Sometimes uncomfortable.
+        Gets to the thing you haven't said out loud yet.
+      </p>
+      <span class="sys-step-arrow">→</span>
     </div>
 
-    <p class="footer">Unlabeled · Self-reflection for solo builders</p>
+    <div class="sys-step">
+      <span class="sys-step-num">02</span>
+      <span class="sys-step-title">Action</span>
+      <p class="sys-step-text">
+        Small, specific, trackable. Big goals without a next step
+        are just anxiety with good intentions.
+      </p>
+      <span class="sys-step-arrow">→</span>
+    </div>
 
-  </main>
+    <div class="sys-step">
+      <span class="sys-step-num">03</span>
+      <span class="sys-step-title">Progress</span>
+      <p class="sys-step-text">
+        The agent follows up. It remembers where you left off.
+        It notices when you've gone quiet.
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- ── AGENTS ────────────────────────────────────────── -->
+<section class="agents">
+
+  <div class="ag-header rx">
+    <h2 class="ag-title">Four perspectives.</h2>
+    <span class="ag-sub">Applied to your situation.</span>
+  </div>
+
+  <div class="ag-grid">
+
+    <div class="ag-card">
+      <span class="ag-book">The Creative Act</span>
+      <span class="ag-author">Rick Rubin</span>
+      <p class="ag-desc">Unhurried. Non-prescriptive. For when you need to stop managing the work and start listening to it.</p>
+    </div>
+
+    <div class="ag-card">
+      <span class="ag-book">Make Ideas Happen</span>
+      <span class="ag-author">Scott Belsky</span>
+      <p class="ag-desc">Organization, energy, forward motion. For when the ideas are real but nothing is shipping.</p>
+    </div>
+
+    <div class="ag-card">
+      <span class="ag-book">Show Your Work</span>
+      <span class="ag-author">Austin Kleon</span>
+      <p class="ag-desc">Share before you feel ready. For when the work is done but the post is never published.</p>
+    </div>
+
+    <div class="ag-card">
+      <span class="ag-book">Unstuck</span>
+      <span class="ag-author">Emily Musgrove</span>
+      <p class="ag-desc">For the circular thinking that resists ordinary forward motion. When stuck, not just resistant.</p>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- ── TOOLS ─────────────────────────────────────────── -->
+<section class="tools">
+
+  <div class="tools-label">02 — the tools</div>
+
+  <a href="tools/blackout.html" class="tool-link">
+    <span class="tool-name">Blackout</span>
+    <span class="tool-desc">Paste any text. The system removes everything but the words that matter.</span>
+    <span class="tool-tag">Workbench</span>
+  </a>
+
+  <a href="tools/card.html" class="tool-link">
+    <span class="tool-name">Oblique Card</span>
+    <span class="tool-desc">A constraint or reframe for where you are in your process. Changes every 24 hours.</span>
+    <span class="tool-tag">Sanctuary</span>
+  </a>
+
+  <a href="tools/simplify.html" class="tool-link">
+    <span class="tool-name">Simplify</span>
+    <span class="tool-desc">Paste a goal that feels too large. Get the smallest possible next action.</span>
+    <span class="tool-tag">System</span>
+  </a>
+
+  <a href="https://unlabeled-coach.up.railway.app" class="tool-link">
+    <span class="tool-name">Clearness Committee</span>
+    <span class="tool-desc">A Quaker-derived process. Asks questions until the answer becomes visible. Requires account.</span>
+    <span class="tool-tag">In-program</span>
+  </a>
+
+  <a href="tools/grow.html" class="tool-link">
+    <span class="tool-name">Grow</span>
+    <span class="tool-desc">Draw lines. Plant color seeds. Watch them become something else.</span>
+    <span class="tool-tag">Sandbox</span>
+  </a>
+
+</section>
+
+<!-- ── CLOSING ───────────────────────────────────────── -->
+<section class="closing" id="closing">
+
+  <span class="closing-eyebrow">For the person doing real work</span>
+
+  <h2 class="closing-headline">
+    <span class="cl"><span>You belong</span></span>
+    <span class="cl"><span>in the room.</span></span>
+  </h2>
+
+  <p class="closing-sub">
+    You have always belonged in the room.<br>
+    The work is to start believing what the evidence already shows.
+  </p>
+
+  <a href="https://unlabeled-coach.up.railway.app" class="closing-cta">
+    Enter the program →
+  </a>
+
+  <span class="closing-annotation">start here.</span>
+
+</section>
+
+<script>
+  // ── Nav state ────────────────────────────────────────
+  const nav = document.getElementById('nav')
+  const closing = document.getElementById('closing')
+  const voice = document.getElementById('voice')
+
+  // ── Intersection observer ────────────────────────────
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        el.target.classList.add('visible')
+        io.unobserve(el.target)
+      }
+    })
+  }, { threshold: 0.15 })
+
+  document.querySelectorAll('.sys-step, .ag-card, .rx, .closing-eyebrow').forEach(el => io.observe(el))
+
+  // ── Closing section reveal ───────────────────────────
+  const closingIO = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) el.target.classList.add('visible')
+    })
+  }, { threshold: 0.2 })
+  closingIO.observe(closing)
+
+  // ── Nav colour shifts ────────────────────────────────
+  const navIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const id = entry.target.id
+      if (id === 'voice') {
+        nav.classList.toggle('yellow', entry.isIntersecting)
+      }
+      if (id === 'closing') {
+        nav.classList.toggle('dark', entry.isIntersecting)
+        nav.classList.toggle('yellow', false)
+      }
+    })
+  }, { threshold: 0.4 })
+  navIO.observe(voice)
+  navIO.observe(closing)
+
+  // ── Voice word animation ─────────────────────────────
+  const words = document.querySelectorAll('.vw')
+  // survivors (not blacked out) — indices 2, 5 = "they'll find out" + "not ready"
+  const survivors = new Set([2, 5])
+
+  const voiceIO = new IntersectionObserver((entries) => {
+    if (!entries[0].isIntersecting) return
+    voiceIO.unobserve(voice)
+
+    // Show words with stagger
+    words.forEach((w, i) => {
+      setTimeout(() => w.classList.add('shown'), i * 120)
+    })
+
+    // Mark survivors before blackout
+    words.forEach((w, i) => { if (survivors.has(i)) w.classList.add('survivor') })
+
+    // Blackout the rest with stagger after reveal
+    const toBlack = [...words].filter((_, i) => !survivors.has(i))
+    // shuffle for random-feeling blackout order
+    toBlack.sort(() => Math.random() - 0.5)
+    toBlack.forEach((w, i) => {
+      setTimeout(() => w.classList.add('blacked'), 1400 + i * 180)
+    })
+  }, { threshold: 0.3 })
+
+  voiceIO.observe(voice)
+</script>
+
 </body>
 </html>
