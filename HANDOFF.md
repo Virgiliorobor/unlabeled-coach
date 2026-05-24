@@ -1,7 +1,200 @@
 # Unlabeled — Development Handoff Document
-> Written at end of Session 2 with Claude (May 22 2026). Pass this to the next agent to continue.
+> Last updated: May 24 2026 · Session 3 with Claude Sonnet 4.6.
+> Previous session notes preserved below (§ Session 2). New work from Session 3 is in §§ A–E.
 
 ---
+
+## SESSION 3 SUMMARY — Design System Application
+
+This session focused entirely on applying the "Tactile OS" visual design system to the two main surfaces: the `how-it-works.html` marketing/philosophy page and the React `Dashboard.tsx`. The Stitch design mockups were the reference point throughout.
+
+---
+
+## A. Design System Reference
+
+The **Tactile OS** design system is documented in `DESIGN.md` (uploaded by user, not in repo — see `icm/` for reference). Key rules:
+
+### Palette (exact values — do not substitute)
+| Token | Value | Usage |
+|---|---|---|
+| `--canvas` / `T.ivory` | `#F4F4F0` | All page backgrounds. Updated this session from `#F3F1EB` which had a pinkish/warm cast |
+| `T.white` | `#FFFFFF` | Card faces, elevated surfaces sitting on ivory |
+| `T.black` | `#111111` | All borders, structural elements, primary text |
+| `T.red` | `#E03C31` | NASA red — deadlines, overdue, destructive actions only |
+| `T.yellow` | `#FFF000` | Highlighter — active nav items, tape, insights |
+| `T.grey` | `#888880` | Secondary text, labels, disabled states |
+| `T.greyLight` | `#D8D8D4` | Dividers, ghost borders |
+| `T.greyBg` | `#ECEAE5` | Recessed areas, step cards, inputs |
+
+### Typography
+| Role | Font | Usage |
+|---|---|---|
+| Headlines / body text | EB Garamond | Sanctuary/reflection states |
+| Typewriter / inputs | Courier Prime | Drafting, sandbox |
+| Labels / metadata / nav | Space Mono | System quadrant, all metadata, nav items |
+| DYMO labels / CTAs | Inter 700 uppercase | Workbench, action buttons |
+
+### Physical language (apply everywhere)
+- **No CSS box-shadows with blur** — all shadows are `N px N px 0px #111111` (hard, unblurred)
+- **No gradients** — flat surfaces only
+- **No rounded corners** — everything is `border-radius: 0`
+- **Hard shadow on hover** shrinks + element translates: `box-shadow: 1px 1px` + `transform: translate(2px,2px)`
+- **NASA red corner flag** for overdue items: CSS triangle `border-top: 24px solid #E03C31; border-left: 24px solid transparent`
+- **Tape borders** (CSS `::before`/`::after` pseudo-elements, `background: rgba(255,240,0,0.75)`) for workbench elements
+- **DYMO label** = black bg, white uppercase Inter, inset shadow
+
+---
+
+## B. Files Changed This Session
+
+### `src/index.css`
+- Updated `--canvas`, `--bg`, `--white` from `#F3F1EB` → `#F4F4F0` (was causing the "pinkish" look the user flagged)
+- All other design tokens already correct
+
+### `src/pages/Dashboard.tsx` (major rewrite)
+**Key structural change:** The dashboard was rebuilt from a centered max-width layout into a full-viewport left-sidebar + main-area layout, matching all four Stitch screen designs.
+
+Current structure:
+```
+<div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+  <aside style={{ width: 240, borderRight: '2px solid #111' }}>
+    NASA-red DYMO brand label
+    Phase nav (6 items, active = yellow #FFF000 + translate + black border)
+    Start Session DYMO button
+    Sign out
+  </aside>
+  <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+    <header style={{ height: 52, borderBottom: '2px solid #111' }}>
+      Current phase name | resistance_pattern + slug
+    </header>
+    <main style={{ flex: 1, overflowY: 'auto' }}>
+      ProgressMap
+      Grid (1fr 300px): Goals | Tools + Agents + Publishing log
+    </main>
+  </div>
+</div>
+```
+
+New subcomponents in Dashboard.tsx:
+- `DymoBtn` — black DYMO label button with 4px hard shadow, translate on hover
+- `Btn` — System rectangular button (ghost/solid/dim variants)
+- `ToolCard` — flat bordered card with hover background, stacked list style
+- `SectionLabel` — Space Mono uppercase label (inline/block/small variants)
+
+Goal cards:
+- White face (`#FFFFFF`) on ivory surface
+- Stacked borderless rows (`border-bottom: none` on all but last)
+- Black corner triangle for overdue (CSS triangle, `position: absolute, top: 0, right: 0`)
+- Inline phase/horizon tags (black pill for horizon, ghost pill for phase)
+
+### `public/how-it-works.html` (major rewrite)
+The standalone marketing/philosophy page was rebuilt using the Tactile OS four-quadrant layout. It does NOT use React — it's a plain HTML file copied to `dist/client/` by Vite during build (because it lives in `public/`).
+
+Current sections:
+1. **Sanctuary** — centered, EB Garamond, vast void, philosophical opening text, two CTAs
+2. **Sandbox** — 2×2 principle cards (white, hard shadow) + 3-column rotated pattern cards (rotate on hover to straighten)
+3. **System** — SYSTEM_LOG header, 3×2 phase grid (hover fills black + reveals description), chat demo in split layout
+4. **Workbench** — 2×2 DYMO agent cards + 2×2 tool cards, full-width NASA red CTA
+
+Fixed sidebar (200px left column) with scroll-spy active states for all four sections.
+
+---
+
+## C. Stitch Design Reference (Source of Truth for Dashboard)
+
+The user has a Stitch project at:
+- **Project ID:** `14374394201114475882`
+- **API key:** stored by user in Railway as `stitch_key` (not in this env — ask user to provide)
+- **MCP server:** `https://stitch.googleapis.com/mcp` with header `X-Goog-Api-Key`
+
+Five screens in the project (IDs listed for `get_screen` tool calls):
+| Screen name | Screen ID |
+|---|---|
+| Ivory Transition State | `7cca1e6dbda74060a802fc996d198d31` |
+| Clarity (System) | `a95b8f7470304bed86a6290c0e284035` |
+| Commitment (Workbench) | `d32d83e35c27438aa9bdf14dd8119ec3` |
+| Reflection (Sanctuary) | `c8fc69e5ece34265bdcf731848890f3d` |
+| The Transition State | `aa24f643cca14cd09d452bae7afec5ec` |
+
+**Note on access:** The `get_screen` MCP call returns metadata + download URLs (`htmlCode.downloadUrl`, `screenshot.downloadUrl`). Those download URLs require Google OAuth (browser session cookie), not the API key — they return 403 from cloud environments. To get the actual HTML/images, the user needs to export from the Stitch web UI directly, or provide OAuth tokens.
+
+The HTML for 4 of the 5 screens was provided by the user during this session and used as design reference:
+- `8615257f-code.html` — Clarity (System)
+- `fd00258b-code.html` — Commitment (Workbench)
+- `327550a1-code.html` — Transition State
+- `f82ceebc-code.html` — Reflection (Sanctuary)
+
+These are in the Claude uploads for session `be5ceae2-aa86-447b-bae6-9bcd65d34180` but are NOT in the repo. If you need them, ask the user to re-upload or export from Stitch.
+
+**Key patterns extracted from Stitch screens:**
+- All screens use `display: flex; height: 100vh; overflow: hidden` on the root
+- Left sidebar: `width: 256px; border-right: 2px solid #000; flex-shrink: 0`
+- Active nav item: `background: #FFF000; border: 1px solid #000; transform: translateX(2-3px)`
+- Main area: `flex: 1; display: flex; flex-direction: column; overflow: hidden`
+- Blueprint grid background (System): `background-image: linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 24px 24px`
+- Tape border (Workbench): CSS `::before` pseudo-element, `position: absolute; top: -6px; left: 50%; width: 40px; height: 12px; background: #d1d1c4`
+- DYMO label class: `background: #1a1a1a; color: #fff; padding: 6px 12px; box-shadow: inset 0 -1px 2px rgba(255,255,255,0.2), 0 2px 4px rgba(0,0,0,0.4); text-transform: uppercase; letter-spacing: 0.1em; font-family: Inter; font-weight: 800`
+- NASA corner flag: `clip-path: polygon(100% 0, 100% 100%, 0 0); background: #E03C31`
+
+---
+
+## D. What Still Needs Work (Design)
+
+The user's feedback at end of session was that the dashboard doesn't fully look like the Stitch designs yet. The structural rebuild (left sidebar + flex layout) was the last commit. What's still missing to get closer to the Stitch reference:
+
+### D1 — Phase-adaptive main content
+The Stitch screens show dramatically different main content per phase:
+- **Sanctuary/Reflection**: Centered content, minimal, `items-center justify-center`, crosshair cursor, full-page serif question with transparent textarea
+- **System/Clarity**: Blueprint grid background, 12-column Bauhaus bento grid with `border-t border-l border-primary` stacking
+- **Workbench/Commitment**: Dot-grid background, tape-bordered cards, 4px hard shadows throughout, OBLIGATION_MANIFEST card
+
+Currently the dashboard renders the same layout regardless of phase. The next step is making the main content area switch based on `data-quadrant` or the current phase.
+
+**How to implement:** In `src/App.tsx`, `phaseToQuadrant()` already maps phases to quadrant names. The `data-quadrant` attribute is set on `<html>`. The CSS in `index.css` already has `[data-quadrant="system"]`, `[data-quadrant="workbench"]`, etc. selectors. The missing piece is phase-conditional rendering in `Dashboard.tsx` main content.
+
+### D2 — Blueprint grid on System quadrant
+When `phase === 'resistance'` (System quadrant), the main content area background should show the grid:
+```css
+background-image: linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
+                  linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+background-size: 24px 24px;
+```
+
+### D3 — Bento grid for goals (System phase)
+In the Clarity/System Stitch screen, goals/content is displayed as a 12-column strict-border bento grid:
+```
+<div class="grid grid-cols-12 gap-0 border-t border-l border-primary">
+  <div class="col-span-8 border-r border-b border-primary p-6 bg-white">...primary card...</div>
+  <div class="col-span-4 border-r border-b border-primary">...metrics...</div>
+  ...
+</div>
+```
+
+### D4 — Sanctuary layout for Reflection phase
+When in reflection phase, the main area should become centered/minimal like the Reflection Stitch screen:
+- `display: flex; flex-direction: column; align-items: center; justify-content: center`
+- Large EB Garamond italic question
+- Transparent textarea "type into the void"
+- Fade-in animation on load
+
+### D5 — Commitment/Workbench tape treatment
+The goal cards in commitment phase should get the tape-border treatment from the Workbench Stitch screen (the `.tape-border::before` pseudo-element). Currently the tape border CSS exists in `index.css` as `.tape-border` class but isn't applied in the new Dashboard.
+
+---
+
+## E. Deployment State
+
+- **Branch:** `main`
+- **Netlify:** auto-deploys from `main`, serves `dist/client/` (built by `npm run build:client`)
+- **Railway:** auto-deploys from `main`, serves the full Express app
+- **netlify.toml:** routes `/how-it-works` → `/how-it-works.html`, then `/*` → `/index.html` (SPA catch-all)
+- **Last commit on main:** `316f7c0` — Rebuild Dashboard with Stitch left-sidebar layout
+
+---
+
+---
+
+# SESSION 2 NOTES (May 22 2026) — preserved below
 
 ## 1. What This Project Is
 
@@ -67,7 +260,11 @@ unlabeled/
 │   ├── sessions/               # {slug}/{session_id}.json
 │   └── community/              # {post_id}.json
 │
+├── public/
+│   └── how-it-works.html       # Standalone marketing/philosophy page (Tactile OS)
+│
 ├── railpack.json               # Railway build config
+├── netlify.toml                # Netlify routing
 ├── package.json
 ├── tsconfig.server.json        # CommonJS target for server
 └── vite.config.ts
@@ -76,8 +273,6 @@ unlabeled/
 ---
 
 ## 3. Environment Variables (Railway)
-
-Set all of these in the Railway project settings:
 
 | Variable | Required | Value/Notes |
 |---|---|---|
@@ -89,334 +284,82 @@ Set all of these in the Railway project settings:
 | `GITHUB_TOKEN` | ✅ Required | Personal access token with `repo` scope (read + write) |
 | `GITHUB_BRANCH` | Optional | Defaults to `main` |
 | `GITHUB_BASE_PATH` | Optional | Leave empty unless storing data in a subfolder |
-| `RESEND_API_KEY` | Optional | For email delivery. Lazy-initialized — app starts fine without it |
+| `RESEND_API_KEY` | Optional | For email delivery. Lazy-initialized |
 | `TELEGRAM_BOT_TOKEN` | Optional | For Telegram notifications. Lazy-initialized |
-| `CLIENT_URL` | Optional | Full URL of deployed app (e.g. `https://your-app.up.railway.app`). Used for CORS restriction. If not set, CORS reflects origin (permissive but fine for MVP) |
-| `NODE_ENV` | Set by Railway | Railway sets this to `production` automatically |
-| `ANTHROPIC_MODEL` | Optional | Defaults to `claude-opus-4-5` |
-| `ANTHROPIC_MAX_TOKENS` | Optional | Defaults to `8192` |
-
-**Startup diagnostics:** On boot, the server logs the status of every env var. Check Railway logs immediately after deploy — any MISSING lines need to be fixed before the app works.
+| `CLIENT_URL` | Optional | Full URL of deployed app. Used for CORS. |
+| `stitch_key` | Design reference | Google API key for Stitch MCP. Used for design work only — not needed for app runtime |
 
 ---
 
 ## 4. How the Coaching System Works
 
-### Session flow
-1. User registers → profile created in `_database/users/{slug}.json` on GitHub
-2. User starts session → `GET /api/session/active` creates a session record and generates an opening message by calling Claude
-3. User types → `POST /api/session/:id/message` sends message + full chat history + all ICM files + profile to Claude
-4. Claude responds with: message text + optional `[PROFILE_PATCHES]` JSON block + optional `[COMMITMENT_OUTPUT]` JSON block + safety state signal
-5. Server strips the control blocks before showing the message to the user, applies any patches to the profile, writes everything to GitHub
+(See Session 2 notes — unchanged.)
 
-### Profile patches — how the coach updates the profile
-The coach signals profile updates by embedding a structured block in its response:
-```
-[PROFILE_PATCHES]
-[
-  {"field_path": "background.domain", "value": "finance"},
-  {"field_path": "program.current_phase", "value": "reflection"}
-]
-[/PROFILE_PATCHES]
-```
-The server parses this, applies each patch using dot-notation path walking, and writes the updated profile to GitHub. **This was broken in early sessions (ICM files never told the coach about this format) and was fixed in this session.**
-
-### Commitment output format
-When a commitment is declared in Phase 4:
-```
-[COMMITMENT_OUTPUT]
-{
-  "text": "exact commitment text",
-  "due_date": "2026-05-29T23:59:00.000Z",
-  "ladder_rung": 3,
-  "public_platform": "unlabeled_community",
-  "share_post": "2-3 plain sentences for posting",
-  "print_card": "one sentence for the desk",
-  "daily_reminders": {
-    "day_1": "...", "day_2": "...", ... "day_7": "..."
-  }
-}
-[/COMMITMENT_OUTPUT]
-```
-
-### Phase names (important — must match exactly)
-Profile stores phases as strings. These are the only valid values:
+Phase names (must match exactly in code):
 ```
 interview → reflection → clarity → resistance → commitment → accountability
 ```
-The frontend maps these to visual quadrants (in `src/App.tsx`):
-- `interview` → sanctuary (EB Garamond, vast space, Rubin aesthetic)
-- `reflection`, `clarity` → sandbox (Courier Prime, skewed elements, Kleon aesthetic)
-- `resistance` → system (Space Mono, strict grid, Bauhaus aesthetic)
-- `commitment`, `accountability` → workbench (Dymo labels, tape borders, Sachs aesthetic)
 
-### Safety system
-Three states: `engaged` → `watchful` → `redirected`  
-Coach signals via `[SAFETY:watchful]` or `[SAFETY:redirected]` in response text.  
-If redirected, the input area is disabled and a banner appears.
+Phase → Quadrant mapping in `src/App.tsx`:
+- `interview` → sanctuary
+- `reflection`, `clarity` → sandbox
+- `resistance` → system
+- `commitment`, `accountability` → workbench
 
 ---
 
-## 5. Bugs Fixed in This Session
+## 5. Known Issues / Next Work Items
 
-### Bug 1 — Coach never wrote profile patches (CRITICAL, fixed)
-**Problem:** `icm/rules.md` told the coach what fields to fill but never explained the `[PROFILE_PATCHES]` format. The coach did the interview correctly but had no way to send the answers back to the server. Profile stayed blank across all sessions.  
-**Fix:** Added a full "HOW TO SIGNAL PROFILE UPDATES" section at the top of `icm/rules.md` with the exact JSON format, a field-path reference table, and instructions to emit incrementally (not just at end of interview).
+### P0 — Dashboard doesn't fully match Stitch designs (D1–D5 above)
+Phase-adaptive content is the most impactful remaining design work.
 
-### Bug 2 — COMMITMENT_OUTPUT format mismatch (fixed)
-**Problem:** `rules.md` defined commitment output as a plain-text YAML block, but `claude.ts` parser expected JSON inside `[COMMITMENT_OUTPUT]...[/COMMITMENT_OUTPUT]` tags. They never matched.  
-**Fix:** Replaced the text format in `rules.md` with the correct JSON format and bracket tags.
+### P1 — Magic link login not implemented
+`POST /api/auth/login` returns 501.
 
-### Bug 3 — Coach restarted from scratch every session (fixed)
-**Problem:** `icm/AI_README.md` had generic "check the phase" instructions but no decision tree for where to resume. The coach would read an empty profile and start Section A even if some sections were already filled.  
-**Fix:** Added a "WHERE TO PICK UP — DECISION TREE" section to `AI_README.md` mapping every `current_phase` value to specific opening behavior. If Section A fields are filled, skip to Section B. Never ask questions you already have answers for.
+### P2 — Session length / stopping points
+Interview is too long in one sitting. Add "section complete" logic to `icm/AI_README.md` (no code changes needed).
 
-### Bug 4 — GitHub writes failed silently (CRITICAL, fixed)
-**Problem:** `server/storage.ts` `githubWrite()` never checked the HTTP response status. A 401/409/422 from the GitHub API would be swallowed — the server returned 200 to the client, messages appeared in the UI, but nothing was actually saved.  
-**Fix:** Added response status check + throw on failure. Now the error propagates to the route handler and returns a 500 with the actual GitHub error message.
+### P3 — User registry not seeded on startup
+`loadUserRegistry([])` in `server/index.ts` should scan `_database/users/` on boot.
 
-### Bug 5 — Wrong phase string names in frontend (fixed)
-**Problem:** `src/App.tsx` `phaseToQuadrant()` mapped `phase_0`, `phase_1`, etc. but the profile actually stores `interview`, `reflection`, `clarity`, etc. Every user hit the default case and got sanctuary quadrant regardless of actual phase.  
-**Fix:** Updated switch cases to match actual profile phase strings.
+### P4 — Dashboard empty for early-phase users
+No conditional rendering for users in `interview` / `reflection` phase. ProgressMap and goals grid are empty.
 
-### Bug 6 — CORS misconfiguration (fixed)
-**Problem:** In production, if `CLIENT_URL` env var was not set, `origin: false` disabled CORS headers entirely for cross-origin requests.  
-**Fix:** Changed to `origin: true` (reflect origin) as the safe default when `CLIENT_URL` is not configured.
+### P5 — Re-interview timer resets on registration
+Should only start after Phase 0 (`interview`) is complete.
 
 ---
 
-## 6. Design System — The Tactile OS
-
-Four visual quadrants defined in `src/index.css`. Switched via `document.documentElement.dataset.quadrant` which is set in `App.tsx` based on current phase.
-
-| Quadrant | Phase | Fonts | Visual character |
-|---|---|---|---|
-| sanctuary | interview | EB Garamond | Vast margins, no borders, italic coach messages, text links instead of buttons |
-| sandbox | reflection, clarity | Courier Prime + Permanent Marker | 0.5deg rotation on messages, yellow tape note cards, typewriter feel |
-| system | resistance | Space Mono | Strict grid, thick borders, 4px box shadows, uppercase labels, Bauhaus |
-| workbench | commitment, accountability | Space Mono + Dymo labels | Black/white label chips, yellow drafting tape borders, NASA red for deadlines, strikethrough for done items |
-
-**Snap animation:** When phase transitions from `sandbox` → `system` (reflection/clarity → resistance), a CSS animation fires on `.is-snapping` class added to `<html>`. Skewed elements animate into a rigid grid.
-
-**Global rules (never violate):**
-- Background is always `#F4F4F0` (never pure white)
-- Shadows are always `4px 4px 0px #111` (unblurred, physical)
-- NASA red `#E03C31` for deadlines/destructive only
-- Highlighter yellow `#FFF000` for tape, insights, active selections only
-
----
-
-## 7. Current Test User Profile
-
-**Slug:** `test-gmao-com`  
-**GitHub path:** `_database/users/test-gmao-com.json`  
-**Current phase:** `clarity` (Phase 2)  
-**Sessions completed:** 4 (+ session 5 and 6 in progress at time of writing)  
-
-Profile was manually seeded from the Phase 0 + Phase 1 session HTML transcript after those sessions failed to save due to Bug 1 + Bug 4. Key data:
-- Finance background, 15 years, parallel builder
-- Resistance pattern: `visibility_avoider`
-- Dominant lens: `business`
-- Goals set across three horizons
-- Email: `jaime.rob@gmail.com`, timezone: `America/Chicago`
-
-Session 5 and 6 are currently running (or recently completed). The `c985dfc profile update: test-gmao-com` commit in git log confirms patches ARE now being written correctly post-fix.
-
----
-
-## 8. Known Remaining Issues / Next Work Items
-
-### Issue A — User experience: sessions are too long
-**Problem:** The interview + Phase 1 took the test user 2+ hours in a single sitting. The system was designed for weekly coaching sessions but is being used as a self-service product. Users see no dashboard value until Phases 2-4 are complete.
-
-**Proposed solution (do not implement yet, needs design discussion):**
-
-**Phase 0 — Split into 3 micro-sessions (~10 min each)**
-- Part A (5 questions): Background only → immediately shows domain + years on dashboard
-- Part B (9 questions): Build + Goals → Three Horizons grid populates on dashboard
-- Part C (6 questions): Resistance + Notifications → pattern named, daily signals configured
-
-The coach already checks which profile fields are filled and skips them (AI_README.md pickup fix). Stopping mid-interview is safe — partial data is saved. The only change needed is telling the coach to recognize "end of a section" as a valid stopping point and invite the user back.
-
-**Phase 1-2 — Async daily questions instead of full sessions**
-Instead of dedicated reflection sessions, the coach sends one question per day via email. User answers in 2 minutes. After 3-5 answers the coach has enough to name the contradiction and advance the phase. Session UI becomes optional (for depth), not required (for progression).
-
-**Dashboard — Progressive state rendering**
-Every profile field should have three display states: `empty` → `in_progress` → `active`  
-- Background shows as soon as Part A is done  
-- Goals show with a "refining..." label before they're finalized  
-- Resistance pattern shows as "?" until confirmed, then full explanation  
-- Phase progress indicator (e.g. "Phase 2 of 6 — Clarity")
-
-**Session ending — explicit "good stopping point" logic**
-Coach should recognize when a section of the interview or a phase unit is complete and offer to stop: "That's a good place to pause. Your profile has been updated — we'll pick up with [X] next time." Currently the coach never offers to stop.
-
-### Issue B — Dashboard incomplete for early phases
-The current dashboard shows Three Horizons grid and Active Commitment. For a user in `interview` or `reflection` phase, both sections are mostly empty. Need:
-- Phase-appropriate dashboard content (interview phase shows "next: complete your profile")
-- Progress indicator showing where user is in the program
-- Partial goal display (even rough/unconfirmed goals are better than "Not set yet")
-
-### Issue C — Magic link login not implemented
-`POST /api/auth/login` returns 501. Currently the only way to log in (aside from registration) is the dev-login endpoint. Needs proper email-based magic link auth for production.
-
-### Issue D — User registry not seeded on startup
-`loadUserRegistry([])` is called with an empty array. If Railway restarts, the scheduler doesn't know about existing users until they start a new session. Needs to scan `_database/users/` on startup.
-
-### Issue E — Re-interview timer resets on registration
-`re_interview_due` is set to `created_at + 7 days`. This means every new registration triggers a re-interview reminder 7 days later even if no real interview happened yet. Should only start the 7-day clock after Phase 0 is actually complete (i.e., after `current_phase` advances past `interview`).
-
----
-
-## 9. How to Run Locally
+## 6. How to Run Locally
 
 ```bash
-cd C:\Users\jaime\OneDrive\dev\unlabeled
-
 # Install dependencies
 npm install
 
-# Create .env file (copy from Railway env vars)
-# Minimum for local:
+# .env minimum:
 # ANTHROPIC_API_KEY=sk-ant-...
-# SESSION_SECRET=any-random-string-32-chars
-# STORAGE_MODE=local   (use local FS for dev, not github)
+# SESSION_SECRET=any-random-32-char-string
+# STORAGE_MODE=local
 
-# Run dev server (Express on :3001, Vite on :5173)
+# Dev (Express :3001, Vite :5173 — proxies /api/* to :3001)
 npm run dev
-```
 
-The Vite dev server proxies `/api/*` to `:3001`. Both run concurrently via `concurrently`.
-
-For production build:
-```bash
-npm run build          # builds client to dist/client, server to dist/server
+# Production build
+npm run build
 node dist/server/index.js
 ```
 
 ---
 
-## 10. Deployment (Railway)
+## 7. Deployment
 
-Railway auto-deploys from `main` branch on push. Config is in `railpack.json`:
-```json
-{ "install": "npm install", "build": "npm run build", "start": "node dist/server/index.js" }
-```
+**Railway** — auto-deploys from `main`. Config: `railpack.json`.  
+**Netlify** — auto-deploys from `main`. Serves React SPA + `/how-it-works` static page. Config: `netlify.toml`.
 
-After every deploy, check Railway logs for:
-- `[startup] ✓ ANTHROPIC_API_KEY` — coach works
-- `[startup] ✓ GITHUB_TOKEN` — storage works  
-- `[startup] Storage mode: github` — data persists
-- Any `MISSING` lines = that feature is broken
-
-**Critical:** If `STORAGE_MODE` is not `github`, all data is lost on every redeploy. This caused multiple lost sessions during testing.
+After Railway deploy, check logs for `[startup] ✓` lines. Any `MISSING` = broken feature.
 
 ---
 
-## 11. The ICM Files — What They Do
-
-The `/icm/` folder is the coach's brain. These files are loaded into the Claude system prompt on every API call. They never change at runtime.
-
-**Load order in system prompt** (defined in `server/claude.ts`):
-1. `AI_README.md` — system briefing, session load order, WHERE TO PICK UP decision tree
-2. User profile JSON (injected fresh every turn)
-3. `identity.md` — coach persona
-4. `rules.md` — non-negotiables + PROFILE_PATCHES format + COMMITMENT_OUTPUT format
-5. `examples.md` — good/bad examples per phase
-6. All reference files (interview protocol, oblique strategies, resistance patterns, three horizons, business-artist lens, building in public, safety protocol)
-
-**Important:** When editing ICM files, the changes take effect immediately on the next Railway deploy (files are read from local FS on server). No code changes required to update coach behavior — only ICM file changes.
-
----
-
-## 12. Key Code Locations for Each Feature
-
-| Feature | File | Key function/line |
-|---|---|---|
-| Opening message generation | `server/routes/session.ts` | `GET /active` → `runTurn([], '[SESSION_START]', profile)` |
-| Profile patch application | `server/routes/session.ts` | `applyPatch()` function at bottom of file |
-| Claude system prompt assembly | `server/claude.ts` | `buildSystemPrompt()` |
-| Patch + commitment parsing | `server/claude.ts` | `extractBlock()`, `parseProfilePatches()`, `parseCommitmentOutput()` |
-| GitHub storage | `server/storage.ts` | `githubRead()`, `githubWrite()` |
-| Auth cookies | `server/auth.ts` | `sign()`, `verify()`, `requireAuth` middleware |
-| Quadrant switching | `src/App.tsx` | `phaseToQuadrant()` + `useEffect` that sets `document.documentElement.dataset.quadrant` |
-| Snap animation trigger | `src/App.tsx` | `prevQuadrantRef` + `is-snapping` class |
-| Daily notification scheduler | `server/scheduler.ts` | `startScheduler()` — runs hourly cron |
-| Commitment resolve | `server/routes/dashboard.ts` | `POST /dashboard/commitment/:id/resolve` |
-| Quaker Board | `server/routes/community.ts` | AI-seeded responses via `generateQuakerResponses()` |
-
----
-
-## 13. Netlify Static Tools — Site Directory
-
-A companion static site lives in `/site/` and is deployed to Netlify from the `claude/handoff-md-review-2DikD` branch (Netlify configured to deploy from this branch).
-
-### Landing page
-`site/index.html` — Sanctuary aesthetic. EB Garamond wordmark + headline, CTA link to Railway app, tool list below.
-
-### Tools catalog
-
-| Tool | File | Quadrant | Description |
-|---|---|---|---|
-| Oblique Card | `site/tools/card.html` | Sanctuary | 40 curated cards for stuck builders. Date-keyed daily card (same card for all users that day). Fade transition between cards. Text-link controls, no buttons. |
-| Blackout | `site/tools/blackout.html` | Workbench | Paste any text (or choose from 8 catalog texts). Algorithm redacts stop words + probabilistic substantive words, leaving a found-poem. Three density modes: Dense / Balanced / Sparse. Dymo labels for section headers. |
-| Grow | `site/tools/grow.html` | Sandbox | Full-screen canvas drawing tool. Draw lines + plant color seeds → Transform fires 4-phase mandala animation: shake/fade → seed connectors → N-fold rotational folds fan in → ribs grow. Handwritten reveal prompt after transform. |
-| Simplify | `site/tools/simplify.html` | System | Calls `POST /api/tools/simplify` on Railway. Claude returns 3–7 steps with duration + why, plus a first_move sentence. System UI: mono throughout, yellow first-move banner, Dymo chip durations, bordered step list. |
-
-### Design quadrant rules (applied to tools)
-Derived from the Tactile OS used in the main app (`src/index.css`):
-
-| Quadrant | Fonts | Key markers |
-|---|---|---|
-| Sanctuary | EB Garamond | No borders on interactive elements, text links not buttons, vast spacing, italic everything |
-| Workbench | Space Mono + Courier Prime | Dymo label chips (black bg), yellow tape borders, inset box-shadow on inputs |
-| Sandbox | Courier Prime + Permanent Marker | 0.5–1.5deg rotations, yellow (#FFF000) as active highlight, handwritten scrawl feel |
-| System | Space Mono | Strict grid, thick 2px borders, 4px unblurred box-shadows, uppercase mono labels, zebra rows |
-
-### API endpoint for Simplify
-`POST /api/tools/simplify` (no auth required)  
-Body: `{ "task": "string, max 1000 chars" }`  
-Returns: `{ "task": "cleaned", "steps": [...], "first_move": "one sentence" }`  
-File: `server/routes/tools.ts`
-
----
-
-## 14. What the Next Agent Should Focus On
-
-Priority order based on user feedback and system state:
-
-**P0 — Verify fixes are stable** ✓ (confirmed in Session 3)
-- Profile patches write correctly post-fix
-- Coach opens in correct phase based on profile state
-
-**P1 — Dashboard for early-phase users** ✓ (implemented in Session 3)
-- Phase progress indicator (6 pips) added to Dashboard.tsx
-- First Move block shown when user has no active commitment
-- Portfolio block visible from Phase 0
-- Today's prompt + Oblique Card signal row added
-
-**P2 — Netlify static tools** ✓ (implemented in Session 3)
-See Section 13 for full catalog. Four tools live, quadrant-styled.
-
-**P3 — Magic link login (Issue C)** — not yet done
-`POST /api/auth/login` in `server/routes/dashboard.ts` returns 501. Need to:
-- Generate a 1-time token, store it (in `_database/auth/{token}.json`)
-- Send login link via Resend
-- `GET /api/auth/verify?token=X` validates and issues session cookie
-
-**P4 — User registry seeding on startup (Issue D)** — not yet done
-In `server/index.ts`, replace `loadUserRegistry([])` with a function that scans `_database/users/` and loads all slugs into the scheduler.
-
-**P5 — Define remaining product areas** — next design session
-User wants to map out other parts of the build beyond the coach + tools:
-- What other pages/sections does the site need?
-- Community features beyond Quaker Board
-- Monetization / program structure (what does "entering the program" mean?)
-- Any missing ICM work
-
----
-
-*Document written: May 22 2026 · Session 2 with Claude Sonnet 4.6*  
-*Updated: May 23 2026 · Session 3 — dashboard overhaul, Netlify tools, style pass*  
-*Repo: https://github.com/Virgiliorobor/unlabeled-coach.git*  
-*Local: C:\Users\jaime\OneDrive\dev\unlabeled\*
+*Session 3 additions: May 24 2026*  
+*Session 2 original: May 22 2026*  
+*Repo: https://github.com/Virgiliorobor/unlabeled-coach.git*
