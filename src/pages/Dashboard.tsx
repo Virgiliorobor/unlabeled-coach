@@ -432,6 +432,7 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
                   sessionsCompleted={profile.sessions_completed}
                   resistancePattern={profile.resistance_pattern}
                   initialInterviewDone={profile.initial_interview_done}
+                  onSelectGoal={(id) => { setSelectedGoalId(id); setInnerView('goal') }}
                 />
               </div>
 
