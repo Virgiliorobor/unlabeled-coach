@@ -224,9 +224,12 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
     time_gate_clear: g.phase_progress.time_gate_clear,
   }))
 
-  const tools = [
+  const practiceTools = [
     { label: 'Clearness Committee', sub: 'Quaker practice', desc: 'Nine questions, no advice.', onClick: onEnterClearness },
     { label: 'Task Simplifier', sub: 'Making Ideas Happen', desc: 'Find the first move buried inside the task.', onClick: onEnterSimplify },
+    { label: 'Oblique Card', sub: 'Brian Eno & Peter Schmidt', desc: 'A random oblique strategy to break the block.', href: 'https://unlabeledbuild.netlify.app/tools/card.html' },
+    { label: 'Blackout', sub: 'Austin Kleon', desc: 'Find a poem hiding inside a page of prose.', href: 'https://unlabeledbuild.netlify.app/tools/blackout.html' },
+    { label: 'Drawing to Discover', sub: 'GROW', desc: 'Use drawing to access what you already know.', href: 'https://unlabeledbuild.netlify.app/tools/grow.html' },
   ]
 
   const phaseHeader = primaryPhase === 'commitment' ? 'Workbench · Commitment'
@@ -476,8 +479,8 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
                   </button>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
-                  {[...tools, ...AGENTS.slice(0, 2).map(a => ({ label: a.name, sub: a.author, desc: a.tagline, onClick: () => onEnterAgent?.(a.id) }))].map(t => (
-                    <ToolCardLg key={t.label} label={t.label} sub={t.sub} desc={t.desc} onClick={t.onClick} />
+                  {[...practiceTools, ...AGENTS.map(a => ({ label: a.name, sub: a.author, desc: a.tagline, onClick: () => onEnterAgent?.(a.id), href: undefined }))].map(t => (
+                    <ToolCardLg key={t.label} label={t.label} sub={t.sub} desc={t.desc} onClick={t.onClick} href={t.href} />
                   ))}
                 </div>
               </div>
@@ -557,7 +560,7 @@ export default function Dashboard({ slug, onStartSession, onPhaseChange, onEnter
           {/* ── TOOLS VIEW ─────────────────────────────────────── */}
           {innerView === 'tools' && (
             <ToolsView
-              tools={tools}
+              tools={practiceTools}
               agents={AGENTS}
               onEnterAgent={onEnterAgent}
               showProofForm={showProofForm}
@@ -654,7 +657,7 @@ function GoalOverviewCards({
         </h2>
         {primary.description && (
           <p style={{ ...SERIF, fontSize: '0.889rem', color: T.grey, lineHeight: 1.5, marginBottom: 16 }}>
-            {primary.description.length > 160 ? primary.description.slice(0, 160) + '…' : primary.description}
+            {primary.description}
           </p>
         )}
 
@@ -680,7 +683,7 @@ function GoalOverviewCards({
               {isOverdue ? '⚠ Commitment overdue' : 'Active commitment'} — due {fmt(primary.active_commitment.due_date)}
             </span>
             <p style={{ ...SERIF, fontSize: '1rem', lineHeight: 1.5 }}>
-              {primary.active_commitment.text.length > 140 ? primary.active_commitment.text.slice(0, 140) + '…' : primary.active_commitment.text}
+              {primary.active_commitment.text}
             </p>
           </div>
         )}
@@ -991,7 +994,7 @@ function ToolsView({
   showProofForm, setShowProofForm, proofUrl, setProofUrl, proofPlatform, setProofPlatform,
   proofDescription, setProofDescription, submittingProof, submitProof, publishingLog,
 }: {
-  tools: Array<{ label: string; sub: string; desc: string; onClick?: () => void }>
+  tools: Array<{ label: string; sub: string; desc: string; onClick?: () => void; href?: string }>
   agents: typeof AGENTS
   onEnterAgent?: (id: AgentId) => void
   showProofForm: string | null; setShowProofForm: (v: string | null) => void
@@ -1015,7 +1018,7 @@ function ToolsView({
         </span>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
           {tools.map(tool => (
-            <ToolCardLg key={tool.label} label={tool.label} sub={tool.sub} desc={tool.desc} onClick={tool.onClick} />
+            <ToolCardLg key={tool.label} label={tool.label} sub={tool.sub} desc={tool.desc} onClick={tool.onClick} href={tool.href} />
           ))}
         </div>
       </div>
@@ -1137,21 +1140,37 @@ function Btn({ children, onClick, ghost, dim }: { children: React.ReactNode; onC
   )
 }
 
-function ToolCardLg({ label, sub, desc, onClick }: { label: string; sub: string; desc: string; onClick?: () => void }) {
+function ToolCardLg({ label, sub, desc, onClick, href }: { label: string; sub: string; desc: string; onClick?: () => void; href?: string }) {
   const [hov, setHov] = useState(false)
-  return (
-    <div onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-      style={{
-        border: `2px solid ${T.black}`,
-        boxShadow: hov ? `1px 1px 0px ${T.black}` : `4px 4px 0px ${T.black}`,
-        transform: hov ? 'translate(3px,3px)' : 'none',
-        padding: '20px 20px', cursor: 'pointer',
-        background: hov ? T.greyBg : T.white,
-        transition: 'all 0.1s',
-      }}>
+  const cardStyle: React.CSSProperties = {
+    border: `2px solid ${T.black}`,
+    boxShadow: hov ? `1px 1px 0px ${T.black}` : `4px 4px 0px ${T.black}`,
+    transform: hov ? 'translate(3px,3px)' : 'none',
+    padding: '20px 20px', cursor: 'pointer',
+    background: hov ? T.greyBg : T.white,
+    transition: 'all 0.1s',
+    display: 'block', textDecoration: 'none', color: 'inherit',
+  }
+  const inner = (
+    <>
       <span style={{ ...MONO, fontSize: '0.611rem', color: T.grey, letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>{sub}</span>
       <span style={{ ...SERIF, fontStyle: 'italic', fontSize: '1.111rem', lineHeight: 1.2, display: 'block', marginBottom: 10 }}>{label}</span>
       <p style={{ ...MONO, fontSize: '0.667rem', color: T.grey, lineHeight: 1.6, letterSpacing: '0.03em' }}>{desc}</p>
+      {href && <span style={{ ...MONO, fontSize: '0.611rem', color: T.grey, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 8, display: 'block' }}>Open ↗</span>}
+    </>
+  )
+  if (href) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer"
+        onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+        style={cardStyle}>
+        {inner}
+      </a>
+    )
+  }
+  return (
+    <div onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} style={cardStyle}>
+      {inner}
     </div>
   )
 }
