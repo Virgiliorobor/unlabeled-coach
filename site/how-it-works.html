@@ -67,6 +67,7 @@
       line-height: 1.8;
       min-height: 100vh;
       position: relative;
+      padding-top: 52px;
     }
 
     /* Paper grain overlay — SVG noise, opacity 0.04 */
@@ -101,6 +102,28 @@
         linear-gradient(var(--grey-light), var(--grey-light)) calc(100% - 16px) calc(100% - 16px) / 12px 1px no-repeat,
         linear-gradient(var(--grey-light), var(--grey-light)) calc(100% - 16px) calc(100% - 28px) / 1px 12px no-repeat;
     }
+
+    /* ── SITE NAV ────────────────────────────────────────────── */
+    .site-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--canvas);
+      border-bottom: var(--border-thick);
+      padding: 13px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .site-nav-wordmark {
+      font-family: var(--font-serif); font-style: italic; font-size: 1rem;
+      color: var(--grey); text-decoration: none;
+    }
+    .site-nav-cta {
+      font-family: var(--font-mono); font-size: 0.55rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      background: var(--black); color: var(--canvas);
+      padding: 9px 18px; text-decoration: none;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.1s, transform 0.1s;
+    }
+    .site-nav-cta:hover { box-shadow: none; transform: translate(2px, 2px); }
 
     /* ── LAYOUT ──────────────────────────────────────────────── */
     .container {
@@ -213,6 +236,15 @@
       bottom: -8px;
       right: 20px;
       transform: rotate(0.8deg);
+    }
+
+    /* ── YELLOW CALLOUT ──────────────────────────────────────── */
+    .yellow-callout {
+      background: var(--yellow);
+      border: var(--border-thick);
+      box-shadow: var(--shadow);
+      padding: 20px 24px;
+      margin: 28px 0;
     }
 
     /* ── HORIZONTAL RULE ─────────────────────────────────────── */
@@ -616,6 +648,23 @@
       padding: 18px 16px;
       box-shadow: var(--shadow-sm);
       background: var(--canvas);
+      position: relative;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .agent-card:nth-child(1) { transform: rotate(-0.7deg); }
+    .agent-card:nth-child(2) { transform: rotate(0.5deg); }
+    .agent-card:nth-child(3) { transform: rotate(0.8deg); }
+    .agent-card:nth-child(4) { transform: rotate(-0.4deg); }
+    .agent-card:hover { transform: rotate(0deg) translateY(-2px) !important; box-shadow: var(--shadow); }
+
+    .agent-card::before {
+      content: '';
+      position: absolute; top: -8px; left: 20px;
+      width: 48px; height: 14px;
+      background: rgba(255, 240, 0, 0.72);
+      border: 1px solid rgba(0,0,0,0.1);
+      transform: rotate(-1.5deg);
     }
 
     .agent-book-title {
@@ -649,6 +698,39 @@
       color: var(--black);
       border-top: var(--border);
       padding-top: 8px;
+    }
+
+    /* ── TOOL ROWS ───────────────────────────────────────────── */
+    .tool-row {
+      display: grid;
+      grid-template-columns: 160px 1fr auto;
+      align-items: baseline;
+      gap: 24px;
+      padding: 20px 0;
+      border-top: var(--border);
+      text-decoration: none;
+      color: var(--black);
+      transition: opacity 0.18s;
+    }
+    .tool-row:last-child { border-bottom: var(--border); }
+    .tool-row:hover { opacity: 0.45; }
+    .tool-row-name {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+    }
+    .tool-row-desc {
+      font-family: var(--font-typewriter);
+      font-size: 0.78rem;
+      color: var(--grey);
+      line-height: 1.55;
+    }
+    .tool-row-tag {
+      font-family: var(--font-mono);
+      font-size: 0.48rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--grey-light);
+      white-space: nowrap;
     }
 
     /* ── TRACKING LIST ───────────────────────────────────────── */
@@ -717,7 +799,7 @@
       color: rgba(17,17,17,0.8);
     }
 
-    /* ── TOOLS GRID ──────────────────────────────────────────── */
+    /* ── TOOLS GRID (legacy, kept for reference) ─────────────── */
     .tools-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -879,6 +961,19 @@
       .diagram-block {
         font-size: 0.68rem;
       }
+
+      .tool-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .tool-row-tag {
+        display: none;
+      }
+
+      .site-nav {
+        padding: 13px 20px;
+      }
     }
 
     /* ── PRINT ───────────────────────────────────────────────── */
@@ -887,10 +982,19 @@
       body::before { display: none; }
       .chat-replay-row { display: none; }
       .section { page-break-inside: avoid; }
+      .site-nav { display: none; }
     }
   </style>
 </head>
 <body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIXED NAV
+     ═══════════════════════════════════════════════════════════ -->
+<nav class="site-nav">
+  <a href="/" class="site-nav-wordmark">Unlabeled</a>
+  <a href="https://unlabeled-coach-production.up.railway.app" class="site-nav-cta">Enter the program →</a>
+</nav>
 
 <!-- ═══════════════════════════════════════════════════════════
      HEADER
@@ -905,7 +1009,12 @@
       <span class="intake-vol">intake · vol. I</span>
     </div>
 
-    <hr class="rule-thin" style="margin-bottom: 24px;" />
+    <nav style="display: flex; gap: 20px; margin-top: 8px;">
+      <a href="/" style="font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey); text-decoration: none;">← Home</a>
+      <a href="https://unlabeled-coach-production.up.railway.app" style="font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey); text-decoration: none;">Enter program →</a>
+    </nav>
+
+    <hr class="rule-thin" style="margin-bottom: 24px; margin-top: 20px;" />
 
     <p class="tagline">
       A structured self-reflection system for solo builders in identity transition.
@@ -946,6 +1055,13 @@
       <span class="annotation" style="transform: rotate(-1.2deg); display: inline-block; margin-bottom: 8px;">the gap</span>
       <p style="font-family: var(--font-typewriter); font-size: 0.85rem; line-height: 1.7; color: var(--grey); margin: 0;">
         Between knowing what you should do and doing it — that's not a tools problem. That's an identity problem. The system is built for that gap, specifically.
+      </p>
+    </div>
+
+    <div class="yellow-callout">
+      <span class="annotation" style="display: block; margin-bottom: 6px; transform: rotate(-1deg);">the actual gap</span>
+      <p style="font-family: var(--font-typewriter); font-size: 0.88rem; line-height: 1.7; margin: 0;">
+        Between knowing what you should do and doing it — that's not a productivity problem. That's an identity problem. Every tool in this system is built for that gap, specifically.
       </p>
     </div>
 
@@ -1452,35 +1568,38 @@
      ═══════════════════════════════════════════════════════════ -->
 <section class="section" id="s11">
   <div class="container">
-
     <div class="section-header">
       <span class="section-num">section · 11</span>
-      <h2>Two tools. Both end with movement.</h2>
+      <h2>Five tools. Each one designed to unstick something specific.</h2>
     </div>
-
-    <div class="tools-grid">
-
-      <div class="tool-card">
-        <p class="tool-name">Clearness Committee</p>
-        <p class="tool-source">Quaker tradition · adapted by Parker J. Palmer</p>
-        <p class="tool-desc">
-          The user brings a dilemma. The committee asks nine questions in three stages — three surface, three medium, three deep — with no advice given at any point. Ends with two mirror observations: not judgments, not recommendations. Reflecting what was noticed in the language and energy of the answers.
-        </p>
-        <p class="tool-desc" style="margin-top: 10px; border-top: var(--border); padding-top: 10px;">
-          "The committee gives no advice. It only asks honest questions — questions where the asker genuinely cannot know the answer."
-        </p>
-      </div>
-
-      <div class="tool-card">
-        <p class="tool-name">Task Simplifier</p>
-        <p class="tool-source">Scott Belsky · Making Ideas Happen</p>
-        <p class="tool-desc">
-          Takes one complex, vague, or overwhelming task and returns: a simplified statement of what the task actually is, ordered action steps starting with verbs, a first move executable in 30 minutes, and two potential blockers to watch for.
-        </p>
-      </div>
-
-    </div>
-
+    <p style="font-family: var(--font-typewriter); font-size: 0.85rem; color: var(--grey); margin-bottom: 28px; line-height: 1.7;">
+      The tools are standalone — no account needed for most of them. Each one is built around a specific method and ends with movement.
+    </p>
+    <a href="tools/blackout.html" class="tool-row">
+      <span class="tool-row-name">Blackout</span>
+      <span class="tool-row-desc">Paste any text. The system removes everything but the words that matter. A poem emerges from whatever you pasted — proposal, plan, essay, complaint.</span>
+      <span class="tool-row-tag">Workbench</span>
+    </a>
+    <a href="tools/card.html" class="tool-row">
+      <span class="tool-row-name">Oblique Card</span>
+      <span class="tool-row-desc">A constraint or reframe, drawn from a 40-card deck built for builders. Changes every 24 hours. Use it when you're stuck or need a different angle.</span>
+      <span class="tool-row-tag">Sanctuary</span>
+    </a>
+    <a href="tools/simplify.html" class="tool-row">
+      <span class="tool-row-name">Simplify</span>
+      <span class="tool-row-desc">Paste a goal or task that feels too large or unclear. Returns a simplified statement, ordered steps starting with verbs, and one first move you can do in 30 minutes.</span>
+      <span class="tool-row-tag">System</span>
+    </a>
+    <a href="https://unlabeled-coach-production.up.railway.app" class="tool-row">
+      <span class="tool-row-name">Clearness Committee</span>
+      <span class="tool-row-desc">A Quaker-derived process. Brings a dilemma. The committee asks questions in three stages — surface, medium, deep — with no advice given. Ends with two mirror observations. Requires account.</span>
+      <span class="tool-row-tag">In-program</span>
+    </a>
+    <a href="tools/grow.html" class="tool-row">
+      <span class="tool-row-name">Grow</span>
+      <span class="tool-row-desc">Draw lines. Plant color seeds. The system applies rotational symmetry and watches them transform into something you didn't plan.</span>
+      <span class="tool-row-tag">Sandbox</span>
+    </a>
   </div>
 </section>
 
@@ -1539,6 +1658,19 @@
       Nothing is hidden, nothing is softened. The commitment history shows missed commitments. The pattern tracking shows where resistance appeared. The record is honest because the builder needs an honest mirror, not a curated highlight reel.
     </div>
 
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     CLOSING CTA
+     ═══════════════════════════════════════════════════════════ -->
+<section class="section" style="border-bottom: none; background: var(--black); background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(255,255,255,0.025) 31px, rgba(255,255,255,0.025) 32px);">
+  <div class="container" style="padding-top: 16px; padding-bottom: 16px;">
+    <p style="font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.18em; text-transform: uppercase; color: #444; margin-bottom: 20px;">For the person doing real work</p>
+    <h2 style="font-family: var(--font-serif); font-size: clamp(1.8rem, 5vw, 3.2rem); line-height: 1.1; color: #F4F4F0; margin-bottom: 24px; font-weight: 400;">You belong in the room.</h2>
+    <a href="https://unlabeled-coach-production.up.railway.app" style="display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-serif); font-style: italic; font-size: 1.1rem; color: #F4F4F0; text-decoration: none; border-bottom: 2px solid #444; padding-bottom: 3px; transition: border-color 0.2s;">Enter the program →</a>
+    <span style="display: block; font-family: var(--font-marker); font-size: 1rem; color: #333; transform: rotate(-4deg); margin-top: 28px;">start here.</span>
   </div>
 </section>
 
