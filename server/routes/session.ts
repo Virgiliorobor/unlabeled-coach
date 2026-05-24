@@ -138,12 +138,12 @@ router.post('/:session_id/message', requireAuth, async (req: Request, res: Respo
 
   // Apply person-level profile patches
   if (profile && result.profile_patches.length > 0) {
-    const prevPhase = profile.program.current_phase
+    const prevInterviewDone = profile.program.initial_interview_done
     for (const patch of result.profile_patches) {
       applyPatch(profile, patch.field_path, patch.value)
     }
-    // Start the 7-day re-interview clock only once the intake interview is complete
-    if (prevPhase === 'interview' && profile.program.current_phase !== 'interview') {
+    // Start the 7-day re-interview clock the first time the intake interview is marked complete
+    if (!prevInterviewDone && profile.program.initial_interview_done) {
       profile.re_interview_due = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
     }
     session.profile_updated = true
