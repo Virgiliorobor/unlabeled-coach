@@ -2,16 +2,14 @@
   "user_id": "b4a1c2d3-e5f6-7890-abcd-ef1234567890",
   "slug": "bruce",
   "created_at": "2026-05-14T09:00:00.000Z",
-  "last_updated": "2026-05-23T08:30:00.000Z",
+  "last_updated": "2026-05-25T11:00:01.673Z",
   "re_interview_due": "2026-05-28T09:00:00.000Z",
-
   "background": {
     "domain": "manufacturing",
     "domain_detail": "Plant operations manager at a mid-size stamping and fabrication plant — 200 people, 3 shifts. Responsible for uptime, throughput, quality escapes, and labor efficiency. Spent 20 years on the floor before moving into management.",
     "years_experience": 22,
     "transition_type": "parallel_build"
   },
-
   "build": {
     "name": "Manufacturing AI Operations",
     "description": "Built and deployed two AI systems for his own plant. First: a downtime tracking and predictive alert system — tracks machine states, logs unplanned stops, sends Telegram alerts to shift supervisors before failures cascade. Reduced unplanned downtime 23% over 6 months. Second: a quality escape classifier — photographs defects on the line, uses vision AI to classify them by type and root cause, replaces handwritten shift logs. Both are live. Now wants to replicate these for other manufacturers and charge for it as an AI operations consultant.",
@@ -22,7 +20,6 @@
     ],
     "target_user": "Operations director at a mid-size manufacturer losing $50k+ per month on unplanned downtime with no systematic visibility into why"
   },
-
   "goals": [
     {
       "goal_id": "g-30d-bruce-001",
@@ -32,10 +29,26 @@
       "phase": "commitment",
       "phase_started_at": "2026-05-20T14:00:00.000Z",
       "phase_history": [
-        {"phase": "intake", "entered_at": "2026-05-14T09:00:00.000Z", "completed_at": "2026-05-14T10:30:00.000Z"},
-        {"phase": "reflection", "entered_at": "2026-05-14T10:30:00.000Z", "completed_at": "2026-05-17T11:00:00.000Z"},
-        {"phase": "clarity", "entered_at": "2026-05-17T11:00:00.000Z", "completed_at": "2026-05-19T09:00:00.000Z"},
-        {"phase": "resistance", "entered_at": "2026-05-19T09:00:00.000Z", "completed_at": "2026-05-20T14:00:00.000Z"}
+        {
+          "phase": "intake",
+          "entered_at": "2026-05-14T09:00:00.000Z",
+          "completed_at": "2026-05-14T10:30:00.000Z"
+        },
+        {
+          "phase": "reflection",
+          "entered_at": "2026-05-14T10:30:00.000Z",
+          "completed_at": "2026-05-17T11:00:00.000Z"
+        },
+        {
+          "phase": "clarity",
+          "entered_at": "2026-05-17T11:00:00.000Z",
+          "completed_at": "2026-05-19T09:00:00.000Z"
+        },
+        {
+          "phase": "resistance",
+          "entered_at": "2026-05-19T09:00:00.000Z",
+          "completed_at": "2026-05-20T14:00:00.000Z"
+        }
       ],
       "added_at": "2026-05-14T09:00:00.000Z",
       "last_touched": "2026-05-22T09:15:00.000Z",
@@ -108,7 +121,7 @@
           "day_5": "Thursday is tomorrow. What version could you post in the next hour?",
           "day_6": "Today. What time are you posting?",
           "day_7": "Did you post it? What happened in the first 24 hours?",
-          "current_day": 2,
+          "current_day": 3,
           "started_at": "2026-05-22T09:15:00.000Z"
         }
       },
@@ -143,7 +156,11 @@
       "phase": "reflection",
       "phase_started_at": "2026-05-14T10:30:00.000Z",
       "phase_history": [
-        {"phase": "intake", "entered_at": "2026-05-14T09:00:00.000Z", "completed_at": "2026-05-14T10:30:00.000Z"}
+        {
+          "phase": "intake",
+          "entered_at": "2026-05-14T09:00:00.000Z",
+          "completed_at": "2026-05-14T10:30:00.000Z"
+        }
       ],
       "added_at": "2026-05-14T09:00:00.000Z",
       "last_touched": "2026-05-20T09:00:00.000Z",
@@ -160,7 +177,11 @@
       "phase": "reflection",
       "phase_started_at": "2026-05-14T10:30:00.000Z",
       "phase_history": [
-        {"phase": "intake", "entered_at": "2026-05-14T09:00:00.000Z", "completed_at": "2026-05-14T10:30:00.000Z"}
+        {
+          "phase": "intake",
+          "entered_at": "2026-05-14T09:00:00.000Z",
+          "completed_at": "2026-05-14T10:30:00.000Z"
+        }
       ],
       "added_at": "2026-05-14T09:00:00.000Z",
       "last_touched": "2026-05-15T09:00:00.000Z",
@@ -170,12 +191,17 @@
       "commitment_history": []
     }
   ],
-
   "calibration": {
     "dominant_lens": "business",
     "resistance_pattern": "identity_anchor",
     "tone": "direct",
-    "oblique_subset": ["R1", "R5", "R9", "R15", "R19"],
+    "oblique_subset": [
+      "R1",
+      "R5",
+      "R9",
+      "R15",
+      "R19"
+    ],
     "behavioral_signals": {
       "avoidance_language": [
         "I need to frame it right first",
@@ -191,13 +217,11 @@
       "excuse_structure": "identity_anchor"
     }
   },
-
   "program": {
     "initial_interview_done": true,
     "sessions_completed": 6,
     "last_session_date": "2026-05-22T09:15:00.000Z"
   },
-
   "publishing_log": [
     {
       "log_id": "p1a2b3c4-d5e6-f789-0abc-def123456780",
@@ -218,22 +242,21 @@
       "description": "Posted the new bio in the Unlabeled community — leads with 'I build AI systems for manufacturing operations,' no mention of plant manager title. Got a reply asking about automotive tier 1."
     }
   ],
-
   "notifications": {
     "email": "bruce@example.com",
     "telegram_chat_id": null,
-    "channels": ["email"],
+    "channels": [
+      "email"
+    ],
     "daily_signal_time": "06:30",
     "timezone": "America/Chicago",
     "re_interview_reminder": true
   },
-
   "safety": {
     "current_state": "engaged",
     "watchful_triggers": 0,
     "last_state_change": "2026-05-14T09:00:00.000Z",
     "flagged_sessions": []
   },
-
   "coach_notes": "[2026-05-14]: Phase 0 complete. 22 years manufacturing operations, plant manager level. Parallel builder — still employed. Shipped two live AI systems: downtime tracker (23% improvement, 6 months live) and quality escape classifier (3 months live). These are not prototypes — they are running on a real floor with real results. Identity pattern is clear and strong: he introduces himself as 'former plant manager' even when describing tools that are actively deployed and producing measurable results. Resistance pattern: identity_anchor. Dominant lens: business. [2026-05-17]: Reflection phase done on 30d goal. Two contradictions surfaced: (1) More deployed AI work than 90% calling themselves AI consultants — but introduces as plant manager. (2) 30-day goal requires external conversation, but has published nothing. Both accepted without defensiveness. [2026-05-19]: Clarity reached. One-sentence: 'I build AI systems that prevent unplanned downtime and quality escapes in manufacturing plants.' Named what makes him different: 22 years on the floor at 2am. That is embedded in the product. [2026-05-20]: Resistance phase done. Named identity_anchor explicitly. R9 card deployed. Action step 3 (bio in community) completed — got a reply. Pattern cracking. [2026-05-22]: 30d goal at commitment phase. LinkedIn post declared — specific, 23% number, by May 28. Rung 5. Previous missed commitment (bio to network contact) debriefed: seven rewrites, never sent."
 }
