@@ -2,7 +2,7 @@
   "user_id": "b4a1c2d3-e5f6-7890-abcd-ef1234567890",
   "slug": "bruce",
   "created_at": "2026-05-14T09:00:00.000Z",
-  "last_updated": "2026-05-25T11:00:01.673Z",
+  "last_updated": "2026-05-26T11:00:01.466Z",
   "re_interview_due": "2026-05-28T09:00:00.000Z",
   "background": {
     "domain": "manufacturing",
@@ -121,7 +121,7 @@
           "day_5": "Thursday is tomorrow. What version could you post in the next hour?",
           "day_6": "Today. What time are you posting?",
           "day_7": "Did you post it? What happened in the first 24 hours?",
-          "current_day": 3,
+          "current_day": 4,
           "started_at": "2026-05-22T09:15:00.000Z"
         }
       },
