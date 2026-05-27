@@ -2,7 +2,7 @@
   "user_id": "b4a1c2d3-e5f6-7890-abcd-ef1234567890",
   "slug": "bruce",
   "created_at": "2026-05-14T09:00:00.000Z",
-  "last_updated": "2026-05-26T11:00:01.466Z",
+  "last_updated": "2026-05-27T01:56:28.086Z",
   "re_interview_due": "2026-05-28T09:00:00.000Z",
   "background": {
     "domain": "manufacturing",
@@ -51,7 +51,7 @@
         }
       ],
       "added_at": "2026-05-14T09:00:00.000Z",
-      "last_touched": "2026-05-22T09:15:00.000Z",
+      "last_touched": "2026-05-27T01:56:28.086Z",
       "status": "active",
       "action_steps": [
         {
@@ -103,28 +103,7 @@
           "exercise_level": 4
         }
       ],
-      "active_commitment": {
-        "commitment_id": "c1d2e3f4-a5b6-7890-cdef-123456789abc",
-        "text": "Post a 3-sentence description of the downtime tracking system on LinkedIn — what it does, the result (23% reduction in unplanned downtime), and that I am now available to build this for other manufacturers. By Thursday May 28.",
-        "declared_at": "2026-05-22T09:15:00.000Z",
-        "due_date": "2026-05-28T23:59:00.000Z",
-        "status": "active",
-        "ladder_rung": 5,
-        "public_platform": "linkedin",
-        "share_post": "Built an AI alert system for our plant floor 6 months ago. Machine states tracked in real time, shift supervisors get a Telegram message before a failure cascades. Result: 23% reduction in unplanned downtime. I'm now available to build this for other manufacturers. If you're losing shifts to equipment failures you didn't see coming, let's talk.",
-        "print_card": "Post the downtime system on LinkedIn by Thursday May 28. — May 22, 2026",
-        "daily_reminders": {
-          "day_1": "You have the 23% number. You have the live system. What's the first sentence?",
-          "day_2": "Have you drafted the post yet? The shift supervisor story is in there — use it.",
-          "day_3": "What's stopping you from posting the draft you already have?",
-          "day_4": "Someone on a plant floor right now is dealing with the exact problem your system solves. They can't find you if this isn't posted.",
-          "day_5": "Thursday is tomorrow. What version could you post in the next hour?",
-          "day_6": "Today. What time are you posting?",
-          "day_7": "Did you post it? What happened in the first 24 hours?",
-          "current_day": 4,
-          "started_at": "2026-05-22T09:15:00.000Z"
-        }
-      },
+      "active_commitment": null,
       "commitment_history": [
         {
           "commitment_id": "a1b2c3d4-e5f6-7890-abcd-ef0987654321",
@@ -145,6 +124,16 @@
           "ladder_rung": 2,
           "outcome_notes": "Didn't do it. Kept rewriting the bio. Got to version 7. None of them felt right. Classic — the identity anchor pattern doing exactly what the coach said it would. The bio wasn't the problem.",
           "logged_at": "2026-05-19T09:00:00.000Z"
+        },
+        {
+          "commitment_id": "c1d2e3f4-a5b6-7890-cdef-123456789abc",
+          "text": "Post a 3-sentence description of the downtime tracking system on LinkedIn — what it does, the result (23% reduction in unplanned downtime), and that I am now available to build this for other manufacturers. By Thursday May 28.",
+          "declared_at": "2026-05-22T09:15:00.000Z",
+          "due_date": "2026-05-28T23:59:00.000Z",
+          "status": "done",
+          "ladder_rung": 5,
+          "outcome_notes": "",
+          "logged_at": "2026-05-27T01:56:28.086Z"
         }
       ]
     },
