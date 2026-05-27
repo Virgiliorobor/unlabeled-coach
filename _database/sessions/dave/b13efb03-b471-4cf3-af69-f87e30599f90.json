@@ -161,6 +161,14 @@
     {
       "role": "assistant",
       "content": "So the goal stays — but you're naming the condition: you need to stop jumping, have some external structure, and stay with it.\n\nThat's what this program is for. I'll hold you to it.\n\n**30-day goal: Mobile app MVP published on the app store, with a website that demonstrates it in use. Functional, even if raw and limited.**\n\nNow let's break that into weeks. If you're going to have something on the app store in 30 days, what would need to be true by the end of week 1 to feel on track?\n\nAnd week 2?"
+    },
+    {
+      "role": "user",
+      "content": "Week 1 should be refamiliarise myself with the project, get it actually making a sound.  Week 2 should be making sure the sounds, syllables and phrases (SSPs) are mapped for a small set of popular languages.  Week 3 should be for testing, fine tuning and making UI improvements ready for screenshots and images of it working for the demo.  How does that sound?  To me, I am already condsider what will prevent this from happening and it all comes back to agentic coding frameworks promising to have \"solved coding\" when in fact they are slowly building a mess.  I have 2 projects, each have part of the process, part of the setup and part of the code.  This is the biggest risk to progress"
+    },
+    {
+      "role": "assistant",
+      "content": "That's a solid weekly breakdown, and you've already named the biggest risk: two fragmented codebases, neither complete, both agentic slop. That's not a vague worry — that's a specific obstacle.\n\nSo Week 1 is really two things:\n1. Decide which codebase to commit to (or whether to start clean with a tighter scope)\n2. Get it making a sound\n\nLet me capture the milestones:\n\n| Week | Milestone |\n|------|-----------|\n| 1 | Refamiliarize, consolidate codebases, get it actually making a sound |\n| 2 | SSPs mapped for a small set of popular languages |\n| 3 | Testing, fine-tuning, UI ready for screenshots |\n| 4 | Published on app store + demo website live |\n\nDoes that capture it accurately?\n\nAnd one more question: **what's the decision you've been avoiding about those two codebases?** You said each has part of the process — is there a reason you haven't already picked one and committed?"
     }
   ]
 }
