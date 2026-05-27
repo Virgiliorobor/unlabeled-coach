@@ -2,7 +2,7 @@
   "user_id": "b4a1c2d3-e5f6-7890-abcd-ef1234567890",
   "slug": "bruce",
   "created_at": "2026-05-14T09:00:00.000Z",
-  "last_updated": "2026-05-27T01:56:28.086Z",
+  "last_updated": "2026-05-27T02:11:40.505Z",
   "re_interview_due": "2026-05-28T09:00:00.000Z",
   "background": {
     "domain": "manufacturing",
@@ -208,8 +208,8 @@
   },
   "program": {
     "initial_interview_done": true,
-    "sessions_completed": 6,
-    "last_session_date": "2026-05-22T09:15:00.000Z"
+    "sessions_completed": 7,
+    "last_session_date": "2026-05-27T02:11:39.192Z"
   },
   "publishing_log": [
     {
