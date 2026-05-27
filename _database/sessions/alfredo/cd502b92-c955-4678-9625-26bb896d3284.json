@@ -49,6 +49,14 @@
     {
       "role": "assistant",
       "content": "How long were you doing that work? And what made you leave, or start building something alongside it — was this a deliberate decision, or did something push you?"
+    },
+    {
+      "role": "user",
+      "content": "I've been doing this for 13+ years and I still want to keep doing it. But also want to expand my portfolio to art direction and more creative endevours"
+    },
+    {
+      "role": "assistant",
+      "content": "So you're not leaving design — you're expanding from it. That's a different kind of transition than someone walking away from a career they've burned out on.\n\nTwo more questions on background:\n\nWhat skills or judgment from those 13 years of design work do you find yourself using constantly in the new direction — even if you wouldn't call them by their old names? The things that feel like second nature now.\n\nAnd when you describe this expansion to someone — a former client, a colleague — how do you explain it? What do you usually leave out?"
     }
   ]
 }
