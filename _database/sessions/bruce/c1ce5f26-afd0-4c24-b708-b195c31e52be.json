@@ -1,0 +1,48 @@
+{
+  "session_id": "c1ce5f26-afd0-4c24-b708-b195c31e52be",
+  "user_id": "b4a1c2d3-e5f6-7890-abcd-ef1234567890",
+  "user_slug": "bruce",
+  "session_number": 8,
+  "date": "2026-05-27",
+  "started_at": "2026-05-27T03:32:01.554Z",
+  "ended_at": "",
+  "duration_minutes": 0,
+  "active_goal_id": "g-30d-bruce-001",
+  "phase": "commitment",
+  "re_interview_completed": false,
+  "profile_updated": false,
+  "safety_state": "engaged",
+  "safety_notes": "",
+  "summary": "",
+  "key_insights": [],
+  "questions_that_landed": [],
+  "resistance_pattern_active": false,
+  "resistance_notes": "",
+  "goals_discussed": [
+    "g-30d-bruce-001"
+  ],
+  "goal_changes": [],
+  "oblique_card_used": "",
+  "oblique_card_text": "",
+  "commitment_declared": false,
+  "commitment_id": "",
+  "commitment_text": "",
+  "commitment_due_date": "",
+  "commitment_ladder_rung": 0,
+  "notification_channels": [],
+  "prior_commitment_resolved": false,
+  "prior_commitment_id": "",
+  "prior_commitment_outcome": "",
+  "prior_commitment_notes": "",
+  "lens_dominant_this_session": "",
+  "lens_notes": "",
+  "next_session_open_with": "",
+  "phase_transition": false,
+  "new_phase": "",
+  "chat_log": [
+    {
+      "role": "assistant",
+      "content": "I see you've started a new session. Let me load your profile and pick up where we left off.\n\n---\n\nBruce, last session you declared a commitment to post a 3-sentence description of the downtime tracking system on LinkedIn by Thursday May 28. The profile shows that commitment is now marked done.\n\nWhat happened? Tell me specifically — did you post it, and what was the response?"
+    }
+  ]
+}
