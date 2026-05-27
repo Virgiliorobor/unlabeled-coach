@@ -217,6 +217,14 @@
     {
       "role": "assistant",
       "content": "Got it. Business financial and tax accounts — the admin that keeps piling up undone.\n\nThat's real, but it's not the resistance pattern that's killing your projects. That's avoidance of a different kind — life admin, not creative work.\n\nLet me ask it differently:\n\n**On the babbling engine specifically — what's the task you keep meaning to do and keep not doing?** The thing that, if you did it, would actually move the project forward. Not the accounts. The build."
+    },
+    {
+      "role": "user",
+      "content": "when i was running the project, it was a case of nothing I tried moved the project forward, not something I was avoiding.  If you've never used an agentic framework and LLM to pair code, you might not understand how frustrating an experience it can be to be given the idea everything is going well for a week, and then find out the tests are nonsense, the code is a mess and that last error has broken everything, its demoralising"
+    },
+    {
+      "role": "assistant",
+      "content": "I hear that. Agentic coding promises flow and delivers slop — you think you're making progress, then discover the tests were theater and the codebase is a house of cards. That's not resistance, that's a real tooling problem.\n\nBut here's what I want to name:\n\nYou said \"nothing I tried moved the project forward.\" And then you stopped. The project got abandoned.\n\nThe question isn't whether the agentic framework was frustrating — it clearly was. The question is: **what happened in the moment between \"this is broken and I don't understand it\" and \"I'll come back to this later\"?**\n\nWas it the technical wall? Or was it something else — the feeling that if you can't fix it cleanly, it's not worth showing anyone anyway?\n\nI'm asking because the pattern I'm seeing across everything you've told me isn't \"can't finish.\" It's **\"won't expose until it's undeniable.\"** The accounts, the projects, the ideas you stopped explaining to people — they all have the same shape: if it's not already proven, it stays hidden.\n\nIs that accurate, or am I off?"
     }
   ]
 }
