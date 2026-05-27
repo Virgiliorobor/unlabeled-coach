@@ -193,6 +193,14 @@
     {
       "role": "assistant",
       "content": "That's a vivid picture.\n\n**12-month vision:** You're in 20 countries, on video, using the languages you acquired through your own tool — understood, understanding, sounding like a playful child which is the point. A small viral movement of users posting their own proof. Blog posts explaining the system. Enough subscribers that money stops being the worry. You *are* the work. People know you through what you built.\n\nThat's not just a product goal. That's an identity goal. You want to stop being the person with deep insights no one listens to, and become the person whose work speaks so loudly the insights are undeniable.\n\n---\n\nThat's your three horizons locked:\n\n| Horizon | Goal |\n|---------|------|\n| 30 days | MVP on app store + demo website. Functional, even if raw. |\n| 90 days | Small user group engaging daily. Community/feedback loop. Public roadmap shaped by users. |\n| 12 months | 20 videos in 20 countries. Viral user movement. Revenue sustaining focus. Known through the work. |\n\n---\n\nGood stopping point for goals. Two more short sections remain — I want to name the pattern most likely to slow you down, and get your notification preferences set up. Maybe 15 more minutes.\n\n**Want to push through now, or is this a good place to stop?**"
+    },
+    {
+      "role": "user",
+      "content": "let's keep going, I'm good at stopping, do not encourage me now"
+    },
+    {
+      "role": "assistant",
+      "content": "Good catch. Let's keep going.\n\n**Section D — Resistance.**\n\nYou've already shown me a lot of this, but I want to make it precise.\n\n**What's the thing you keep meaning to do but keep not doing?** The specific task that appears on every week's list and never gets crossed off — on this project or any project."
     }
   ]
 }
