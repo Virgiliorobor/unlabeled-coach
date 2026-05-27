@@ -209,6 +209,14 @@
     {
       "role": "assistant",
       "content": "Say more. What accounts — social media, business accounts, financial records? And what does \"updating\" mean — posting, organizing, maintaining?\n\nI want the specific task, not the category."
+    },
+    {
+      "role": "user",
+      "content": "business financial and tax accounts"
+    },
+    {
+      "role": "assistant",
+      "content": "Got it. Business financial and tax accounts — the admin that keeps piling up undone.\n\nThat's real, but it's not the resistance pattern that's killing your projects. That's avoidance of a different kind — life admin, not creative work.\n\nLet me ask it differently:\n\n**On the babbling engine specifically — what's the task you keep meaning to do and keep not doing?** The thing that, if you did it, would actually move the project forward. Not the accounts. The build."
     }
   ]
 }
