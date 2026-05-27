@@ -153,6 +153,14 @@
     {
       "role": "assistant",
       "content": "That's specific: a mobile app MVP on the app store, with a website that demonstrates it in use. Functional, even if raw and limited.\n\nBefore I accept that as the 30-day goal, I want to pressure-test it.\n\nYou said you're good at starting, not finishing. You said you've never shipped something with your name on it that you'd show a client. You said the current codebase is abandoned slop that's hard to fix.\n\n**Given all that — is \"published on the app store in 30 days\" honest, or is it the ambitious version you think you should say?**\n\nI'm not asking you to lower your standards. I'm asking: if we're sitting here in 30 days, what's the version of this goal where you'd say \"yes, I did it\" — and it's actually achievable given where you are right now?"
+    },
+    {
+      "role": "user",
+      "content": "i think if I stopped jumping between projects, and sat with some certainty, some guidance, a project manager of sorts, then I could get this done"
+    },
+    {
+      "role": "assistant",
+      "content": "So the goal stays — but you're naming the condition: you need to stop jumping, have some external structure, and stay with it.\n\nThat's what this program is for. I'll hold you to it.\n\n**30-day goal: Mobile app MVP published on the app store, with a website that demonstrates it in use. Functional, even if raw and limited.**\n\nNow let's break that into weeks. If you're going to have something on the app store in 30 days, what would need to be true by the end of week 1 to feel on track?\n\nAnd week 2?"
     }
   ]
 }
