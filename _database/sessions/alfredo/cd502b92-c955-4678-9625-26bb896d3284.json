@@ -41,6 +41,14 @@
     {
       "role": "assistant",
       "content": "I've loaded your profile. You're Alfredo — this is our first session together, and I don't have any information about you yet.\n\nBefore we do anything else, I want to spend about 20 minutes getting an accurate picture of who you are and what you're up against — not the elevator pitch version, the honest one. I'll ask about your background, what you're building, and what typically gets in your way. From that I'll calibrate how I coach you. There are no right answers. The less polished your answers are, the more useful this will be. Goals come after this — first I want to understand the person.\n\nLet's start with your background.\n\nWhat did you do before this? Not the LinkedIn version — what did the work actually involve, and how long did you do it?"
+    },
+    {
+      "role": "user",
+      "content": "Graphic and web design for small businesses and some agencies"
+    },
+    {
+      "role": "assistant",
+      "content": "How long were you doing that work? And what made you leave, or start building something alongside it — was this a deliberate decision, or did something push you?"
     }
   ]
 }
