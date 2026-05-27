@@ -1,0 +1,48 @@
+{
+  "session_id": "39d1833b-e837-4918-86a4-ce26e1acb593",
+  "user_id": "b4a1c2d3-e5f6-7890-abcd-ef1234567890",
+  "user_slug": "bruce",
+  "session_number": 8,
+  "date": "2026-05-27",
+  "started_at": "2026-05-27T19:02:29.038Z",
+  "ended_at": "",
+  "duration_minutes": 0,
+  "active_goal_id": "g-30d-bruce-001",
+  "phase": "commitment",
+  "re_interview_completed": false,
+  "profile_updated": false,
+  "safety_state": "engaged",
+  "safety_notes": "",
+  "summary": "",
+  "key_insights": [],
+  "questions_that_landed": [],
+  "resistance_pattern_active": false,
+  "resistance_notes": "",
+  "goals_discussed": [
+    "g-30d-bruce-001"
+  ],
+  "goal_changes": [],
+  "oblique_card_used": "",
+  "oblique_card_text": "",
+  "commitment_declared": false,
+  "commitment_id": "",
+  "commitment_text": "",
+  "commitment_due_date": "",
+  "commitment_ladder_rung": 0,
+  "notification_channels": [],
+  "prior_commitment_resolved": false,
+  "prior_commitment_id": "",
+  "prior_commitment_outcome": "",
+  "prior_commitment_notes": "",
+  "lens_dominant_this_session": "",
+  "lens_notes": "",
+  "next_session_open_with": "",
+  "phase_transition": false,
+  "new_phase": "",
+  "chat_log": [
+    {
+      "role": "assistant",
+      "content": "I see from your profile that we were working on your 30-day goal — the first real external conversation with an operations director outside your current company.\n\nYou committed to posting a 3-sentence description of the downtime tracking system on LinkedIn by Thursday May 28. That deadline was yesterday.\n\nWhat happened?"
+    }
+  ]
+}
