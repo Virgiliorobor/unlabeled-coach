@@ -97,6 +97,14 @@
     {
       "role": "assistant",
       "content": "Yes — pick one. The one you think about most right now, even if it's stalled or failed.\n\nWe're not looking for the most impressive or the most likely to succeed. We're looking for the one that has the most grip on your attention, for whatever reason.\n\n**What are you building? Describe it as it actually is right now — not what it will be, what it is today.**"
+    },
+    {
+      "role": "user",
+      "content": "I am building a babbling engine which takes the users native language, maps it at a sound, syllable and breath-group phrase level to any number of selected languages they show an interest in acquiring.  The human pysiology can only produce a total of around 50-60 sounds, so many languages use the same sounds and syllables, but in different sequences, different phonology and frequency of use.  So if a child can make themselves understood with 300 words and a good playful understanding of their language, the babbling engine allows adults to do this by stacking multiple languages and playing with their commonalities all at once, its not language->sound, its sound->languages.  The app was built using agentic framework, but as with all of them, it starts out fine but soon becomes a slop factory, then when something does not work as intended its really hard to fix.  The flutter app runs, allows language selection, installs onnx but does not actually make any sounds when the user taps play. It's been a short while since I looked at the code, it's another abandoned agentic codebase"
+    },
+    {
+      "role": "assistant",
+      "content": "Good. That's a real description of something real.\n\nA babbling engine that inverts the standard model — sound to languages, not language to sounds. Built on the insight that human physiology produces a limited sound set, and languages share more than they differ at that level. The idea is to let adults acquire language the way children do: through playful sound-making, not vocabulary memorization.\n\nThe app exists. It runs. Language selection works, ONNX installs. But when you tap play — silence. And because it was built with an agentic framework that degraded into slop, you can't easily fix it. So it sits there, abandoned.\n\nThat's the honest state of it.\n\n**What have you shipped?** Not on this project necessarily — anything. A landing page, a prototype someone else used, a tool you gave to one person, a previous version of this. What exists outside your head or your hard drive that someone else has touched?"
     }
   ]
 }
