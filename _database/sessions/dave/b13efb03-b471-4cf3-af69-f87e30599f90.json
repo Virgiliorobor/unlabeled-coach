@@ -105,6 +105,14 @@
     {
       "role": "assistant",
       "content": "Good. That's a real description of something real.\n\nA babbling engine that inverts the standard model — sound to languages, not language to sounds. Built on the insight that human physiology produces a limited sound set, and languages share more than they differ at that level. The idea is to let adults acquire language the way children do: through playful sound-making, not vocabulary memorization.\n\nThe app exists. It runs. Language selection works, ONNX installs. But when you tap play — silence. And because it was built with an agentic framework that degraded into slop, you can't easily fix it. So it sits there, abandoned.\n\nThat's the honest state of it.\n\n**What have you shipped?** Not on this project necessarily — anything. A landing page, a prototype someone else used, a tool you gave to one person, a previous version of this. What exists outside your head or your hard drive that someone else has touched?"
+    },
+    {
+      "role": "user",
+      "content": "if you are asking for a 20 year project history you might be overstretching yourself, what is the real question about, are you asking about my technical capabilities or ability to ship?"
+    },
+    {
+      "role": "assistant",
+      "content": "Fair push. I'm asking about your ability to ship.\n\nSpecifically: **has anyone else ever used something you built?** Not whether you *can* build — that's clear. Whether you've put something in front of a real person and let them interact with it.\n\nOne example is enough."
     }
   ]
 }
