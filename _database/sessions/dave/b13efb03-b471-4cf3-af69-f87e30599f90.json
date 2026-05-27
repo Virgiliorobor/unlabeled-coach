@@ -273,6 +273,14 @@
     {
       "role": "assistant",
       "content": "That landed.\n\n**Afraid of becoming:** The person who understood everything, built nothing, and failed at everything he started. All insight, no evidence. The guy who could have.\n\n**Afraid of admitting you want:** Success. You said it yourself — \"I don't know.\" That hesitation is the tell. Success would mean visibility, judgment, having to defend the work publicly, becoming the person people know through the work. That's what you said you wanted in the 12-month vision. But wanting it openly feels dangerous somehow.\n\n---\n\nNow I want to capture two behavioral signals. These help me recognize when the pattern is operating in future sessions.\n\n**First:** When you've avoided doing something you said you would do — on this project or any other — what do you usually tell yourself? What's your go-to internal reason?\n\nNot the logical explanation. The actual words in your head."
+    },
+    {
+      "role": "user",
+      "content": "try again"
+    },
+    {
+      "role": "assistant",
+      "content": "\"Try again.\"\n\nSo when something fails, the internal voice says *try again* — which sounds productive but becomes a loop. Try again, hit the wall, try again, hit the wall, try again... until eventually you stop trying and move to something else.\n\nIt's persistence that doesn't complete. The trying becomes the activity instead of the shipping.\n\n**Second behavioral signal:**\n\nWhat's the last thing about the babbling engine — or any project — that genuinely excited you? A moment where you felt like *this could actually work*. What specifically was happening?"
     }
   ]
 }
