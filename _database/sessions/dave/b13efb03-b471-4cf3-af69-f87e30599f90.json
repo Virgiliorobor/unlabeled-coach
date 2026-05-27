@@ -201,6 +201,14 @@
     {
       "role": "assistant",
       "content": "Good catch. Let's keep going.\n\n**Section D — Resistance.**\n\nYou've already shown me a lot of this, but I want to make it precise.\n\n**What's the thing you keep meaning to do but keep not doing?** The specific task that appears on every week's list and never gets crossed off — on this project or any project."
+    },
+    {
+      "role": "user",
+      "content": "updating my accounts"
+    },
+    {
+      "role": "assistant",
+      "content": "Say more. What accounts — social media, business accounts, financial records? And what does \"updating\" mean — posting, organizing, maintaining?\n\nI want the specific task, not the category."
     }
   ]
 }
