@@ -89,6 +89,14 @@
     {
       "role": "assistant",
       "content": "That's a vivid contrast.\n\n**What drained you:** Office politics, clients who constrain solutions to their limited imagination, domain experts who overstep into telling you *how* to build instead of *what* they need.\n\n**What lit you up:** Hands-on diagnostic problem-solving — the psychological hunt, the hours of working toward the root cause. Systems you fully understood where you could see the problem and know the fix instantly. And that hostel job — switching between languages fluidly, in real time, in service of real human connection.\n\nThere's a thread there: you come alive when you're *inside* a system you deeply understand, solving real problems in real time, with autonomy over how you solve them. The moment someone else's limited framework gets imposed on you — whether it's a client, a domain expert, or a credentialing system — something dies.\n\nThat's a good stopping point for your background. I have a clear picture now: where you came from, how long you were in it, why you're here, and what energizes versus drains you.\n\n**We can stop here and pick up next time with your current build and goals, or we can keep going now.** The next section is about what you're actually building — what exists, what you've shipped, who it's for. Maybe another 15 minutes.\n\nWhat do you want to do?"
+    },
+    {
+      "role": "user",
+      "content": "we can keep going, but due to agentic coding there is more than 1 project build, or should I say more than 1 project fail.  Should I pick one?"
+    },
+    {
+      "role": "assistant",
+      "content": "Yes — pick one. The one you think about most right now, even if it's stalled or failed.\n\nWe're not looking for the most impressive or the most likely to succeed. We're looking for the one that has the most grip on your attention, for whatever reason.\n\n**What are you building? Describe it as it actually is right now — not what it will be, what it is today.**"
     }
   ]
 }
