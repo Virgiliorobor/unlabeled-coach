@@ -41,6 +41,14 @@
     {
       "role": "assistant",
       "content": "I see you're a new user — your profile shows the initial interview hasn't been completed yet.\n\nBefore we do anything else, I want to spend about 20 minutes getting an accurate picture of who you are and what you're up against — not the elevator pitch version, the honest one. I'll ask about your background, what you're building, and what typically gets in your way. From that I'll calibrate how I coach you. There are no right answers. The less polished your answers are, the more useful this will be. Goals come after this — first I want to understand the person.\n\nLet's start with your background.\n\n**What did you do before this?** Not the LinkedIn version — what did the work actually involve, and how long did you do it?"
+    },
+    {
+      "role": "user",
+      "content": "i started as a motor mechanic, then did production engineering, then trained as a software developer, but I've never had real qualifications and so I can never apply for 'real' jobs. So I've moved around from indie mobile app development to web building, then did some product documenting and called myself a 'conversational architect' while building out some chatbot scripts back when chatbots had scripts to follow.  Somehow I've been doing this for over 10 years"
+    },
+    {
+      "role": "assistant",
+      "content": "Good — that's a real answer. Mechanic to production engineering to self-taught developer to mobile apps to web to chatbots. Ten-plus years of building things across different domains, all without the formal credentials that would let you walk into a \"real\" job interview.\n\nThat's a particular kind of path — you've had to prove competence through output instead of credentials, over and over.\n\n**What made you move through all those transitions?** Was each shift a deliberate choice, or did something push you — a job ending, an opportunity appearing, getting bored, hitting a ceiling?"
     }
   ]
 }
